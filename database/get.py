@@ -3,15 +3,13 @@ from lib.config import load_config
 
 def get_all_devices_ip():
     config = load_config()
-    sql = """SELECT ip_addr FROM device"""
+    sql = """SELECT ip_addr, seri FROM device"""
     result = []
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
-                data = cur.fetchall()
-                for ip_addr in data:
-                    result.append(ip_addr[0])
+                result = cur.fetchall()
 
                 
     except (Exception, psycopg2.DatabaseError) as Error:
