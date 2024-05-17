@@ -52,3 +52,20 @@ def get_data_latest(device_id):
     
     finally:
         return result
+    
+def get_user_by_username(username):
+    """ Retrive user from the table """
+    config = load_config()
+    sql = """SELECT full_name, email, password FROM users
+             WHERE username = %s"""
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (username, ))
+
+                result = cur.fetchone()
+    except (Exception, psycopg2.DatabaseError) as Error:
+        print(Error)
+        result = Error
+    finally:
+        return result

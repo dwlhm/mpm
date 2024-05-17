@@ -1,6 +1,7 @@
 import psycopg2
 from lib.config import load_config
 from datetime import datetime
+import main
 
 def insert_device(device_name, ip_addr, seri):
     """ Insert a new device into the devices table """
@@ -65,6 +66,25 @@ def insert_data(device_id, data):
         print(error)    
     finally:
         return result
+    
+def insert_new_user(user):
+    """ Insert new user to table """
+    sql = """INSERT INTO users (full_name, username, email, password)
+             VALUES(%s, %s, %s, %s)"""
+    
+    result = None
+    config = load_config()
 
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                result = cur.execute(sql, (user.full_name, user.username, user.email, user.password))
+
+                conn.commit()
+    except (Exception, psycopg2.DatabaseError) as Error:
+        result = Error
+    finally:
+        return result
+    
 # if __name__ == '__main__':
 #     insert_device("3M Co.", "192.168.250.7", "AW9L")

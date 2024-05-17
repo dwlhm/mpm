@@ -28,6 +28,15 @@ def create_tables():
             timestamp TIMESTAMPTZ NOT NULL,
             CONSTRAINT fk_device FOREIGN KEY(device_id) REFERENCES device(id)
         )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            full_name VARCHAR(255),
+            username VARCHAR(255),
+            email VARCHAR(255),
+            password VARCHAR(255)
+        )
         """
     )
     try:
