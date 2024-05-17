@@ -20,6 +20,14 @@ def create_tables():
             timestamp TIMESTAMPTZ NOT NULL,
             CONSTRAINT fk_device FOREIGN KEY(device_id) REFERENCES device(id)
         )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS data_repo (
+            data VARCHAR(10000) NOT NULL,
+            device_id INT NOT NULL,
+            timestamp TIMESTAMPTZ NOT NULL,
+            CONSTRAINT fk_device FOREIGN KEY(device_id) REFERENCES device(id)
+        )
         """
     )
     try:

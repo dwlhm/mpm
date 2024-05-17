@@ -3,7 +3,7 @@ from lib.config import load_config
 
 def get_all_devices_ip():
     config = load_config()
-    sql = """SELECT ip_addr, seri FROM device"""
+    sql = """SELECT ip_addr, seri, id FROM device"""
     result = []
     try:
         with psycopg2.connect(**config) as conn:

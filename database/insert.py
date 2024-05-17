@@ -38,14 +38,21 @@ def insert_data(device_id, data):
              DO UPDATE SET data = EXCLUDED.data, timestamp = EXCLUDED.timestamp
              RETURNING timestamp"""
     
+    sql2 = """INSERT INTO data_repo (device_id, data, timestamp)
+              VALUES(%s, %s, %s)
+              RETURNING timestamp"""
+    
     result = None
     config = load_config()
 
     try:
         with  psycopg2.connect(**config) as conn:
             with  conn.cursor() as cur:
+                now = datetime.now()
                 # execute the INSERT statement
-                cur.execute(sql, (device_id, data, datetime.now()))
+                cur.execute(sql, (device_id, data, now))
+
+                cur.execute(sql2, (device_id, data, now))
 
                 # get the generated id back                
                 rows = cur.fetchone()
