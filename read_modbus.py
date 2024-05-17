@@ -30,5 +30,6 @@ def read(client, register, data, ip_addr):
 if __name__ == "__main__":
 	devices = get_all_devices_ip()
 	print(devices)
-	for device in devices:
-	    scan_device(device[0], device[1], device[2])
+	while True:
+		for device in devices:
+			scan_device(device[0], device[1], device[2])
