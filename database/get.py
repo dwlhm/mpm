@@ -33,7 +33,7 @@ def get_device(device_id):
         result = Error
     finally:
         return result
-
+    
 def get_data_latest(device_id):
     """ Retrive latest data from the device """
     config = load_config()

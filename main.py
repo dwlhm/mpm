@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 import database.get as get
 import database.insert as insert
+import database.delete as delete
 from device_registers.registers_repo import repo as registers
 
 app = FastAPI()
@@ -32,6 +33,11 @@ def insert_new_device(device: Device):
 @app.get("/devices/{device_id}")
 def read_device_info(device_id: int):
 	data = get.get_device(device_id)
+	return {"status": "success", "results": data}
+
+@app.delete("/devices/{device_id}")
+def remove_device_by_id(device_id: str):
+	data = delete.remove_device(device_id)
 	return {"status": "success", "results": data}
 
 @app.get("/devices/{device_id}/latest")
