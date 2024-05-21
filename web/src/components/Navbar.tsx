@@ -100,16 +100,6 @@ export default function Navbar({ logout }: { logout: () => void }) {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'bg-blue-100' : '', 'block px-4 py-2 text-sm text-blue-700')}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
                           <button
                             className={classNames(active ? 'bg-blue-100' : '', 'block px-4 py-2 text-sm text-blue-700 w-full text-left')}
                             onClick={logout}

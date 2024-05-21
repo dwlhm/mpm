@@ -44,7 +44,6 @@ function setStoredToken(token: string | null) {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = React.useState<string | null>(getStoredToken())
     const isAuthenticated = !!token
-    const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: doLogin
     })
@@ -60,8 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username: username,
             password: password
         } as Login)
-       
-        console.info("mutation: ", mutation)
 
         if (mutation.isError) {
             const error: LoginError = mutation.error as LoginError
