@@ -26,36 +26,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 def read_root():
 	return {"Hello": "World"}
 
-@app.get("/devices")
-def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_all_devices_ip()
-	return {"status": "success", "results": data}
-
-class Device(BaseModel):
-	name: str
-	ip_addr: str
-	seri: str = Field(default="AW9L")
-
-@app.post("/devices")
-def insert_new_device(device: Device, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = insert.insert_device(device.name, device.ip_addr, device.seri)
-	return {"status": "success", "results": data}
-
-@app.get("/devices/{device_id}")
-def read_device_info(device_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_device(device_id)
-	return {"status": "success", "results": data}
-
-@app.delete("/devices/{device_id}")
-def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = delete.remove_device(device_id)
-	return {"status": "success", "results": data}
-
-@app.get("/devices/{device_id}/latest")
-def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_data_latest(device_id)
-	return {"status": "success", "results": data}
-
 class User(BaseModel):
 	full_name: str
 	username: str
@@ -119,7 +89,58 @@ async def login_for_access_token(
     )
     return Token(access_token=access_token, token_type="bearer")
 
-@app.post("/login")
-def login_user(username: str, password: str):
-	data = authenticate_user(username, password)
-	return {"status": "success", "results": { "full_name": data[0], "email": data[1]}}
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = get.get_user_by_username(username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+@app.get("/users/me/", response_model=User)
+async def read_users_me(
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    return current_user
+
+
+@app.get("/devices")
+def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
+	data = get.get_all_devices_ip()
+	return {"status": "success", "results": data}
+
+class Device(BaseModel):
+	name: str
+	ip_addr: str
+	seri: str = Field(default="AW9L")
+
+@app.post("/devices")
+def insert_new_device(device: Device, token: Annotated[str, Depends(oauth2_scheme)]):
+	data = insert.insert_device(device.name, device.ip_addr, device.seri)
+	return {"status": "success", "results": data}
+
+@app.get("/devices/{device_id}")
+def read_device_info(device_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
+	data = get.get_device(device_id)
+	return {"status": "success", "results": data}
+
+@app.delete("/devices/{device_id}")
+def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+	data = delete.remove_device(device_id)
+	return {"status": "success", "results": data}
+
+@app.get("/devices/{device_id}/latest")
+def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+	data = get.get_data_latest(device_id)
+	return {"status": "success", "results": data}

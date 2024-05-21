@@ -19,13 +19,12 @@ def scan_device(ip_addr, seri, id):
 	insert_data(id, json.dumps(data))
 
 def read(client, register, data, ip_addr):
-	logger.info(f"reading register {register} from {ip_addr}")
+	logger.info(f"reading register {register[0]} from {ip_addr}, value: {rr.registers[0]*register[1]} {register[3]}")
 	rr = client.read_holding_registers(register[0], 2, slave=1)
 	if rr.isError():
 		logger.warning(f"{register} - exception in pymodbus {rr}")
 	else:
-		data[register[2]] = rr.registers[0]
-		#print(f"{register}: {rr.registers}")  
+		data[register[2]] = rr.registers[0]*register[1]
 		
 if __name__ == "__main__":
 	devices = get_all_devices_ip()
