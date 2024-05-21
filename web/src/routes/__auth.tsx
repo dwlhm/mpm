@@ -1,13 +1,11 @@
 import { Outlet, createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { useAuth } from "../auth";
-import { Link } from "lucide-react";
-import { AuthContext } from "../auth";
+import { AuthContext, useAuth } from "../auth";
 import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute('/__auth')({
     beforeLoad: async ({ context, location }) => {
-      console.log(context)
-        if (!context.isAuthenticated) {
+        const ctx = context as AuthContext
+        if (!ctx.isAuthenticated) {
             throw redirect({
                 to: '/login',
                 search: {

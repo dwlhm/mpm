@@ -7,9 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { useAuth } from '../auth'
-import { useMutation, useQueryClient } from 'react-query'
-import { doLogin } from '../api/users'
+import { AuthContext, useAuth } from '../auth'
 
 const fallback = '/dashboard' as const
 
@@ -18,21 +16,16 @@ export const Route = createFileRoute('/login')({
     redirect: z.string().optional().catch(''),
   }),
   beforeLoad: async ({ context, search }) => {
-    if (context.isAuthenticated) {
+    const ctx: AuthContext = context as AuthContext
+    if (ctx.isAuthenticated) {
       throw redirect({ to: search.redirect || fallback})
     }
   },
   component: LoginComponent
 })
 
-const loginSchema = z.object({
-  username: z.string(),
-  password: z.string()
-})
-
 function LoginComponent() {
   const auth = useAuth()
-  const queryClient = useQueryClient()
   const router = useRouter()
   const isLoading = useRouterState({ select: (s) => s.isLoading })
   const navigate = Route.useNavigate()
