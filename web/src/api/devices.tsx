@@ -1,12 +1,12 @@
 import axios from "axios";
-import { AuthContext } from "../auth";
+import { QueryFunctionContext } from "react-query";
 
-export async function getDevices(context: AuthContext) {
+export async function getDevices(context: QueryFunctionContext) {
     const config = {
         method: 'get',
         url: 'http://localhost:8000/devices',
         headers: { 
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${context.queryKey[1]}`
         }
       };
 
