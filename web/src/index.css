@@ -5,3 +5,7 @@
 h2 {
   @apply text-xl font-semibold
 }
+
+#root {
+  @apply flex flex-col min-h-screen
+}

@@ -8,6 +8,7 @@ import {
 import { z } from 'zod'
 
 import { AuthContext, useAuth } from '../auth'
+import { sleep } from '../utils'
 
 const fallback = '/dashboard' as const
 
@@ -47,9 +48,6 @@ function LoginComponent() {
       await auth.login({ username: username, password: password})
 
       await router.invalidate()
-
-      // This is just a hack being used to wait for the auth state to update
-      // in a real app, you'd want to use a more robust solution
 
       await navigate({ to: search.redirect || fallback })
     } catch (error) {

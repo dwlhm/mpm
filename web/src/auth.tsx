@@ -10,6 +10,11 @@ export interface AuthContext {
     token: string | null
 }
 
+export interface Token<T> {
+    token: string | null,
+    data: T
+}
+
 interface LoginError {
     response: {
         data: {
@@ -45,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = React.useState<string | null>(getStoredToken())
     const isAuthenticated = !!token
     const mutation = useMutation({
-        mutationFn: doLogin
+        mutationFn: doLogin,
     })
 
     const logout = React.useCallback(async () => {
@@ -58,18 +63,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         mutation.mutate({
             username: username,
             password: password
-        } as Login)
-
-        if (mutation.isError) {
-            const error: LoginError = mutation.error as LoginError
-            console.error(error.response.data.detail)
-        }
-
-        if (mutation.isSuccess) {
-            const res: LoginSuccess = mutation.data
-            setStoredToken(res.data.access_token)
-            setToken(res.data.access_token)
-        }
+        } as Login,
+        {
+            onSuccess: (res: LoginSuccess) => {
+                console.log(res)
+                setStoredToken(res.data.access_token)
+                setToken(res.data.access_token)
+            },
+            onError: (error) => {
+                const err = error as LoginError
+                console.error(err.response.data.detail)
+            }
+        })
     }, [])
 
     React.useEffect(() => {
