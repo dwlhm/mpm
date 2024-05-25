@@ -31,7 +31,7 @@ function Dashboard() {
               return (
                 <Link 
                   key={index}
-                  to={`/perangkat/${perangkatId}`}
+                  to={`/perangkat/${data[2]}`}
                   className={`perangkat transition py-2 px-3 ${isViewAllMode ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
                   <h4 className='font-medium text-lg mb-1 capitalize'>{data[3]}</h4>
                   <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data[0]}</p>

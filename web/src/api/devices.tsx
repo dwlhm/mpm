@@ -87,3 +87,15 @@ export async function getSensorData(context: QueryFunctionContext) {
   console.log(data)
   return data
 }
+
+export async function getDatasheetDevices(context: QueryFunctionContext) {
+  const config = {
+    method: "get",
+    headers: {
+      'Authorization': `Bearer ${context.queryKey[1]}`
+    }
+  }
+
+  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2]}`, config)
+  return data
+}

@@ -160,9 +160,8 @@ def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_sch
 def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
 
     data = get.get_data_latest(device_id)
-    print(data)
+    
     if data == None:
-        print("NGGA ADA DATA")
         raise HTTPException(
             status_code=404,
             detail="no data"
@@ -178,3 +177,7 @@ def insert_dummy_data(device_id: str, data: str, token: Annotated[str, Depends(o
     insert.insert_data(device_id, data)
 
     return { "status": "success" }
+
+@app.get("/datasheet/{seri}")
+def get_datasheet(seri: str, tooken: Annotated[str, Depends(oauth2_scheme)]):
+    return { "status": "success", "results": registers[seri]}

@@ -13,3 +13,10 @@ h2 {
 .perangkat.active {
   @apply bg-slate-900/50 rounded
 }
+
+.live-data li {
+  @apply px-2 py-1
+}
+.live-data li:nth-child(even) {
+  @apply bg-white/10
+}
