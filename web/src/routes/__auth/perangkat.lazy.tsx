@@ -21,14 +21,21 @@ function Dashboard() {
   })
 
   if (isLoading) return <p>Mendapatkan data perangkat...</p>
-  if (isError) return <p className='text-red-800'><span className='font-semibold'>Error: </span>{queryInfo.error?.message}</p>
+  if (isError) return <p className='text-red-800'><span className='font-semibold'>Error: </span>ERROR</p>
   if (isSuccess) return (
     <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900 relative'}`}>
       <div className={`${perangkatId && 'max-w-64'} w-full p-2`}>
         <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
           {
-            data.results.map(data => {
-              return <DeviceCard data={data} preview={isViewAllMode} key={data.ip} />
+            data.results.map((data, index) => {
+              return (
+                <Link 
+                  key={index}
+                  to={`/perangkat/${perangkatId}`}
+                  className={`perangkat transition py-2 px-3 ${isViewAllMode ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
+                  <h4 className='font-medium text-lg mb-1 capitalize'>{data[3]}</h4>
+                  <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data[0]}</p>
+                </Link>)
             })
           }
         </div>
@@ -42,18 +49,5 @@ function Dashboard() {
       </div>
       <Outlet />
     </div>
-  )
-}
-
-function DeviceCard(props: {data: Devices, preview: boolean, key: string}) {
-  const [ ip, _, id, name ] = props.data
-  return(
-    <Link 
-      to={`/perangkat/${id}`} 
-      key={props.key} 
-      className={`perangkat transition py-2 px-3 ${props.preview ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
-      <h4 className='font-medium text-lg mb-1 capitalize'>{name}</h4>
-      <p className={`text-xs ${props.preview ? 'text-slate-800' :'text-gray-200' }`}>{ip}</p>
-    </Link>
   )
 }

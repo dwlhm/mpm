@@ -158,5 +158,23 @@ def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_sch
 
 @app.get("/devices/{device_id}/latest")
 def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_data_latest(device_id)
-	return {"status": "success", "results": data}
+
+    data = get.get_data_latest(device_id)
+    print(data)
+    if data == None:
+        print("NGGA ADA DATA")
+        raise HTTPException(
+            status_code=404,
+            detail="no data"
+        )
+
+    return {"status": "success", "results": {
+        "data": data[0],
+        "timestamp": data[1]
+    }}
+
+@app.post("/devices/{device_id}/latest")
+def insert_dummy_data(device_id: str, data: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    insert.insert_data(device_id, data)
+
+    return { "status": "success" }

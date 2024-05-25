@@ -74,3 +74,16 @@ export async function removeDevices(props: {token: string | null, id: string}) {
 
   return res
 }
+
+export async function getSensorData(context: QueryFunctionContext) {
+  const config = {
+    method: "get",
+    headers: {
+      'Authorization': `Bearer ${context.queryKey[1]}`
+    }
+  }
+
+  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/devices/${context.queryKey[2]}/latest`, config)
+  console.log(data)
+  return data
+}

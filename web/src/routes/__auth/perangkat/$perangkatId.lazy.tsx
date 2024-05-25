@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/16/solid'
 import { useQuery } from 'react-query'
 import { Link, Outlet, createLazyFileRoute } from '@tanstack/react-router'
-import { getDeviceDetail } from '../../../api/devices'
+import { getDeviceDetail, getSensorData } from '../../../api/devices'
 import { useAuth } from '../../../auth'
 
 export const Route = createLazyFileRoute('/__auth/perangkat/$perangkatId')({
@@ -18,25 +18,48 @@ function PreviewPerangkat() {
   const user = useAuth()
   const { perangkatId } = Route.useParams()
 
+  return (
+    <div className='grow p-2 sm:p-6 lg:p-8 bg-white rounded shadow'>
+      <Outlet />
+      <DeviceDetail token={user.token} perangkatId={perangkatId} />
+      <SensorData token={user.token} perangkatId={perangkatId} />
+    </div>
+  )
+}
+
+function DeviceDetail(props: { token: string | null, perangkatId: string }) {
   const { isLoading, isError, isSuccess, data, ...queryInfo } = useQuery({
-    queryKey: [`devices.${perangkatId}`, user.token, perangkatId ],
+    queryKey: [`devices.${props.perangkatId}`, props.token, props.perangkatId ],
     queryFn: getDeviceDetail
   })
 
   if (isLoading) return <p>Mendapatkan data perangkat...</p>
   if (isError) return <p className='text-red-800'><span className='font-semibold'>Error: </span>{queryInfo.error as String}</p>
   if (isSuccess) return(
-    <div className='grow p-2 sm:p-6 lg:p-8 bg-white rounded shadow'>
-      <Outlet />
-      <div className='flex justify-between items-center'>
-        <div>
-          <h2 className='font-semibold text-xl'>{data.results.name}</h2>
-          <p className="text-sm">{data.results.ip_addr} - {data.results.seri}</p>  
-        </div>
-        <div>
-          <PerangkatOptions perangkatId={perangkatId} />
-        </div>
+    <div className='flex justify-between items-center'>
+      <div>
+        <h2 className='font-semibold text-xl'>{data.results.name}</h2>
+        <p className="text-sm">{data.results.ip_addr} - {data.results.seri}</p>  
       </div>
+      <div>
+        <PerangkatOptions perangkatId={props.perangkatId} />
+      </div>
+    </div>
+  )
+}
+
+function SensorData(props: { token: string | null, perangkatId: string }) {
+
+  const { isLoading, isError, isSuccess, data, error} = useQuery({
+    queryFn: getSensorData,
+    queryKey: [ `devices.${props.perangkatId}.data`, props.token, props.perangkatId ]
+  })
+
+  if (isLoading) return <p className='mt-5'>Mendapatkan data hasil pengukuran perangkat...</p>
+  if (isError) return <p className='text-red-800 mt-5'><span className='font-semibold'>Error: </span>{error.response.data.detail}</p>
+  if (isSuccess) return (
+    <div className='mt-5'>
+      {JSON.stringify(data)}
     </div>
   )
 }
