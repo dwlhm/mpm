@@ -12,7 +12,9 @@ const router = createRouter({
   defaultPreload: 'intent',
   context: {
     auth: undefined!,
-  }
+    queryClient
+  },
+  defaultPreloadStaleTime: 0,
 })
 
 declare module '@tanstack/react-router' {
@@ -22,7 +24,8 @@ declare module '@tanstack/react-router' {
 }
 
 function InnerApp() {
-  const auth = useAuth()
+  const auth_context = useAuth()
+  const auth = { auth: auth_context }
   return <RouterProvider router={router} context={ auth } />
 }
 

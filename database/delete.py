@@ -1,4 +1,4 @@
-from lib.config import load_config
+from configuration.config import load_config
 import psycopg2
 
 def remove_device(device_id):

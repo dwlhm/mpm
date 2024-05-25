@@ -1,6 +1,8 @@
 import psycopg2
-from lib.config import load_config
+from configuration.config import load_config
 from database.connect import connect
+from database.insert import insert_new_user
+from main import User, get_password_hash
 
 def create_tables():
     """ Create tables in the PostgreSQL database """
@@ -47,6 +49,16 @@ def create_tables():
                     cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+
+    config_app = load_config("configuration/database.ini", "application")
+
+    new_user = {
+        "full_name": "admin",
+        "username": config_app["master_username"],
+        "email": "admin@admin.admin",
+        "password": get_password_hash(config_app["master_password"])
+    }
+    insert_new_user(User(**new_user))
 
 if __name__ == '__main__':
     create_tables()

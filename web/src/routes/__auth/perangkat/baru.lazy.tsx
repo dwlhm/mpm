@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link, createLazyFileRoute, useRouter } from '@tanstack/react-router'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { Api, DeviceDetail, Devices, newDevices } from "../../api/devices"
+import { Api, DeviceDetail, Devices, newDevices } from "../../../api/devices"
 import { useMutation, useQueryClient } from 'react-query'
-import { Token, useAuth } from "../../auth"
+import { Token, useAuth } from "../../../auth"
 
 export const Route: any = createLazyFileRoute('/__auth/perangkat/baru')({
   component: PerangkatBaru

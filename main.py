@@ -145,9 +145,11 @@ def insert_new_device(device: Device, token: Annotated[str, Depends(oauth2_schem
 	return {"status": "success", "results": data}
 
 @app.get("/devices/{device_id}")
-def read_device_info(device_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_device(device_id)
-	return {"status": "success", "results": data}
+def read_device_info(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    data = get.get_device(device_id)
+    print(data)
+	
+    return {"status": "success", "results": data}
 
 @app.delete("/devices/{device_id}")
 def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):

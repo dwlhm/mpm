@@ -9,3 +9,7 @@ h2 {
 #root {
   @apply flex flex-col min-h-screen
 }
+
+.perangkat.active {
+  @apply bg-slate-900/50 rounded
+}

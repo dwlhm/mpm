@@ -8,7 +8,6 @@ import {
 import { z } from 'zod'
 
 import { AuthContext, useAuth } from '../auth'
-import { sleep } from '../utils'
 
 const fallback = '/dashboard' as const
 
@@ -17,7 +16,7 @@ export const Route = createFileRoute('/login')({
     redirect: z.string().optional().catch(''),
   }),
   beforeLoad: async ({ context, search }) => {
-    const ctx: AuthContext = context as AuthContext
+    const ctx: AuthContext = context.auth as AuthContext
     if (ctx.isAuthenticated) {
       throw redirect({ to: search.redirect || fallback})
     }

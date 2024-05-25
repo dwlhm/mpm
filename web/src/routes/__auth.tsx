@@ -1,11 +1,10 @@
 import { Outlet, createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { AuthContext, useAuth } from "../auth";
+import { useAuth } from "../auth";
 import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute('/__auth')({
     beforeLoad: async ({ context, location }) => {
-        const ctx = context as AuthContext
-        if (!ctx.isAuthenticated) {
+        if (!context.auth.isAuthenticated) {
             throw redirect({
                 to: '/login',
                 search: {
