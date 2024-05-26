@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { Line } from "react-chartjs-2"
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Api, Datasheets, SensorData, getSensorData } from '../api/devices';
@@ -29,9 +30,7 @@ ChartJS.register(
 );
 
 export default function ChartsView(props: { datasheet: Datasheets[], perangkatId: string | undefined, token: string | null }) {
-
-    const [_, setRepo] = React.useState({})
-  
+ 
     const { isSuccess, isError, data, error } = useQuery<Api<SensorData>, AxiosError>({
       queryFn: getSensorData,
       queryKey: [ `devices.${props.perangkatId}.data`, props.token, props.perangkatId ],
@@ -54,7 +53,6 @@ export default function ChartsView(props: { datasheet: Datasheets[], perangkatId
           repository[v[1]].shift()
         }
       })
-      setRepo(repository)
       
     }
   
@@ -62,19 +60,19 @@ export default function ChartsView(props: { datasheet: Datasheets[], perangkatId
       <>
         <p className='text-sm'>Diperbaharui pada: {new Date(data.results.timestamp).toLocaleString()}</p>
         <div className='grid grid-cols-3 gap-2 mt-6'>
-          {Object.keys(repository).map(v => <div className='rounded bg-gray-900 py-4 px-5 text-gray-200'>
+          {Object.keys(repository).map(v => <div key={`data.${v}`} className='rounded bg-gray-900 py-4 px-5 text-gray-200'>
             <h4 className='text-base font-medium'>{props.datasheet[Number(v)][2]}</h4>
             <div className="my-1 h-px bg-white/50 mb-2" />
-            {/* <div>
+            <div>
               <Line options={{
                 responsive: true
               }} data={{timestamp_repo, datasets: [{
                 label: 'data',
-                data: repo[v],
+                data: repository[Number(v)],
                 borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
               }]}} />
-            </div> */}
+            </div>
             <ul className='live-data'>
               {repository[Number(v)].map((_, i) => (
                 <li key={`${v}-${i}`} className='flex justify-between'>

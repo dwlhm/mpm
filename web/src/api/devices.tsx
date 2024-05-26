@@ -39,7 +39,6 @@ export async function getDevices(context: QueryFunctionContext): Promise<Api<{ d
 }
 
 export async function getDeviceDetail(context: QueryFunctionContext): Promise<Api<DeviceDetail>> {
-  console.log('CONTEXT: ', context)
   const config = {
     method: 'get',
     url: `${import.meta.env.VITE_BACKEND_URL}/devices/${context.queryKey[2]}`,
@@ -105,6 +104,6 @@ export async function getDatasheetDevices(context: QueryFunctionContext): Promis
     }
   }
 
-  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2]}`, config)
+  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2] == "undefined" ? "AW9L" : context.queryKey[2]}`, config)
   return data
 }
