@@ -132,7 +132,13 @@ async def read_users_me(
 @app.get("/devices")
 def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
     data = get.get_all_devices_ip()
-    if data.get("data") == None:
+    print(data)
+    if data.get("error"):
+        raise HTTPException(
+            status_code=500,
+            detail="database connection error"
+        )
+    if data.get("data") == []:
         raise HTTPException(
             status_code=404,
             detail="no data"

@@ -16,19 +16,29 @@ function Dashboard() {
   const { perangkatId } = useParams({ strict: false }) as { perangkatId: string }
   const isViewAllMode = !perangkatId
 
-  const { isLoading, isError, isSuccess, data, error } = useQuery<Api<Devices[]>, AxiosError>({
+  const { isLoading, isError, isSuccess, data, error } = useQuery<Api<{data: Devices[] }>, AxiosError>({
     queryKey: ['devices', user.token],
     queryFn: getDevices,
     retry: 2
   })
 
-  if (isLoading) return <Loadings />
-  if (isError) return <Errors process='mendapatkan list data perangkat' message={error} />
+  if (isLoading) return <>
+    <Loadings />
+    <Outlet />
+  </>
+  if (isError) return <>
+    <Errors process='mendapatkan list data perangkat' message={error} action={<Link 
+        to={'/perangkat/baru'}
+        className='bg-blue-900 rounded-full py-2 px-5 text-white shadow-md border border-2 border-blue-900 hover:border-blue-600 transition hover:shadow-lg'>
+          + Perangkat Baru
+      </Link>} />
+    <Outlet />
+    </>
   if (isSuccess) return (
     <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900 relative'}`}>
       <div className={`${perangkatId && 'max-w-64'} w-full p-2`}>
         <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
-          {data.results.map((data, index) => {
+          {data.results.data.map((data, index) => {
               return (
                 <Link 
                   key={index}

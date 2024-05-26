@@ -9,13 +9,17 @@ export interface Api<T> {
   results: T
 }
 
+export interface Data<T> {
+  data: T
+}
+
 export interface DeviceDetail {
   name: string,
   ip_addr: string,
   seri?: 'AW9L' | string 
 }
 
-export async function getDevices(context: QueryFunctionContext): Promise<Api<Devices[]>> {
+export async function getDevices(context: QueryFunctionContext): Promise<Api<{ data: Devices[] }>> {
     const config = {
         method: 'get',
         url: 'http://localhost:8000/devices',
@@ -25,7 +29,7 @@ export async function getDevices(context: QueryFunctionContext): Promise<Api<Dev
       };
 
       const {data} = await axios(config)
-      return data as Api<Devices[]>
+      return data as Api<{ data: Devices[] }>
 }
 
 export async function getDeviceDetail(context: QueryFunctionContext): Promise<Api<DeviceDetail>> {

@@ -1,9 +1,3 @@
-import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import {
-  ChevronDownIcon,
-  PencilIcon,
-  TrashIcon,
-} from '@heroicons/react/16/solid'
 import { useQuery } from 'react-query'
 import {
   Chart as ChartJS,
@@ -15,11 +9,11 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Link, Outlet, createLazyFileRoute } from '@tanstack/react-router'
+import { Outlet, createLazyFileRoute } from '@tanstack/react-router'
 import { getDatasheetDevices, getSensorData } from '../../../api/devices'
 import { useAuth } from '../../../auth'
 import React from 'react'
-import DeviceDetails from '@/src/components/DeviceDetails';
+import DeviceDetails from '../../../components/DeviceDetails';
 
 let repository = {}
 let last_timestamp: string;
@@ -48,7 +42,7 @@ function PreviewPerangkat() {
   return (
     <div className='grow p-2 sm:p-6 lg:p-8 bg-white rounded shadow'>
       <Outlet />
-      <DeviceDetails token={user.token} perangkatId={perangkatId} seri={(data: string) => {setSeri(data)}} />
+      <DeviceDetails token={user.token} perangkatId={perangkatId} seri={(data: string | undefined) => {setSeri(data)}} />
       <SensorData token={user.token} perangkatId={perangkatId} seri={seri} />
     </div>
   )
