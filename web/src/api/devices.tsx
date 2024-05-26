@@ -3,6 +3,12 @@ import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth";
 
 export type Devices = [string, string, number, string]
+export type Datasheets = [number, number, string, string]
+
+export interface SensorData {
+  data: string,
+  timestamp: string
+}
 
 export interface Api<T> {
   status: string,
@@ -79,7 +85,7 @@ export async function removeDevices(props: {token: string | null, id: string}) {
   return res
 }
 
-export async function getSensorData(context: QueryFunctionContext) {
+export async function getSensorData(context: QueryFunctionContext): Promise<Api<SensorData>> {
   const config = {
     method: "get",
     headers: {
@@ -88,11 +94,10 @@ export async function getSensorData(context: QueryFunctionContext) {
   }
 
   const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/devices/${context.queryKey[2]}/latest`, config)
-  console.log(data)
   return data
 }
 
-export async function getDatasheetDevices(context: QueryFunctionContext) {
+export async function getDatasheetDevices(context: QueryFunctionContext): Promise<Api<Datasheets[]>> {
   const config = {
     method: "get",
     headers: {
