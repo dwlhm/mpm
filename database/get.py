@@ -9,11 +9,13 @@ def get_all_devices_ip():
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
-                result = cur.fetchall()
-
+                res = cur.fetchall()
+                result = {
+                    "data": res
+                }
                 
     except (Exception, psycopg2.DatabaseError) as Error:
-        result = Error
+        result = { "error": Error }
     finally:
         return result
 

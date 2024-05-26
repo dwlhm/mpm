@@ -3,31 +3,32 @@ import { useQuery } from 'react-query'
 import { Api, Devices, getDevices } from "../../api/devices"
 import { useAuth } from '../../auth'
 import { AxiosError } from 'axios'
+import Loadings from "../../components/Loadings"
+import Errors from '../../components/Errors'
 
 export const Route = createLazyFileRoute('/__auth/perangkat')({
   component: Dashboard
 })
 
-
 function Dashboard() {
 
   const user = useAuth()
-  const { perangkatId } = useParams({ strict: false })
+  const { perangkatId } = useParams({ strict: false }) as { perangkatId: string }
   const isViewAllMode = !perangkatId
 
-  const { isFetching, isLoading, isError, isSuccess, data, ...queryInfo } = useQuery<Api<Devices[]>, AxiosError>({
+  const { isLoading, isError, isSuccess, data, error } = useQuery<Api<Devices[]>, AxiosError>({
     queryKey: ['devices', user.token],
-    queryFn: getDevices
+    queryFn: getDevices,
+    retry: 2
   })
 
-  if (isLoading) return <p>Mendapatkan data perangkat...</p>
-  if (isError) return <p className='text-red-800'><span className='font-semibold'>Error: </span>ERROR</p>
+  if (isLoading) return <Loadings />
+  if (isError) return <Errors process='mendapatkan list data perangkat' message={error} />
   if (isSuccess) return (
     <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900 relative'}`}>
       <div className={`${perangkatId && 'max-w-64'} w-full p-2`}>
         <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
-          {
-            data.results.map((data, index) => {
+          {data.results.map((data, index) => {
               return (
                 <Link 
                   key={index}

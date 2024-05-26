@@ -131,8 +131,13 @@ async def read_users_me(
 
 @app.get("/devices")
 def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
-	data = get.get_all_devices_ip()
-	return {"status": "success", "results": data}
+    data = get.get_all_devices_ip()
+    if data.get("data") == None:
+        raise HTTPException(
+            status_code=404,
+            detail="no data"
+        )
+    return {"status": "success", "results": data}
 
 class Device(BaseModel):
 	name: str
