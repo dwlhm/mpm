@@ -42,7 +42,7 @@ export default function ChartsView(props: { datasheet: Datasheets[], perangkatId
   
     if (data?.results.timestamp !== last_timestamp) {
       last_timestamp = String(data?.results.timestamp)
-      timestamp_repo.push(last_timestamp)
+      timestamp_repo.push(new Date(last_timestamp).toLocaleTimeString())
       if (timestamp_repo.length > 100) {
         timestamp_repo.shift()
       }
@@ -65,19 +65,24 @@ export default function ChartsView(props: { datasheet: Datasheets[], perangkatId
             <div className="my-1 h-px bg-white/50 mb-2" />
             <div>
               <Line options={{
-                responsive: true
-              }} data={{timestamp_repo, datasets: [{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    display: false
+                  }
+                }
+              }} data={{labels: timestamp_repo, datasets: [{
                 label: 'data',
                 data: repository[Number(v)],
                 borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
               }]}} />
             </div>
-            <ul className='live-data'>
+            <ul className='live-data max-h-48 overflow-auto'>
               {repository[Number(v)].map((_, i) => (
                 <li key={`${v}-${i}`} className='flex justify-between'>
                   <p>{repository[Number(v)][repository[Number(v)].length - (i + 1)]} {props.datasheet[Number(v)][3]}</p>
-                  <p>{new Date(timestamp_repo[timestamp_repo.length - (i + 1)]).toLocaleTimeString()}</p>
+                  <p>{timestamp_repo[timestamp_repo.length - (i + 1)]}</p>
                 </li>
               ))}
             </ul>
