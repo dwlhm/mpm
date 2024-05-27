@@ -35,7 +35,8 @@ export default function ChartsView(props: { datasheet: Datasheets[], perangkatId
       queryFn: getSensorData,
       queryKey: [ `devices.${props.perangkatId}.data`, props.token, props.perangkatId ],
       retry: true,
-      retryDelay: 5000
+      retryDelay: 2000,
+      refetchInterval: 2000
     })
 
     if (isError) return <Errors process='mendapatkan data pembacaan terbaru' message={error} />
