@@ -29,6 +29,9 @@ const authPerangkatPerangkatIdLazyImport = createFileRoute(
 const authPerangkatPerangkatIdHapusLazyImport = createFileRoute(
   '/__auth/perangkat/$perangkatId/hapus',
 )()
+const authPerangkatPerangkatIdEditLazyImport = createFileRoute(
+  '/__auth/perangkat/$perangkatId/edit',
+)()
 
 // Create/Update Routes
 
@@ -98,6 +101,18 @@ const authPerangkatPerangkatIdHapusLazyRoute =
       ),
     )
 
+const authPerangkatPerangkatIdEditLazyRoute =
+  authPerangkatPerangkatIdEditLazyImport
+    .update({
+      path: '/edit',
+      getParentRoute: () => authPerangkatPerangkatIdLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__auth/perangkat/$perangkatId.edit.lazy').then(
+        (d) => d.Route,
+      ),
+    )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -158,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authUserRegisterLazyImport
       parentRoute: typeof authImport
     }
+    '/__auth/perangkat/$perangkatId/edit': {
+      id: '/__auth/perangkat/$perangkatId/edit'
+      path: '/edit'
+      fullPath: '/perangkat/$perangkatId/edit'
+      preLoaderRoute: typeof authPerangkatPerangkatIdEditLazyImport
+      parentRoute: typeof authPerangkatPerangkatIdLazyImport
+    }
     '/__auth/perangkat/$perangkatId/hapus': {
       id: '/__auth/perangkat/$perangkatId/hapus'
       path: '/hapus'
@@ -177,6 +199,7 @@ export const routeTree = rootRoute.addChildren({
     authPerangkatLazyRoute: authPerangkatLazyRoute.addChildren({
       authPerangkatPerangkatIdLazyRoute:
         authPerangkatPerangkatIdLazyRoute.addChildren({
+          authPerangkatPerangkatIdEditLazyRoute,
           authPerangkatPerangkatIdHapusLazyRoute,
         }),
       authPerangkatBaruLazyRoute,

@@ -71,6 +71,22 @@ export async function newDevices(props: Token<DeviceDetail>) {
   return res
 }
 
+// export async function updateDevices(props: Token<{...DeviceDetail, id: str}>) {
+//   const config = {
+//     method: 'put',
+//     headers: {
+//       'Authorization': `Bearer ${props.token}`,
+//       'Content-Type': 'application/json'
+//     },
+//     data: JSON.stringify(props.data)
+//   }
+
+//   const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/devices/${props.data.}`, config)
+
+//   return res
+// }
+
+
 export async function removeDevices(props: {token: string | null, id: string}) {
   const config = {
     method: 'delete',

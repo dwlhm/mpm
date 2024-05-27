@@ -11,6 +11,7 @@ from jose import JWTError, jwt
 import database.get as get
 import database.insert as insert
 import database.delete as delete
+import database.update as update
 from device_registers.registers_repo import repo as registers
 
 app = FastAPI()
@@ -158,9 +159,27 @@ def insert_new_device(device: Device, token: Annotated[str, Depends(oauth2_schem
 @app.get("/devices/{device_id}")
 def read_device_info(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     data = get.get_device(device_id)
-    print(data)
 	
     return {"status": "success", "results": data}
+
+@app.put("/devices/{device_id}")
+def update_device_info(device_id: str, device: Device, token: Annotated[str, Depends(oauth2_scheme)]):
+    data = update.update_device_detail(
+          device_id=device_id, 
+          device_name=device.name,
+          device_ip=device.ip_addr
+        )
+    
+    if data.get("error"):
+        raise HTTPException(
+            status_code=500,
+            detail="database connection error"
+        )
+    
+    return {
+         "status": "success",
+         "results": data
+    } 
 
 @app.delete("/devices/{device_id}")
 def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
