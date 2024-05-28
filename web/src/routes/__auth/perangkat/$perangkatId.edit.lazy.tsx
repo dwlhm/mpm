@@ -1,9 +1,11 @@
-import { getDeviceDetail } from "../../../api/devices"
+import Errors from "../../../components/Errors"
+import { DeviceDetail, getDeviceDetail, updateDevices } from "../../../api/devices"
 import { useAuth } from "../../../auth"
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { Link, createLazyFileRoute } from '@tanstack/react-router'
+import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import React from 'react'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { AxiosError } from "axios"
 
 export const Route = createLazyFileRoute('/__auth/perangkat/$perangkatId/edit')({
   component:EditPerangkat
@@ -13,6 +15,8 @@ function EditPerangkat() {
 
   const user = useAuth()
   const { perangkatId } = Route.useParams()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate({ from: "/perangkat/$perangkatId" })
 
   const perangkatInfo = useQuery({
     queryFn: getDeviceDetail,
@@ -20,15 +24,50 @@ function EditPerangkat() {
   })
 
   const mutation = useMutation({
-
+    mutationFn: updateDevices,
+    onError(error, variables, context) {
+      console.log("ERROR", error)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [`devices.${perangkatId}`, user.token, perangkatId ] })
+    }
   })
 
 
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
+    setIsSubmitting(true)
+    try {
+      evt.preventDefault()
+    const data = new FormData(evt.currentTarget)
+    const payload: { device: DeviceDetail, id: string } = {
+      device: {
+        name: data.get("name") as string,
+        ip_addr: data.get("ip") as string
+      },
+      id: perangkatId
+    }
+
+    mutation.mutate({
+      token: user.token,
+      data: payload
+    }, {
+      onSuccess: (res) => {
+        setIsSubmitting(false)
+        navigate({ to: "/perangkat/$perangkatId" })
+      },
+      onError: () => {
+        setIsSubmitting(false)
+      }
+    }) 
+    } catch (error) {
+      console.error(error)
+      setIsSubmitting(false)
+    }
+     
   }
+
   if (perangkatInfo.isSuccess) return(
     <div className='fixed inset-0 flex justify-center items-center'>
       <div 
@@ -76,16 +115,18 @@ function EditPerangkat() {
                   type="submit"
                   className="mt-2 bg-blue-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 border border-2 border-blue-900 transition hover:border-blue-500"
                 >
-                  {isSubmitting ? "Loading..." : "Tambahkan"}
+                  {isSubmitting ? "Loading..." : "Simpan"}
                 </button>
                 <Link
-                  to="/perangkat"
+                  to="/perangkat/$perangkatId"
+                  params={{ perangkatId: perangkatId }}
                   className="mt-2 bg-red-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:border-red-600"
                 >
                   Batalkan
                 </Link>
               </div>
             </fieldset>
+            <div>{mutation.isError ? <Errors className="mt-3" process="update data perangkat" message={mutation.error as AxiosError} /> : <></> }</div>
           </form>
       </div>
     </div>

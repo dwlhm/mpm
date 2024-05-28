@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth";
 
@@ -71,20 +71,23 @@ export async function newDevices(props: Token<DeviceDetail>) {
   return res
 }
 
-// export async function updateDevices(props: Token<{...DeviceDetail, id: str}>) {
-//   const config = {
-//     method: 'put',
-//     headers: {
-//       'Authorization': `Bearer ${props.token}`,
-//       'Content-Type': 'application/json'
-//     },
-//     data: JSON.stringify(props.data)
-//   }
+export async function updateDevices(props: Token<{device: DeviceDetail, id: string}>): Promise<Api<null>> {
+  
+  console.log(props.data.device)
+  
+  const config = {
+    method: 'put',
+    headers: {
+      'Authorization': `Bearer ${props.token}`,
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(props.data.device)
+  }
 
-//   const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/devices/${props.data.}`, config)
+  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/devices/${props.data.id}`, config)
 
-//   return res
-// }
+  return data
+}
 
 
 export async function removeDevices(props: {token: string | null, id: string}) {
