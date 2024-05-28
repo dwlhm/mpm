@@ -13,6 +13,7 @@ import { useQuery } from 'react-query';
 import { Api, Datasheets, SensorData, getSensorData } from '../api/devices';
 import Errors from './Errors';
 import { AxiosError } from 'axios';
+import Loadings from './Loadings';
 
 let repository: { [key: number ]: number[] } = {}
 let last_timestamp: string;
@@ -30,13 +31,15 @@ ChartJS.register(
 
 export default function ChartsView(props: { datasheet: Datasheets[], perangkatId: string | undefined, token: string | null }) {
  
-    const { isSuccess, isError, data, error } = useQuery<Api<SensorData>, AxiosError>({
+    const { isLoading, isSuccess, isError, data, error } = useQuery<Api<SensorData>, AxiosError>({
       queryFn: getSensorData,
       queryKey: [ `devices.${props.perangkatId}.data`, props.token, props.perangkatId ],
-      retry: true,
+      retry: 3,
       retryDelay: 2000,
       refetchInterval: 2000
     })
+
+    if (isLoading) return <Loadings />
 
     if (isError) return <Errors process='mendapatkan data pembacaan terbaru' message={error} />
   

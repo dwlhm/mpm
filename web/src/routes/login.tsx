@@ -9,7 +9,7 @@ import { z } from 'zod'
 
 import { AuthContext, useAuth } from '../auth'
 
-const fallback = '/dashboard' as const
+const fallback = '/perangkat' as const
 
 export const Route = createFileRoute('/login')({
   validateSearch: z.object({
