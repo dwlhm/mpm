@@ -13,7 +13,7 @@ function classNames(...classes: string[]) {
 
 export default function Navbar({ logout }: { logout: () => void }) {
   return (
-    <Disclosure as="nav" className="bg-blue-900">
+    <Disclosure as="nav" className="bg-blue-900 sticky top-0 z-10">
       {({ open }) => (
         <>
           <div className="mx-auto px-2 sm:px-6 lg:px-8">

@@ -28,7 +28,7 @@ def get_device(device_id):
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (device_id))
+                cur.execute(sql, (device_id, ))
 
                 result = cur.fetchone()
     except (Exception, psycopg2.DatabaseError) as Error:
@@ -41,11 +41,12 @@ def get_data_latest(device_id):
     config = load_config()
     sql = """SELECT data, timestamp FROM data_latest
              WHERE device_id = %s"""
+    
     result = None
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (device_id))
+                cur.execute(sql, (device_id, ))
 
                 result = cur.fetchone()
 

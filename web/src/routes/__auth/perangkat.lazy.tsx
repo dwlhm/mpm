@@ -35,8 +35,8 @@ function Dashboard() {
     <Outlet />
     </>
   if (isSuccess) return (
-    <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900 relative'}`}>
-      <div className={`${perangkatId && 'max-w-64'} w-full p-2`}>
+    <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900'}`}>
+      <div className={`${perangkatId && 'max-w-64 sticky top-16 bottom-0 h-[calc(100vh-3.9rem)]'} w-full p-2 overflow-auto`}>
         <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
           {data.results.data.map((data, index) => {
               return (

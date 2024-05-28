@@ -30,6 +30,7 @@ function EditPerangkat() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [`devices.${perangkatId}`, user.token, perangkatId ] })
+      queryClient.invalidateQueries({ queryKey: [ 'devices', user.token ]})
     }
   })
 
