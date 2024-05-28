@@ -19,9 +19,10 @@ import { Route as authImport } from './routes/__auth'
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
+const authUsersLazyImport = createFileRoute('/__auth/users')()
 const authPerangkatLazyImport = createFileRoute('/__auth/perangkat')()
 const authAboutLazyImport = createFileRoute('/__auth/about')()
-const authUserRegisterLazyImport = createFileRoute('/__auth/user/register')()
+const authUsersRegisterLazyImport = createFileRoute('/__auth/users/register')()
 const authPerangkatBaruLazyImport = createFileRoute('/__auth/perangkat/baru')()
 const authPerangkatPerangkatIdLazyImport = createFileRoute(
   '/__auth/perangkat/$perangkatId',
@@ -50,6 +51,13 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
+const authUsersLazyRoute = authUsersLazyImport
+  .update({
+    path: '/users',
+    getParentRoute: () => authRoute,
+  } as any)
+  .lazy(() => import('./routes/__auth/users.lazy').then((d) => d.Route))
+
 const authPerangkatLazyRoute = authPerangkatLazyImport
   .update({
     path: '/perangkat',
@@ -64,12 +72,14 @@ const authAboutLazyRoute = authAboutLazyImport
   } as any)
   .lazy(() => import('./routes/__auth/about.lazy').then((d) => d.Route))
 
-const authUserRegisterLazyRoute = authUserRegisterLazyImport
+const authUsersRegisterLazyRoute = authUsersRegisterLazyImport
   .update({
-    path: '/user/register',
-    getParentRoute: () => authRoute,
+    path: '/register',
+    getParentRoute: () => authUsersLazyRoute,
   } as any)
-  .lazy(() => import('./routes/__auth/user/register.lazy').then((d) => d.Route))
+  .lazy(() =>
+    import('./routes/__auth/users/register.lazy').then((d) => d.Route),
+  )
 
 const authPerangkatBaruLazyRoute = authPerangkatBaruLazyImport
   .update({
@@ -152,6 +162,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPerangkatLazyImport
       parentRoute: typeof authImport
     }
+    '/__auth/users': {
+      id: '/__auth/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof authUsersLazyImport
+      parentRoute: typeof authImport
+    }
     '/__auth/perangkat/$perangkatId': {
       id: '/__auth/perangkat/$perangkatId'
       path: '/$perangkatId'
@@ -166,12 +183,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPerangkatBaruLazyImport
       parentRoute: typeof authPerangkatLazyImport
     }
-    '/__auth/user/register': {
-      id: '/__auth/user/register'
-      path: '/user/register'
-      fullPath: '/user/register'
-      preLoaderRoute: typeof authUserRegisterLazyImport
-      parentRoute: typeof authImport
+    '/__auth/users/register': {
+      id: '/__auth/users/register'
+      path: '/register'
+      fullPath: '/users/register'
+      preLoaderRoute: typeof authUsersRegisterLazyImport
+      parentRoute: typeof authUsersLazyImport
     }
     '/__auth/perangkat/$perangkatId/edit': {
       id: '/__auth/perangkat/$perangkatId/edit'
@@ -204,7 +221,9 @@ export const routeTree = rootRoute.addChildren({
         }),
       authPerangkatBaruLazyRoute,
     }),
-    authUserRegisterLazyRoute,
+    authUsersLazyRoute: authUsersLazyRoute.addChildren({
+      authUsersRegisterLazyRoute,
+    }),
   }),
   LoginRoute,
 })

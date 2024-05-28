@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router'
 
 const navigation = [
   { name: 'Perangkat', href: '/perangkat', current: true },
+  { name: 'Users Mamagement', href: '/users', current: false },
 ]
 
 function classNames(...classes: string[]) {
@@ -46,7 +47,7 @@ export default function Navbar({ logout }: { logout: () => void }) {
                         to={item.href}
                       >
                         {({ isActive }) => <span className={classNames(
-                          isActive ? 'bg-blue-900 text-white' : 'text-blue-300 hover:bg-blue-700 hover:text-white',
+                          isActive ? 'bg-blue-700 text-white' : 'text-blue-300 hover:bg-blue-700 hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium'
                         )}>{item.name}</span>}
                       </Link>

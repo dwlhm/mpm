@@ -5,6 +5,7 @@ import { useAuth } from '../../auth'
 import { AxiosError } from 'axios'
 import Loadings from "../../components/Loadings"
 import Errors from '../../components/Errors'
+import { CpuChipIcon } from '@heroicons/react/24/outline'
 
 export const Route = createLazyFileRoute('/__auth/perangkat')({
   component: Dashboard
@@ -43,9 +44,12 @@ function Dashboard() {
                 <Link 
                   key={index}
                   to={`/perangkat/${data[2]}`}
-                  className={`perangkat transition py-2 px-3 ${isViewAllMode ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
-                  <h4 className='font-medium text-lg mb-1 capitalize'>{data[3]}</h4>
-                  <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data[0]}</p>
+                  className={`perangkat transition py-2 px-3 flex items-center gap-3 ${isViewAllMode ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
+                  <CpuChipIcon className={`w-6 h-6 ${isViewAllMode ? 'text-slate-800' : 'text-white/60'}`} />
+                  <div>
+                    <h4 className='font-medium text-lg mb-1 capitalize'>{data[3]}</h4>
+                    <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data[0]}</p>
+                  </div>
                 </Link>)
             })
           }
