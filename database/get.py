@@ -1,4 +1,5 @@
 import psycopg2
+import base64
 from configuration.config import load_config
 
 def get_all_devices_ip():
@@ -72,3 +73,45 @@ def get_user_by_username(username):
         result = Error
     finally:
         return result
+    
+def get_all_user():
+    config = load_config()
+    sql = """SELECT * FROM users"""
+    result = None
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+
+                res = []
+                data = cur.fetchall()
+
+                for user in data:
+                    duser = list(user)
+                    duser[0] = base64.b64encode(str(user[0]).encode()).decode('UTF-8')
+                    res.append(tuple(duser))
+
+                result = tuple(res)
+    except (Exception, psycopg2.DatabaseError) as Error:
+        print(Error)
+        result = Error
+    finally:
+        return result
+    
+def get_role_by_id(id: str):
+    config = load_config()
+    sql = """SELECT * FROM role 
+             WHERE id = %s"""
+    result = None
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (id, ))
+
+                result = cur.fetchone()
+    except (Exception, psycopg2.DatabaseError) as Error:
+        print(Error)
+        result = Error
+    finally:
+        return result
+    

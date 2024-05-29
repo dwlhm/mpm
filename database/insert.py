@@ -69,8 +69,8 @@ def insert_data(device_id, data):
     
 def insert_new_user(user):
     """ Insert new user to table """
-    sql = """INSERT INTO users (full_name, username, email, password)
-             VALUES(%s, %s, %s, %s)"""
+    sql = """INSERT INTO users (full_name, username, email, password, role)
+             VALUES(%s, %s, %s, %s, %s)"""
     
     result = None
     config = load_config()
@@ -78,7 +78,26 @@ def insert_new_user(user):
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                result = cur.execute(sql, (user.full_name, user.username, user.email, user.password))
+                result = cur.execute(sql, (user.full_name, user.username, user.email, user.password, user.role))
+
+                conn.commit()
+    except (Exception, psycopg2.DatabaseError) as Error:
+        result = Error
+    finally:
+        return result
+    
+def insert_new_role(role_name: str):
+    """ Insert new role to table """
+    sql = """INSERT INTO role (name)
+             VALUES(%s)"""
+    
+    result = None
+    config = load_config()
+
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                result = cur.execute(sql, (role_name, ))
 
                 conn.commit()
     except (Exception, psycopg2.DatabaseError) as Error:

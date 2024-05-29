@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+import base64
 
 import database.get as get
 import database.insert as insert
@@ -42,10 +43,11 @@ def read_root():
 	return {"Hello": "World"}
 
 class User(BaseModel):
-	full_name: str
-	username: str
-	email: EmailStr
-	password: str = Field(min_length=8)
+    full_name: str
+    username: str
+    email: EmailStr
+    password: str = Field(min_length=8)
+    role: int
 
 class Token(BaseModel):
     access_token: str
@@ -129,11 +131,15 @@ async def read_users_me(
 ):
     return current_user
 
+@app.get("/users")
+def get_all_users(token: Annotated[str, Depends(oauth2_scheme)]):
+    data = get.get_all_user()
+    return data
+
 
 @app.get("/devices")
 def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
     data = get.get_all_devices_ip()
-    print(data)
     if data.get("error"):
         raise HTTPException(
             status_code=500,
@@ -144,7 +150,15 @@ def read_all_device_ip(token: Annotated[str, Depends(oauth2_scheme)]):
             status_code=404,
             detail="no data"
         )
-    return {"status": "success", "results": data}
+    
+    result = []
+    
+    for data in data.get("data"):
+        lst = list(data)
+        lst[2] = base64.b64encode(str(data[2]).encode()).decode("utf-8")
+        result.append(tuple(lst))
+
+    return {"status": "success", "results": {"data": result}}
 
 class Device(BaseModel):
 	name: str
@@ -154,10 +168,11 @@ class Device(BaseModel):
 @app.post("/devices")
 def insert_new_device(device: Device, token: Annotated[str, Depends(oauth2_scheme)]):
 	data = insert.insert_device(device.name, device.ip_addr, device.seri)
-	return {"status": "success", "results": data}
+	return {"status": "success", "results": base64.b64encode(str(data).encode)}
 
 @app.get("/devices/{device_id}")
 def read_device_info(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    device_id = base64.b64decode(device_id).decode("utf-8")
     data = get.get_device(device_id)
 	
     return {"status": "success", "results": data}
@@ -183,12 +198,13 @@ def update_device_info(device_id: str, device: Device, token: Annotated[str, Dep
 
 @app.delete("/devices/{device_id}")
 def remove_device_by_id(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
-	data = delete.remove_device(device_id)
-	return {"status": "success", "results": data}
+    device_id = base64.b64decode(device_id).decode("utf-8")
+    data = delete.remove_device(device_id)
+    return {"status": "success", "results": data}
 
 @app.get("/devices/{device_id}/latest")
 def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
-
+    device_id = base64.b64decode(device_id).decode("utf-8")
     data = get.get_data_latest(device_id)
     
     if data == None:
@@ -204,6 +220,7 @@ def read_device_data(device_id: str, token: Annotated[str, Depends(oauth2_scheme
 
 @app.post("/devices/{device_id}/latest")
 def insert_dummy_data(device_id: str, data: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    device_id = base64.b64decode(device_id).decode("utf-8")
     insert.insert_data(device_id, data)
 
     return { "status": "success" }

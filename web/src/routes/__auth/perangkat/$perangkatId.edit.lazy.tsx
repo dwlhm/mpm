@@ -74,7 +74,8 @@ function EditPerangkat() {
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 
-          to='/perangkat'
+          to='/perangkat/$perangkatId'
+          params={{ perangkatId: perangkatId }}
           className='inline-block float-right'>
             <div className='bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600'>
               <XMarkIcon className="block h-6 w-6 text-white" />
