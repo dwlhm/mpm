@@ -3,6 +3,7 @@ from configuration.config import load_config
 from datetime import datetime
 import main
 
+
 def insert_device(device_name, ip_addr, seri):
     """ Insert a new device into the devices table """
 

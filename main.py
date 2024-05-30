@@ -9,11 +9,15 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import base64
 
+from configuration.config import load_config
 import database.get as get
 import database.insert as insert
 import database.delete as delete
 import database.update as update
+from database import powermeter
 from device_registers.registers_repo import repo as registers
+
+config = load_config()
 
 app = FastAPI()
 
@@ -226,5 +230,57 @@ def insert_dummy_data(device_id: str, data: str, token: Annotated[str, Depends(o
     return { "status": "success" }
 
 @app.get("/datasheet/{seri}")
-def get_datasheet(seri: str, tooken: Annotated[str, Depends(oauth2_scheme)]):
+def get_datasheet(seri: str, token: Annotated[str, Depends(oauth2_scheme)]):
     return { "status": "success", "results": registers[seri]}
+
+# Struktur database baru
+@app.post("/powermeter")
+async def insert_powermeter(pm_seri: str, pm_name: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    res = powermeter.new(
+        pm_name=pm_name,
+        pm_seri=pm_seri,
+        config=config
+    )
+
+    if (res.get("error")):
+        raise HTTPException(
+            status_code=400,
+            detail=res.get("error")
+        )
+    
+    return {
+        "status": "success",
+        "results": base64.b64encode(str(res.get("data")).encode()).decode()
+    }
+
+@app.get("/powermeter")
+async def get_all_powermeter(token: Annotated[str, Depends(oauth2_scheme)]):
+    res = powermeter.get_all(config)
+
+    if (res.get("error")):
+        raise HTTPException(
+            status_code=400,
+            detail=res.get("error")
+        )
+    
+    return {
+        "status": "success",
+        "results": res.get("data")
+    }
+
+@app.get("/powermeter/{id}")
+async def get_powermeter_by_id(id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    id = base64.b64decode(id).decode()
+    res = powermeter.get_one(id=id,config=config)
+    print("ID", id)
+
+    if (res.get("error")):
+        raise HTTPException(
+            status_code=400,
+            detail=str(res.get("error"))
+        )
+    
+    return {
+        "status": "success",
+        "results": res.get("data")
+    }
