@@ -44,12 +44,12 @@ def create_tables():
         CREATE TABLE device (
             id SERIAL PRIMARY KEY,
             device_name VARCHAR(50) NOT NULL UNIQUE,
-            unit INT NOT NULL,
+            gedung INT NOT NULL,
             ip_addr VARCHAR(15) NOT NULL,
             port INT DEFAULT 80,
             power_meter INT NOT NULL,
             CONSTRAINT fk_power_meter FOREIGN KEY(power_meter) REFERENCES power_meter(id),
-            CONSTRAINT fk_unit FOREIGN KEY(unit) REFERENCES unit(id)
+            CONSTRAINT fk_gedung FOREIGN KEY(gedung) REFERENCES gedung(id)
         )
         """,
         """
