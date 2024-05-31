@@ -1,9 +1,12 @@
 import psycopg2
 from configuration.config import load_config
 from database.connect import connect
-from database.insert import insert_new_user, insert_new_role
-from database.get import get_user_by_username, get_role_by_id
-from main import User, get_password_hash
+from database.insert import insert_new_role
+from database.get import get_role_by_id
+from user.db import get_user_by_username, insert_new_user
+from user.auth.internal import get_password_hash
+from user.internal import User
+from configuration import config
 
 def create_tables():
     """ Create tables in the PostgreSQL database """
@@ -22,7 +25,7 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE IF NOT EXISTS gedung (
+        CREATE TABLE IF NOT EXISTS unit (
             id SERIAL PRIMARY KEY,
             name VARCHAR(50) NOT NULL UNIQUE,
             kampus INT NOT NULL,
@@ -30,11 +33,11 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE IF NOT EXISTS unit (
+        CREATE TABLE IF NOT EXISTS gedung (
             id SERIAL PRIMARY KEY,
             name VARCHAR(50) NOT NULL UNIQUE,
-            gedung INT NOT NULL,
-            CONSTRAINT fk_gedung FOREIGN KEY(gedung) REFERENCES gedung(id)
+            unit INT NOT NULL,
+            CONSTRAINT fk_unit FOREIGN KEY(unit) REFERENCES unit(id)
         )
         """,
         """
@@ -43,6 +46,7 @@ def create_tables():
             device_name VARCHAR(50) NOT NULL UNIQUE,
             unit INT NOT NULL,
             ip_addr VARCHAR(15) NOT NULL,
+            port INT DEFAULT 80,
             power_meter INT NOT NULL,
             CONSTRAINT fk_power_meter FOREIGN KEY(power_meter) REFERENCES power_meter(id),
             CONSTRAINT fk_unit FOREIGN KEY(unit) REFERENCES unit(id)
@@ -133,48 +137,49 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS role (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(255)
+            name VARCHAR(10)
         )
         """,
         """
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
-            full_name VARCHAR(255),
-            username VARCHAR(255),
-            email VARCHAR(255),
-            password VARCHAR(255),
+            full_name VARCHAR(100),
+            username VARCHAR(50),
+            email VARCHAR(50),
+            password VARCHAR(70),
             role INT NOT NULL,
             CONSTRAINT fk_role FOREIGN KEY(role) REFERENCES role(id)
         )
         """,
     )
+    config_db = config.load_config()
     try:
-        config = load_config()
-        with psycopg2.connect(**config) as conn:
+        with psycopg2.connect(**config_db) as conn:
             with conn.cursor() as cur:
                 for command in commands:
                     cur.execute(command)
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
 
-    config_app = load_config("configuration/database.ini", "application")
+    config_app = config.load_config("configuration/database.ini", "application")
+    master_username = config_app["master_username"]
 
     role = get_role_by_id("1")
 
     if role is None:
         insert_new_role("Admin")
 
-    userExsist = get_user_by_username(config_app["master_username"])
+    userExsist = get_user_by_username(master_username, config_db)
 
     if userExsist is None:
         new_user = {
             "full_name": "admin",
-            "username": config_app["master_username"],
+            "username": master_username,
             "email": "admin@admin.admin",
             "password": get_password_hash(config_app["master_password"]),
             "role": 1
         }
-        res = insert_new_user(User(**new_user))
+        res = insert_new_user(User(**new_user), config_db)
         print("Add master account: ", res)
 
 if __name__ == '__main__':

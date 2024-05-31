@@ -57,46 +57,7 @@ def get_data_latest(device_id):
     finally:
         return result
     
-def get_user_by_username(username):
-    """ Retrive user from the table """
-    config = load_config()
-    sql = """SELECT full_name, email, password FROM users
-             WHERE username = %s"""
-    try:
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql, (username, ))
 
-                result = cur.fetchone()
-    except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error)
-        result = Error
-    finally:
-        return result
-    
-def get_all_user():
-    config = load_config()
-    sql = """SELECT * FROM users"""
-    result = None
-    try:
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql)
-
-                res = []
-                data = cur.fetchall()
-
-                for user in data:
-                    duser = list(user)
-                    duser[0] = base64.b64encode(str(user[0]).encode()).decode('UTF-8')
-                    res.append(tuple(duser))
-
-                result = tuple(res)
-    except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error)
-        result = Error
-    finally:
-        return result
     
 def get_role_by_id(id: str):
     config = load_config()
