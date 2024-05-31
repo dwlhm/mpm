@@ -1,7 +1,7 @@
 import psycopg2
 import base64
 
-def new(pm_name: str, pm_seri: str, config):
+def new(pbrand: str, pseri: str, config):
     sql = """INSERT INTO power_meter(seri, brand)
              VALUES(%s, %s) RETURNING id;"""
     
@@ -10,7 +10,7 @@ def new(pm_name: str, pm_seri: str, config):
     try:
         with  psycopg2.connect(**config) as conn:
             with  conn.cursor() as cur:
-                cur.execute(sql, (pm_name, pm_seri, ))
+                cur.execute(sql, (pseri, pbrand, ))
                 id = cur.fetchone()[0]
                 conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -32,9 +32,11 @@ def get_all(config):
                 results = cur.fetchall()
                 result = []
                 for res in results:
-                    data = list(res)
-                    data[0] = base64.b64encode(str(data[0]).encode()).decode()
-                    result.append(data)
+                    result.append({
+                        "id": base64.b64encode(str(res[0]).encode()).decode(),
+                        "seri": res[1],
+                        "brand": res[2]
+                    })
                 return {
                     "data": result
                 }
@@ -57,6 +59,25 @@ def get_one(id: str, config):
                 print(result)
                 return {
                     "data": result
+                }
+    except (Exception, psycopg2.DatabaseError) as Error:
+        return {
+            "error": Error
+        }
+    
+def update(id: str, pbrand: str, pseri: str, config):
+    sql = """UPDATE power_meter
+             SET seri = %s,
+                 brand = %s
+             WHERE id = %s"""
+    
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (pseri, pbrand, id ))
+                conn.commit()
+                return {
+                    "data": True
                 }
     except (Exception, psycopg2.DatabaseError) as Error:
         return {

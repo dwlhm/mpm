@@ -233,12 +233,16 @@ def insert_dummy_data(device_id: str, data: str, token: Annotated[str, Depends(o
 def get_datasheet(seri: str, token: Annotated[str, Depends(oauth2_scheme)]):
     return { "status": "success", "results": registers[seri]}
 
-# Struktur database baru
+# powermeter CRUD
+class PowerMeter(BaseModel):
+    seri: str
+    brand: str
+
 @app.post("/powermeter")
-async def insert_powermeter(pm_seri: str, pm_name: str, token: Annotated[str, Depends(oauth2_scheme)]):
+async def insert_powermeter(pm: PowerMeter, token: Annotated[str, Depends(oauth2_scheme)]):
     res = powermeter.new(
-        pm_name=pm_name,
-        pm_seri=pm_seri,
+        pbrand=pm.brand,
+        pseri=pm.seri,
         config=config
     )
 
@@ -250,7 +254,11 @@ async def insert_powermeter(pm_seri: str, pm_name: str, token: Annotated[str, De
     
     return {
         "status": "success",
-        "results": base64.b64encode(str(res.get("data")).encode()).decode()
+        "results": {
+            "id": base64.b64encode(str(res.get("data")).encode()).decode(),
+            "seri": pm.seri,
+            "brand": pm.brand    
+        }
     }
 
 @app.get("/powermeter")
@@ -272,7 +280,27 @@ async def get_all_powermeter(token: Annotated[str, Depends(oauth2_scheme)]):
 async def get_powermeter_by_id(id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     id = base64.b64decode(id).decode()
     res = powermeter.get_one(id=id,config=config)
-    print("ID", id)
+
+    if (res.get("error")):
+        raise HTTPException(
+            status_code=400,
+            detail=str(res.get("error"))
+        )
+    
+    return {
+        "status": "success",
+        "results": res.get("data")
+    }
+
+@app.put("/powermeter/{id}")
+async def update_powermeter(id: str, pm: PowerMeter, token: Annotated[str, Depends(oauth2_scheme)]):
+    id = base64.b64decode(id).decode()
+    res = powermeter.update(
+        id=id,
+        pseri=pm.seri,
+        pbrand=pm.brand,
+        config=config
+    )
 
     if (res.get("error")):
         raise HTTPException(
