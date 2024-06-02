@@ -18,7 +18,7 @@ class Kampus(BaseModel):
     name: str
 
 @router.get("/")
-async def get_all_unit(token: str = Depends(oauth2_scheme)):
+async def get_all_kampus(token: str = Depends(oauth2_scheme)):
     result = get_all(load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
