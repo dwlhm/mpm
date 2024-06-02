@@ -12,6 +12,7 @@ import base64
 import unit.router as unit
 import user.auth.router as auth
 import user.router as user
+import kampus.router as kampus
 
 from configuration.config import load_config
 import database.get as get
@@ -41,6 +42,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(unit.router)
+app.include_router(kampus.router)
 
 # @app.get("/")
 # def read_root():
