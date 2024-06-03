@@ -11,16 +11,17 @@ import base64
 
 import user.auth.router as auth
 import user.router as user
+import powermeter.router as powermeter
 import kampus.router as kampus
 import unit.router as unit
 import gedung.router as gedung
+import perangkat.router as perangkat
 
 from configuration.config import load_config
 import database.get as get
 import database.insert as insert
 import database.delete as delete
 import database.update as update
-from database import powermeter
 from device_registers.registers_repo import repo as registers
 
 config = load_config()
@@ -42,9 +43,11 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(user.router)
+app.include_router(powermeter.router)
 app.include_router(kampus.router)
 app.include_router(unit.router)
 app.include_router(gedung.router)
+app.include_router(perangkat.router)
 
 # @app.get("/")
 # def read_root():

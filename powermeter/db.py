@@ -2,8 +2,7 @@ import psycopg2
 import base64
 
 def get_all(config):
-    sql = """SELECT device.*, gedung.id, gedung.name FROM device 
-             LEFT JOIN gedung ON device.gedung = gedung.id"""
+    sql = """SELECT * FROM power_meter"""
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -20,11 +19,8 @@ def get_all(config):
                 for d in data:
                     res.append({
                         "id": base64.b64encode(str(d[0]).encode()).decode(),
-                        "name": d[1],
-                        "gedung_id": base64.b64encode(str(d[2]).encode()).decode(),
-                        "ip_addr": d[3],
-                        "port": d[4],
-                        "power_meter_id": base64.b64encode(str(d[5]).encode()).decode()
+                        "seri": d[1],
+                        "brand": d[2]
                     })
                 return {
                     "data": res
@@ -37,9 +33,8 @@ def get_all(config):
         }
 
 def get_by_id(id: str, config):
-    sql = """SELECT device.*, gedung.id, gedung.name FROM device 
-             LEFT JOIN gedung ON device.unit = gedung.id
-             WHERE device.id = %s"""
+    sql = """SELECT seri, brand FROM power_meter
+             WHERE id = %s"""
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -53,9 +48,8 @@ def get_by_id(id: str, config):
                 }
                 return {
                     "data": {
-                        "name": data[0],
-                        "unit_id": base64.b64encode(str(data[1]).encode()).decode(),
-                        "unit_name": data[2]
+                        "seri": data[0],
+                        "brand": data[1]
                     }
                 }
 
@@ -66,26 +60,14 @@ def get_by_id(id: str, config):
         }
 
 
-def new(
-        name: str, 
-        gedung_id: str,
-        ip_addr: str,
-        port: int,
-        power_meter_id: str, 
-        config):
-    sql = """INSERT INTO device (name, gedung, ip_addr, port, power_meter)
-             VALUES (%s, %s, %s, %s, %s) RETURNING id"""
+def new(seri: str, brand: str, config):
+    sql = """INSERT INTO power_meter (seri, brand)
+             VALUES (%s, %s) RETURNING id"""
 
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (
-                    name, 
-                    base64.b64decode(gedung_id).decode(), 
-                    ip_addr,
-                    port,
-                    base64.b64decode(power_meter_id).decode()
-                ))
+                cur.execute(sql, (seri, brand))
 
                 data = cur.fetchone()
 
@@ -100,31 +82,16 @@ def new(
             "error": str(Error)
         }
 
-def update(
-        name: str, 
-        gedung_id: str,
-        ip_addr: str,
-        port: int,
-        power_meter_id: str, 
-        config):
-    sql = """UPDATE device
-             SET name = %s,
-                 gedung = %s, 
-                 ip_addr = %s, 
-                 port = %i, 
-                 power_meter = %s
+def update(seri: str, brand: str, id: str, config):
+    sql = """UPDATE power_meter
+             SET seri = %s,
+                 brand = %s
              WHERE id= %s"""
+    print(base64.b64decode(id).decode(), id)
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                res = cur.execute(sql, (
-                    name, 
-                    base64.b64decode(gedung_id).decode(), 
-                    ip_addr,
-                    port,
-                    base64.b64decode(power_meter_id).decode(), 
-                    base64.b64decode(id).decode(), 
-                ))
+                res = cur.execute(sql, (seri, brand, base64.b64decode(id).decode(), ))
                 conn.commit()
                 return {
                     "data": True
@@ -135,7 +102,7 @@ def update(
         }
 
 def remove(id: str, config):
-    sql = """DELETE FROM device
+    sql = """DELETE FROM power_meter
              WHERE id = %s"""
     try:
         with psycopg2.connect(**config) as conn:

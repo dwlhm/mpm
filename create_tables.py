@@ -43,7 +43,7 @@ def create_tables():
         """
         CREATE TABLE device (
             id SERIAL PRIMARY KEY,
-            device_name VARCHAR(50) NOT NULL UNIQUE,
+            name VARCHAR(50) NOT NULL UNIQUE,
             gedung INT NOT NULL,
             ip_addr VARCHAR(15) NOT NULL,
             port INT DEFAULT 80,
@@ -54,6 +54,7 @@ def create_tables():
         """,
         """
         CREATE TABLE IF NOT EXISTS data (
+            id SERIAL PRIMARY KEY,
             device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
@@ -110,26 +111,6 @@ def create_tables():
             second_quadrant_reactive_energy FLOAT8,
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
-            total_cumulative_total_active_energy FLOAT8,
-            total_cumulative_sharp_active_energy FLOAT8,
-            total_cumulative_peak_active_energy FLOAT8,
-            total_cumulative_flat_active_energy FLOAT8,
-            total_cumulative_valley_active_energy FLOAT8,
-            cumulative_total_active_energy_this_month FLOAT8,
-            cumulative_total_sharp_active_energy_this_month FLOAT8,
-            cumulative_total_peak_actenergy_this_month FLOAT8,
-            cumulative_total_flat_actenergy_this_month FLOAT8,
-            cumulative_total_valley_actenergy_this_month FLOAT8,
-            cumulative_total_active_energy_last_month FLOAT8,
-            cumulative_total_sharp_active_energy_last_month FLOAT8,
-            cumulative_total_peak_active_energy_last_month FLOAT8,
-            cumulative_total_flat_active_energy_last_month FLOAT8,
-            cumulative_total_valley_active_energy_last_month FLOAT8,
-            cumulative_total_active_energy_last_two_months FLOAT8,
-            cumulative_total_sharp_energy_last_two_months FLOAT8,
-            cumulative_total_peak_energy_last_two_months FLOAT8,
-            cumulative_total_flat_energy_last_two_months FLOAT8,
-            cumulative_total_valley_energy_last_two_months FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
             CONSTRAINT fk_device FOREIGN KEY(device_id) REFERENCES device(id)
         )

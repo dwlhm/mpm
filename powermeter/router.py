@@ -9,20 +9,17 @@ from .db import get_all, new, get_by_id, update, remove
 
 
 router = APIRouter(
-    prefix="/perangkat",
-    tags=["Perangkat"],
+    prefix="/powermeter",
+    tags=["Powermeter"],
     dependencies=[Depends(oauth2_scheme)]
 )
 
-class Perangkat(BaseModel):
-    name: str
-    gedung: str
-    ip_addr: str
-    port: int
-    power_meter: str
+class Powermeter(BaseModel):
+    seri: str
+    brand: str
 
 @router.get("/")
-async def get_all_perangkat(token: str = Depends(oauth2_scheme)):
+async def get_all_powermeter(token: str = Depends(oauth2_scheme)):
     result = get_all(load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
@@ -34,7 +31,7 @@ async def get_all_perangkat(token: str = Depends(oauth2_scheme)):
     }
 
 @router.get("/{id}")
-async def get_perangkat(id: str):
+async def get_powermeter(id: str):
     result = get_by_id(id, load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
@@ -46,15 +43,11 @@ async def get_perangkat(id: str):
     }
 
 @router.post("/")
-async def insert_perangkat(perangkat: Perangkat):
+async def insert_powermeter(powermeter: Powermeter):
     result = new(
-        name=perangkat.name, 
-        gedung_id=perangkat.gedung, 
-        ip_addr=perangkat.ip_addr,
-        port=perangkat.port,
-        power_meter_id=perangkat.power_meter,
-        config=load_config()
-    )
+        seri=powermeter.seri,
+        brand=powermeter.brand, 
+        config=load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
             detail=result.get("error")
@@ -63,24 +56,17 @@ async def insert_perangkat(perangkat: Perangkat):
         "status": "success",
         "data": {
             "id": base64.b64encode(str(result.get("data")).encode()).decode(),
-            "name": perangkat.name,
-            "gedung_id": perangkat.gedung,
-            "ip_addr": perangkat.ip_addr,
-            "port": perangkat.port,
-            "power_meter_id": perangkat.power_meter
+            "seri": powermeter.seri,
+            "brand": powermeter.brand
         }
     }
 
 @router.put("/{id}")
-async def update_gedung(id: str, perangkat: Perangkat):
+async def update_powermeter(id: str, powermeter: Powermeter):
     result = update(
-        name=perangkat.name, 
-        gedung_id=perangkat.gedung, 
-        ip_addr=perangkat.ip_addr,
-        port=perangkat.port,
-        power_meter_id=perangkat.power_meter,
-        config=load_config()
-    )
+        seri=powermeter.seri,
+        brand=powermeter.brand, 
+        config=load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
             detail=result.get("error")
@@ -89,16 +75,13 @@ async def update_gedung(id: str, perangkat: Perangkat):
         "status": "success",
         "data": {
             "id": id,
-            "name": perangkat.name,
-            "gedung_id": perangkat.gedung,
-            "ip_addr": perangkat.ip_addr,
-            "port": perangkat.port,
-            "power_meter_id": perangkat.power_meter
+            "seri": powermeter.seri,
+            "brand": powermeter.brand
         }
     }
 
 @router.delete("/{id}")
-async def delete_gedung(id: str):
+async def delete_powermeter(id: str):
     result = remove(id, load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
@@ -107,6 +90,6 @@ async def delete_gedung(id: str):
     return {
         "status": "success",
         "data": {
-            "message": "Perangkat berhasil dihapus"
+            "message": "Powermeter berhasil dihapus"
         }
     }
