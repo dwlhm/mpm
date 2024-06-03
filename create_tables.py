@@ -46,7 +46,7 @@ def create_tables():
             name VARCHAR(50) NOT NULL UNIQUE,
             gedung INT NOT NULL,
             ip_addr VARCHAR(15) NOT NULL,
-            port INT DEFAULT 80,
+            port INT DEFAULT 502,
             power_meter INT NOT NULL,
             CONSTRAINT fk_power_meter FOREIGN KEY(power_meter) REFERENCES power_meter(id),
             CONSTRAINT fk_gedung FOREIGN KEY(gedung) REFERENCES gedung(id)
@@ -68,19 +68,15 @@ def create_tables():
             active_power_a FLOAT8,
             active_power_b FLOAT8,
             active_power_c FLOAT8,
-            total_active_power FLOAT8,
             reactive_power_a FLOAT8,
             reactive_power_b FLOAT8,
             reactive_power_c FLOAT8,
-            total_reactive_power FLOAT8,
             apparent_power_a FLOAT8,
             apparent_power_b FLOAT8,
             apparent_power_c FLOAT8,
-            total_apparent_power FLOAT8,
             power_factor_a FLOAT8,
             power_factor_b FLOAT8,
             power_factor_c FLOAT8,
-            total_power_factor FLOAT8,
             frequency FLOAT8,
             active_power FLOAT8,
             reactive_power FLOAT8,
@@ -132,6 +128,17 @@ def create_tables():
             CONSTRAINT fk_role FOREIGN KEY(role) REFERENCES role(id)
         )
         """,
+        """
+        CREATE TABLE IF NOT EXISTS power_meter_register (
+            id SERIAL PRIMARY KEY,
+            power_meter INT NOT NULL,
+            register VARCHAR(5000)
+        )
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS device_id
+        ON device(id)
+        """
     )
     config_db = config.load_config()
     try:

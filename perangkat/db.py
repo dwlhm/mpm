@@ -1,5 +1,6 @@
 import psycopg2
 import base64
+from .internal import DataPerangkat
 
 def get_all(config):
     sql = """SELECT device.id, device.name, device.ip_addr, device.port,
@@ -193,6 +194,175 @@ def remove(id: str, config):
                 return {
                     "data": True
                 }
+    except (Exception, psycopg2.DatabaseError) as Error:
+        return {
+            "error": str(Error)
+        }
+    
+def get_latest_data(id: str, config):
+    sql = """SELECT DISTINCT ON (id) *
+             FROM data
+             WHERE device_id = %s
+             ORDER BY id DESC
+             """
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (base64.b64decode(id).decode(), ))
+
+                d = cur.fetchone()
+
+                print(d)
+
+                if (d == None): return {
+                    "error": "no data"
+                }
+                return {
+                    "data": d
+                }
+
+
+    except (Exception, psycopg2.DatabaseError) as Error:
+        print(Error)
+        return {
+            "error": str(Error)
+        }
+
+def insert_latest_data(
+    id: str,
+    data: DataPerangkat,
+    config):
+    sql = """
+    INSERT INTO data (
+        device_id,
+        phase_voltage_a,
+        phase_voltage_b,
+        phase_voltage_c,
+        wire_voltage_ab,
+        wire_voltage_bc,
+        wire_voltage_ca,
+        phase_current_a,
+        phase_current_b,
+        phase_current_c,
+        active_power_a,
+        active_power_b,
+        active_power_c,
+        reactive_power_a,
+        reactive_power_b,
+        reactive_power_c,
+        apparent_power_a,
+        apparent_power_b,
+        apparent_power_c,
+        power_factor_a,
+        power_factor_b,
+        power_factor_c,
+        frequency,
+        active_power,
+        reactive_power,
+        positive_active_power,
+        negative_active_power,
+        positive_reactive_power,
+        negative_reactive_power,
+        current_active_power_demand,
+        maximum_active_power_demand,
+        current_reactive_power_demand,
+        maximum_reactive_power_demand,
+        a_phase_voltage_total_harmonic_content,
+        b_phase_voltage_total_harmonic_content,
+        c_phase_voltage_total_harmonic_content,
+        a_phase_current_total_harmonic_content,
+        b_phase_current_total_harmonic_content,
+        c_phase_current_total_harmonic_content,
+        o_phase_current,
+        phase_voltage_maximum,
+        Wires_voltage_maximum,
+        current_maximum,
+        voltage_imbalance,
+        current_imbalance,
+        a_b_phase_voltage_angle,
+        b_C_phase_voltage_angle,
+        c_a_phase_voltage_angle,
+        first_quadrant_reactive_energy,
+        second_quadrant_reactive_energy,
+        third_quadrant_reactive_energy,
+        fourth_quadrant_reactive_power,
+        timestamp
+    ) VALUES (
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        %s, %s, %s
+    ) RETURNING id
+    """
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (
+                    base64.b64decode(id).decode(),
+                    data.phase_voltage_a,
+                    data.phase_voltage_b,
+                    data.phase_voltage_c,
+                    data.wire_voltage_ab,
+                    data.wire_voltage_bc,
+                    data.wire_voltage_ca,
+                    data.phase_current_a,
+                    data.phase_current_b,
+                    data.phase_current_c,
+                    data.active_power_a,
+                    data.active_power_b,
+                    data.active_power_c,
+                    data.reactive_power_a,
+                    data.reactive_power_b,
+                    data.reactive_power_c,
+                    data.apparent_power_a,
+                    data.apparent_power_b,
+                    data.apparent_power_c,
+                    data.power_factor_a,
+                    data.power_factor_b,
+                    data.power_factor_c,
+                    data.frequency,
+                    data.active_power,
+                    data.reactive_power,
+                    data.positive_active_power,
+                    data.negative_active_power,
+                    data.positive_reactive_power,
+                    data.negative_reactive_power,
+                    data.current_active_power_demand,
+                    data.maximum_active_power_demand,
+                    data.current_reactive_power_demand,
+                    data.maximum_reactive_power_demand,
+                    data.a_phase_voltage_total_harmonic_content,
+                    data.b_phase_voltage_total_harmonic_content,
+                    data.c_phase_voltage_total_harmonic_content,
+                    data.a_phase_current_total_harmonic_content,
+                    data.b_phase_current_total_harmonic_content,
+                    data.c_phase_current_total_harmonic_content,
+                    data.o_phase_current,
+                    data.phase_voltage_maximum,
+                    data.wires_voltage_maximum,
+                    data.current_maximum,
+                    data.voltage_imbalance,
+                    data.current_imbalance,
+                    data.a_b_phase_voltage_angle,
+                    data.b_c_phase_voltage_angle,
+                    data.c_a_phase_voltage_angle,
+                    data.first_quadrant_reactive_energy,
+                    data.second_quadrant_reactive_energy,
+                    data.third_quadrant_reactive_energy,
+                    data.fourth_quadrant_reactive_power,
+                    data.timestamp,
+                ))
+
+                data = cur.fetchone()
+
+                print(data)
+
+                return {
+                    "data": data[0]
+                }
+
     except (Exception, psycopg2.DatabaseError) as Error:
         return {
             "error": str(Error)

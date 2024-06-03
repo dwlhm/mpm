@@ -1,0 +1,58 @@
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
+class DataPerangkat(BaseModel):
+    device_id: str
+    phase_voltage_a: Optional[float] = None
+    phase_voltage_b: Optional[float] = None
+    phase_voltage_c: Optional[float] = None
+    wire_voltage_ab: Optional[float] = None
+    wire_voltage_bc: Optional[float] = None
+    wire_voltage_ca: Optional[float] = None
+    phase_current_a: Optional[float] = None
+    phase_current_b: Optional[float] = None
+    phase_current_c: Optional[float] = None
+    active_power_a: Optional[float] = None
+    active_power_b: Optional[float] = None
+    active_power_c: Optional[float] = None
+    reactive_power_a: Optional[float] = None
+    reactive_power_b: Optional[float] = None
+    reactive_power_c: Optional[float] = None
+    apparent_power_a: Optional[float] = None
+    apparent_power_b: Optional[float] = None
+    apparent_power_c: Optional[float] = None
+    power_factor_a: Optional[float] = None
+    power_factor_b: Optional[float] = None
+    power_factor_c: Optional[float] = None
+    frequency: Optional[float] = None
+    active_power: Optional[float] = None
+    reactive_power: Optional[float] = None
+    positive_active_power: Optional[float] = None
+    negative_active_power: Optional[float] = None
+    positive_reactive_power: Optional[float] = None
+    negative_reactive_power: Optional[float] = None
+    current_active_power_demand: Optional[float] = None
+    maximum_active_power_demand: Optional[float] = None
+    current_reactive_power_demand: Optional[float] = None
+    maximum_reactive_power_demand: Optional[float] = None
+    a_phase_voltage_total_harmonic_content: Optional[float] = None
+    b_phase_voltage_total_harmonic_content: Optional[float] = None
+    c_phase_voltage_total_harmonic_content: Optional[float] = None
+    a_phase_current_total_harmonic_content: Optional[float] = None
+    b_phase_current_total_harmonic_content: Optional[float] = None
+    c_phase_current_total_harmonic_content: Optional[float] = None
+    o_phase_current: Optional[float] = None
+    phase_voltage_maximum: Optional[float] = None
+    wires_voltage_maximum: Optional[float] = None
+    current_maximum: Optional[float] = None
+    voltage_imbalance: Optional[float] = None
+    current_imbalance: Optional[float] = None
+    a_b_phase_voltage_angle: Optional[float] = None
+    b_c_phase_voltage_angle: Optional[float] = None
+    c_a_phase_voltage_angle: Optional[float] = None
+    first_quadrant_reactive_energy: Optional[float] = None
+    second_quadrant_reactive_energy: Optional[float] = None
+    third_quadrant_reactive_energy: Optional[float] = None
+    fourth_quadrant_reactive_power: Optional[float] = None
+    timestamp: datetime

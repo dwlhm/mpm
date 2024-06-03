@@ -5,7 +5,7 @@ import base64
 
 from dependencies import oauth2_scheme
 from configuration.config import load_config
-from .db import get_all, new, get_by_id, update, remove
+from .db import get_all, new, get_by_id, update, remove, get_latest_data
 
 
 router = APIRouter(
@@ -36,6 +36,18 @@ async def get_all_perangkat(token: str = Depends(oauth2_scheme)):
 @router.get("/{id}")
 async def get_perangkat(id: str):
     result = get_by_id(id, load_config())
+    if (result.get("error")): raise HTTPException(
+            status_code=400,
+            detail=result.get("error")
+        )
+    return {
+        "status": "success",
+        "results": result.get("data")
+    }
+
+@router.get("/{id}/latest")
+async def get_latest_data_perangkat(id: str):
+    result = get_latest_data(id, load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
             detail=result.get("error")
