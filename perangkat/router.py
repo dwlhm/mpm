@@ -79,6 +79,7 @@ async def update_gedung(id: str, perangkat: Perangkat):
         ip_addr=perangkat.ip_addr,
         port=perangkat.port,
         power_meter_id=perangkat.power_meter,
+        id=id,
         config=load_config()
     )
     if (result.get("error")): raise HTTPException(

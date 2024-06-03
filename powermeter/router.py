@@ -66,6 +66,7 @@ async def update_powermeter(id: str, powermeter: Powermeter):
     result = update(
         seri=powermeter.seri,
         brand=powermeter.brand, 
+        id=id,
         config=load_config())
     if (result.get("error")): raise HTTPException(
             status_code=400,
