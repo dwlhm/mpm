@@ -25,7 +25,7 @@ function EditPerangkat() {
 
   const mutation = useMutation({
     mutationFn: updateDevices,
-    onError(error, variables, context) {
+    onError(error, _a, _b) {
       console.log("ERROR", error)
     },
     onSettled: () => {
@@ -54,7 +54,7 @@ function EditPerangkat() {
       token: user.token,
       data: payload
     }, {
-      onSuccess: (res) => {
+      onSuccess: () => {
         setIsSubmitting(false)
         navigate({ to: "/perangkat/$perangkatId" })
       },

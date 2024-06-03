@@ -38,6 +38,7 @@ function HapusPerangkat() {
                     className='py-2 px-5 rounded bg-red-500/50 mx-2 text-sm'>Hapus</button>
                 <Link 
                     to='/perangkat/$perangkatId'
+                    params={{ perangkatId: perangkatId }}
                     className='py-2 px-5 rounded bg-blue-900 mx-2 text-sm text-white'
                 >
                     Tidak

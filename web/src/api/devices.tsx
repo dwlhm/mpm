@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth";
 

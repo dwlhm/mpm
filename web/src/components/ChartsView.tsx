@@ -31,7 +31,7 @@ ChartJS.register(
 
 export default function ChartsView(props: { datasheet: Datasheets[], perangkatId: string | undefined, token: string | null }) {
  
-    const { isLoading, isSuccess, isError, data, error, ...queryInfo } = useQuery<Api<SensorData>, AxiosError>({
+    const { isLoading, isSuccess, isError, data, error } = useQuery<Api<SensorData>, AxiosError>({
       queryFn: getSensorData,
       queryKey: [ `devices.${props.perangkatId}.data`, props.token, props.perangkatId ],
       retry: 3,
