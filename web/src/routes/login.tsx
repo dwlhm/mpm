@@ -8,6 +8,7 @@ import {
 import { z } from 'zod'
 
 import { AuthContext, useAuth } from '../auth'
+import { sleep } from '../utils'
 
 const fallback = '/perangkat' as const
 
@@ -45,16 +46,23 @@ function LoginComponent() {
       const username = username_value.toString()
       const password = password_value.toString()
       await auth.login({ username: username, password: password})
-
-      await router.invalidate()
-
-      await navigate({ to: search.redirect || fallback })
+      
     } catch (error) {
       console.error('Error logging in: ', error)
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  React.useEffect(() => {
+    if (auth.isAuthenticated) {
+      router.invalidate()
+
+      sleep(1)
+      console.log(auth)
+      navigate({ to: search.redirect || fallback })
+    }
+  }, [auth.isAuthenticated])
 
   const isLoggingIn = isLoading || isSubmitting
 

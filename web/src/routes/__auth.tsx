@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute('/__auth')({
     beforeLoad: async ({ context, location }) => {
-        if (!context.auth.isAuthenticated) {
+        if (!context.auth.isAuthenticated && !localStorage.getItem("auth.token")) {
             throw redirect({
                 to: '/login',
                 search: {

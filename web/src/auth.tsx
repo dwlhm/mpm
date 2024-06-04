@@ -66,7 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } as Login,
         {
             onSuccess: (res: LoginSuccess) => {
-                console.log(res)
                 setStoredToken(res.data.access_token)
                 setToken(res.data.access_token)
             },
@@ -74,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const err = error as LoginError
                 console.error(err.response.data.detail)
             }
-        })
+        })        
     }, [])
 
     React.useEffect(() => {
