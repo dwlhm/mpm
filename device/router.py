@@ -9,7 +9,7 @@ from .db import get_all, new, get_by_id, update, remove, get_latest_data
 
 
 router = APIRouter(
-    prefix="/perangkat",
+    prefix="/device",
     tags=["Perangkat"],
     dependencies=[Depends(oauth2_scheme)]
 )
