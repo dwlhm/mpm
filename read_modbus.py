@@ -1,5 +1,6 @@
 from pymodbus.client import ModbusTcpClient
 from datetime import datetime
+from time import sleep
 # from database.get import get_all_devices_ip
 # from database.insert import insert_data
 # from perangkat.db import insert_latest_data, get_all
@@ -15,7 +16,6 @@ from device_registers.registers_repo import repo as registers
 def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
 	client = ModbusTcpClient(
 		host= ip_addr, 
-		port= port,
 		retries = 5, 
 		no_resend_on_retry = False
 	)  
@@ -24,7 +24,8 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
 		print(f"connected to {ip_addr}:{port} with device_id: {id} [{pm_seri}]")
 		data = []
 		for index, register in enumerate(registers[seri]):
-			read(client, register, data, ip_addr, index)	                  
+			read(client, register, data, ip_addr, index)	  
+			sleep                
 		client.close()  
 		# logger.info(f"close connection from {ip_addr}")
 		# data_sensor: DataPerangkat
@@ -34,7 +35,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
 		return
 
 def read(client, register, data, ip_addr, index):
-	rr = client.read_holding_registers(register[0], 2)
+	rr = client.read_holding_registers(register[0], 2, slave=1)
 	if rr.isError():
 		print(f"{register[0]} - exception in pymodbus {rr}")
 	else:
