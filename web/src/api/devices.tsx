@@ -1,6 +1,7 @@
 import axios from "axios";
 import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth";
+import { Api } from "./internal";
 
 export type Devices = [string, string, number, string]
 export type Datasheets = [number, number, string, string]
@@ -8,11 +9,6 @@ export type Datasheets = [number, number, string, string]
 export interface SensorData {
   data: string,
   timestamp: string
-}
-
-export interface Api<T> {
-  status: string,
-  results: T
 }
 
 export interface Data<T> {

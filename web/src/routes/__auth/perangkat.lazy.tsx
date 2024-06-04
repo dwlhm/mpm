@@ -1,6 +1,7 @@
 import { Link, Outlet, createLazyFileRoute, useParams } from '@tanstack/react-router'
 import { useQuery } from 'react-query'
-import { Api, Devices, getDevices } from "../../api/devices"
+import { Api } from '../../api/internal'
+import { Devices, getDevices } from "../../api/devices"
 import { useAuth } from '../../auth'
 import { AxiosError } from 'axios'
 import Loadings from "../../components/Loadings"

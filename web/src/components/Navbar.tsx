@@ -6,6 +6,7 @@ import { Link } from '@tanstack/react-router'
 const navigation = [
   { name: 'Perangkat', href: '/perangkat', current: true },
   { name: 'Manajemen User', href: '/users', current: false },
+  { name: 'Pengaturan', href: '/pengaturan', current: false },
 ]
 
 function classNames(...classes: string[]) {
