@@ -15,7 +15,7 @@ import powermeter.router as powermeter
 import kampus.router as kampus
 import unit.router as unit
 import gedung.router as gedung
-import perangkat.router as perangkat
+import device.router as device
 
 from configuration.config import load_config
 import database.get as get
@@ -48,7 +48,7 @@ app.include_router(powermeter.router)
 app.include_router(kampus.router)
 app.include_router(unit.router)
 app.include_router(gedung.router)
-app.include_router(perangkat.router)
+app.include_router(device.router)
 
 # @app.get("/")
 # def read_root():
