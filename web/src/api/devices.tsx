@@ -28,7 +28,7 @@ export interface DeviceDetail {
 export async function getDevices(context: QueryFunctionContext): Promise<Api<{ data: Devices[] }>> {
     const config = {
         method: 'get',
-        url: 'http://localhost:8000/devices',
+        url: `${import.meta.env.VITE_BACKEND_URL}/devices`,
         headers: { 
           'Authorization': `Bearer ${context.queryKey[1]}`
         }
