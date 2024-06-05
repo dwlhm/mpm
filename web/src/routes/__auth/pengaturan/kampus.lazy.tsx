@@ -21,7 +21,7 @@ function Kampus() {
     queryFn: getKampus,
     retry: 2
   })
-  const kampus_id = data?.results.find(item => item.id == kampusId )
+  const kampus_id = kampusId ? data?.results.find(item => item.id == kampusId ) : ""
 
   if (isLoading) <Loadings />
 
