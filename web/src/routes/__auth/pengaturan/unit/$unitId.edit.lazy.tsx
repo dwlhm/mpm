@@ -4,26 +4,26 @@ import React from 'react'
 import { AxiosError } from 'axios'
 import { useMutation, useQueryClient } from 'react-query'
 import { Api } from '../../../../api/internal'
-import { Kampus, updateKampus } from '../../../../api/kampus'
 import { useAuth } from '../../../../auth'
 import Errors from "../../../../components/Errors"
+import { Unit, updateUnit } from '../../../../api/unit'
 
-export const Route = createLazyFileRoute('/__auth/pengaturan/kampus/$kampusId/edit')({
-  component: EditKampus
+export const Route = createLazyFileRoute('/__auth/pengaturan/unit/$unitId/edit')({
+  component: EditUnit
 })
 
-function EditKampus() {
+function EditUnit() {
 
   const auth = useAuth()
-  const { kampusId } = Route.useParams()
+  const { unitId } = Route.useParams()
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
-  const kampusRepo = queryClient.getQueriesData(["kampus"])
-  const kampusApiData = kampusRepo[0][1] as Api<Kampus[]>
-  const kampus = kampusApiData.results.find(item => item.id == kampusId)
+  const unitRepo = queryClient.getQueriesData(["unit"])
+  const unitApiData = unitRepo[0][1] as Api<Unit[]>
+  const unit = unitApiData.results.find(item => item.id == unitId)
   const [ isSubmitting, setIsSubmitting ] = React.useState<boolean>(false)
   const mutation = useMutation({
-    mutationFn: updateKampus,
+    mutationFn: updateUnit,
     onSettled: () => {
       queryClient.invalidateQueries()
     }
@@ -33,11 +33,14 @@ function EditKampus() {
     setIsSubmitting(true)
     try {
       evt.preventDefault()
-    const data = new FormData(evt.currentTarget)
-    const payload: Kampus = {
-      id: kampusId,
-      name: data.get("name") as string
-    }
+      const data = new FormData(evt.currentTarget)
+      const payload: Unit = {
+        id: unitId,
+        name: data.get("name") as string,
+        kampus: {
+          id: data.get("kampus") as string
+        }
+      }
 
     mutation.mutate({
       token: auth.token,
@@ -45,7 +48,7 @@ function EditKampus() {
     }, {
       onSuccess: () => {
         setIsSubmitting(false)
-        navigate({ to: "/pengaturan/kampus/$kampusId", params: { kampusId } })
+        navigate({ to: '/pengaturan/unit/$unitId', params: { unitId } })
       },
       onError: () => {
         setIsSubmitting(false)
@@ -63,8 +66,8 @@ function EditKampus() {
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 
-          to='/pengaturan/kampus/$kampusId'
-          params={{ kampusId }}
+          to='/pengaturan/unit/$unitId'
+          params={{ unitId }}
           className='inline-block float-right'>
             <div className='bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600'>
               <XMarkIcon className="block h-6 w-6 text-white" />
@@ -75,14 +78,28 @@ function EditKampus() {
             <fieldset className="w-full grid gap-2">
               <div className="grid gap-2 items-center min-w-[300px]">
                 <label htmlFor="name-input" className="text-sm font-medium">
-                  Nama Kampus
+                  Nama Unit
                 </label>
                 <input
                   id="name-input"
                   name="name"
-                  placeholder="Masukan Nama Kampus Baru"
+                  placeholder="Masukan Nama Unit Baru"
                   type="text"
-                  defaultValue={kampus?.name}
+                  defaultValue={unit?.name}
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px]">
+                <label htmlFor="kampus-input" className="text-sm font-medium">
+                  ID Kampus
+                </label>
+                <input
+                  id="kampus-input"
+                  name="kampus"
+                  placeholder="Masukan ID Kampus Baru"
+                  type="text"
+                  defaultValue={unit?.kampus.id}
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
@@ -95,8 +112,8 @@ function EditKampus() {
                   {isSubmitting ? "Loading..." : "Simpan"}
                 </button>
                 <Link
-                  to='/pengaturan/kampus/$kampusId'
-                  params={{ kampusId }}
+                  to='/pengaturan/unit/$unitId'
+                  params={{ unitId }}
                   className="mt-2 bg-red-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:border-red-600"
                 >
                   Batalkan

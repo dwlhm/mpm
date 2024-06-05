@@ -21,8 +21,10 @@ def get_all(config):
                     res.append({
                         "id": base64.b64encode(str(d[0]).encode()).decode(),
                         "name": d[1],
-                        "kampus_id": base64.b64encode(str(d[2]).encode()).decode(),
-                        "kampus_name": d[3]
+                        "kampus": {
+                            "id": base64.b64encode(str(d[2]).encode()).decode(),
+                            "name": d[3]
+                        }
                     })
                 return {
                     "data": res
@@ -52,8 +54,10 @@ def get_by_id(id: str, config):
                 return {
                     "data": {
                         "name": data[0],
-                        "kampus_id": base64.b64encode(str(data[1]).encode()).decode(),
-                        "kampus_name": data[2]
+                        "kampus": {
+                            "id": base64.b64encode(str(data[1]).encode()).decode(),
+                            "name": data[2]
+                        }
                     }
                 }
 

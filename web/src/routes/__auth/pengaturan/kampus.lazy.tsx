@@ -30,7 +30,7 @@ function Kampus() {
   if (isSuccess) return(
     <div>
       <header>
-        <h2 className='py-1'>
+        <h2 className='py-1 flex gap-1 items-center'>
           <Link to="/pengaturan/kampus" className='text-2xl'>Kampus</Link> { 
           kampus_id 
             && <><ChevronRightIcon className='w-6 h-6 inline' /> <span className='text-blue-900 font-medium'><Link

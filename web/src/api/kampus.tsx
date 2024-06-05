@@ -5,7 +5,7 @@ import { Api } from "./internal";
 
 export interface Kampus {
     id: string,
-    name: string
+    name?: string
 }
 
 export async function getKampus(context: QueryFunctionContext): Promise<Api<Kampus[]>> {

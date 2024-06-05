@@ -51,10 +51,12 @@ async def insert_unit(unit: Unit):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "id": base64.b64encode(str(result.get("data")).encode()).decode(),
             "name": unit.name,
-            "kampus_id": unit.kampus
+            "kampus": {
+                "id": unit.kampus
+            }
         }
     }
 

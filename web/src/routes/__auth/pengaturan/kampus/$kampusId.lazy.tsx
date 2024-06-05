@@ -1,11 +1,11 @@
 import { useAuth } from '../../../../auth'
 import { Api } from '../../../../api/internal'
 import { getKampus, Kampus } from '../../../../api/kampus'
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { useQuery } from 'react-query'
 import { AxiosError } from 'axios'
 
-export const Route = createFileRoute('/__auth/pengaturan/kampus/$kampusId')({
+export const Route = createLazyFileRoute('/__auth/pengaturan/kampus/$kampusId')({
   component: KampusDetail
 })
 
