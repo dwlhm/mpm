@@ -1,18 +1,24 @@
-import { Api } from '@/src/api/internal'
-import { Kampus } from '@/src/api/kampus'
+import { useAuth } from '../../../../auth'
+import { Api } from '../../../../api/internal'
+import { getKampus, Kampus } from '../../../../api/kampus'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
-import { useQueryClient } from 'react-query'
+import { useQuery } from 'react-query'
+import { AxiosError } from 'axios'
 
 export const Route = createFileRoute('/__auth/pengaturan/kampus/$kampusId')({
   component: KampusDetail
 })
 
 function KampusDetail() {
+
+  const auth = useAuth()
   const { kampusId } = Route.useParams()
-  const queryClient = useQueryClient()
-  const kampusRepo = queryClient.getQueriesData(["kampus"])
-  const kampusApiData = kampusRepo[0][1] as Api<Kampus[]>
-  const kampus = kampusApiData.results.find(item => item.id == kampusId)
+  const { data } = useQuery<Api<Kampus[]>, AxiosError>({
+    queryKey: ['kampus', auth.token],
+    queryFn: getKampus,
+    retry: 2
+  })
+  const kampus = data?.results.find(item => item.id == kampusId)
   return(
     <div>
       <p>Nama:</p>

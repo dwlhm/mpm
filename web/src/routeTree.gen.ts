@@ -15,7 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as authImport } from './routes/__auth'
-import { Route as authPengaturanKampusKampusIdImport } from './routes/__auth/pengaturan/kampus.$kampusId'
+import { Route as authPengaturanKampusKampusIdImport } from './routes/__auth/pengaturan/kampus/$kampusId'
 
 // Create Virtual Routes
 
@@ -175,7 +175,7 @@ const authPengaturanKampusKampusIdHapusLazyRoute =
       getParentRoute: () => authPengaturanKampusKampusIdRoute,
     } as any)
     .lazy(() =>
-      import('./routes/__auth/pengaturan/kampus.$kampusId.hapus.lazy').then(
+      import('./routes/__auth/pengaturan/kampus/$kampusId.hapus.lazy').then(
         (d) => d.Route,
       ),
     )
@@ -187,7 +187,7 @@ const authPengaturanKampusKampusIdEditLazyRoute =
       getParentRoute: () => authPengaturanKampusKampusIdRoute,
     } as any)
     .lazy(() =>
-      import('./routes/__auth/pengaturan/kampus.$kampusId.edit.lazy').then(
+      import('./routes/__auth/pengaturan/kampus/$kampusId.edit.lazy').then(
         (d) => d.Route,
       ),
     )

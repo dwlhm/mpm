@@ -37,3 +37,34 @@ export async function newKampus(props: Token<{name: string}>) {
   
     return res
 }
+
+export async function updateKampus(props: Token<Kampus>): Promise<Api<Kampus>> {
+  
+  const config = {
+    method: 'put',
+    headers: {
+      'Authorization': `Bearer ${props.token}`,
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify({
+      name: props.data.name
+    })
+  }
+
+  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/kampus/${props.data.id}`, config)
+
+  return data
+}
+
+export async function removeKampus(props: {token: string | null, id: string}) {
+  const config = {
+    method: 'delete',
+    headers: {
+      'Authorization': `Bearer ${props.token}`
+    }
+  }
+
+  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/kampus/${props.id}`, config)
+
+  return res
+}

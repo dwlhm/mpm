@@ -50,7 +50,7 @@ async def insert_kampus(kampus: Kampus):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "id": base64.b64encode(str(result.get("data")).encode()).decode(),
             "name": kampus.name
         }
@@ -65,7 +65,7 @@ async def update_kampus(id: str, kampus: Kampus):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "id": id,
             "name": kampus.name
         }
@@ -80,7 +80,7 @@ async def delete_kampus(id: str):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "message": "Kampus berhasil dihapus"
         }
     }

@@ -85,7 +85,6 @@ export async function updateDevices(props: Token<{device: DeviceDetail, id: stri
   return data
 }
 
-
 export async function removeDevices(props: {token: string | null, id: string}) {
   const config = {
     method: 'delete',

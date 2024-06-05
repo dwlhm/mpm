@@ -1,57 +1,61 @@
-import { createLazyFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
-import { AxiosError, AxiosResponse } from 'axios'
+import { Link, createLazyFileRoute } from '@tanstack/react-router'
+import React from 'react'
+import { AxiosError } from 'axios'
 import { useMutation, useQueryClient } from 'react-query'
-import { Kampus, newKampus } from '../../../api/kampus'
-import { useAuth } from '../../../auth'
-import Errors from '../../../components/Errors'
-import { Api } from '@/src/api/internal'
+import { Api } from '../../../../api/internal'
+import { Kampus, updateKampus } from '../../../../api/kampus'
+import { useAuth } from '../../../../auth'
+import Errors from "../../../../components/Errors"
 
-export const Route = createLazyFileRoute('/__auth/pengaturan/kampus/baru')({
-  component: KampusBaru
+export const Route = createLazyFileRoute('/__auth/pengaturan/kampus/$kampusId/edit')({
+  component: EditKampus
 })
 
-function KampusBaru() {
+function EditKampus() {
+
   const auth = useAuth()
-  const router = useRouter()
+  const { kampusId } = Route.useParams()
   const navigate = Route.useNavigate()
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const queryClient = useQueryClient()
+  const kampusRepo = queryClient.getQueriesData(["kampus"])
+  const kampusApiData = kampusRepo[0][1] as Api<Kampus[]>
+  const kampus = kampusApiData.results.find(item => item.id == kampusId)
+  const [ isSubmitting, setIsSubmitting ] = React.useState<boolean>(false)
   const mutation = useMutation({
-    mutationFn: newKampus,
+    mutationFn: updateKampus,
     onSettled: () => {
       queryClient.invalidateQueries()
     }
   })
 
-  const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true)
     try {
       evt.preventDefault()
-      const data = new FormData(evt.currentTarget)
-      const kampus_name: string | undefined = data.get('name')?.toString()
+    const data = new FormData(evt.currentTarget)
+    const payload: Kampus = {
+      id: kampusId,
+      name: data.get("name") as string
+    }
 
-      if (!kampus_name) return
-
-      await mutation.mutate({
-        token: auth.token,
-        data: {
-          name: kampus_name
-        }
+    mutation.mutate({
+      token: auth.token,
+      data: payload
+    }, {
+      onSuccess: () => {
+        setIsSubmitting(false)
+        navigate({ to: "/pengaturan/kampus/$kampusId", params: { kampusId } })
       },
-      {
-        onSuccess: (res: AxiosResponse<Api<Kampus>, any>) => {
-          const kampusId = res.data.results.id
-          setIsSubmitting(false)
-          router.invalidate()
-          navigate({ to: "/pengaturan/kampus/$kampusId", params: { kampusId } })
-        }
-      })
-
+      onError: () => {
+        setIsSubmitting(false)
+      }
+    }) 
     } catch (error) {
+      console.error(error)
       setIsSubmitting(false)
     }
+     
   }
 
   return(
@@ -59,24 +63,26 @@ function KampusBaru() {
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 
-          to='/pengaturan/kampus'
+          to='/pengaturan/kampus/$kampusId'
+          params={{ kampusId }}
           className='inline-block float-right'>
             <div className='bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600'>
               <XMarkIcon className="block h-6 w-6 text-white" />
             </div>
         </Link>
         <form className="mt-5 mb-10 max-w-lg mx-auto" onSubmit={onFormSubmit}>
-          <h2 className='mb-10 text-2xl font-semibold text-center'>Tambah Data Kampus</h2>
+          <h2 className='mb-10 text-2xl font-semibold text-center'>Edit Perangkat</h2>
             <fieldset className="w-full grid gap-2">
               <div className="grid gap-2 items-center min-w-[300px]">
                 <label htmlFor="username-input" className="text-sm font-medium">
-                  Nama
+                  Nama Kampus
                 </label>
                 <input
                   id="name-input"
                   name="name"
-                  placeholder="Masukan Nama Kampus yang Ditambahkan"
+                  placeholder="Masukan Nama Kampus Baru"
                   type="text"
+                  defaultValue={kampus?.name}
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
@@ -89,7 +95,8 @@ function KampusBaru() {
                   {isSubmitting ? "Loading..." : "Simpan"}
                 </button>
                 <Link
-                  to="/pengaturan/kampus"
+                  to='/pengaturan/kampus/$kampusId'
+                  params={{ kampusId }}
                   className="mt-2 bg-red-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:border-red-600"
                 >
                   Batalkan
