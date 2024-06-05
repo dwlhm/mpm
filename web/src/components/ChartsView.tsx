@@ -10,10 +10,11 @@ import {
 } from 'chart.js';
 import { Line } from "react-chartjs-2"
 import { useQuery } from 'react-query';
-import { Api, Datasheets, SensorData, getSensorData } from '../api/devices';
+import { Datasheets, SensorData, getSensorData } from '../api/devices';
 import Errors from './Errors';
 import { AxiosError } from 'axios';
 import Loadings from './Loadings';
+import { Api } from '../api/internal';
 
 let repository: { [key: number ]: number[] } = {}
 let last_timestamp: string;

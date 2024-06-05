@@ -1,4 +1,4 @@
-import { Outlet, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { RectangleGroupIcon } from "@heroicons/react/24/outline";
 import React from "react";
 
