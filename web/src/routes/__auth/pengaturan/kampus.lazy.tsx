@@ -43,34 +43,27 @@ function Kampus() {
           className="bg-blue-900 py-2 px-4 mb-2 mt-3 text-white rounded inline-block transition hover:bg-blue-900/90">Tambah Kampus</Link> 
       </header>
       <main className='mt-5'>
-        { !kampusId && <ListKampus data={data} kampus_id='' /> }
+        { !kampusId && <div className={`flex grow w-full ${kampus_id && 'bg-gray-200'}`}>
+          <div className={`w-full py-2 overflow-auto`}>
+            <div className={`grid grid-cols-5 gap-4`}>
+              {data.results.map((data, index) => {
+                  return (
+                    <Link 
+                      key={index}
+                      to={`/pengaturan/kampus/${data.id}`}
+                      className={`pengaturan transition py-2 px-4 flex items-center gap-3 ${!kampus_id ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
+                      <HomeIcon className={`w-6 h-6 ${!kampus_id ? 'text-white' : 'text-white/60'}`} />
+                      <div>
+                        <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
+                      </div>
+                    </Link>)
+                })
+              }
+            </div>
+          </div>
+        </div> }
         <Outlet />
       </main>
-    </div>
-  )
-}
-
-function ListKampus(props: { data: Api<KampusInf[]>, kampus_id: string }) {
-
-  return(
-    <div className={`flex grow w-full ${props.kampus_id && 'bg-gray-200'}`}>
-      <div className={`w-full py-2 overflow-auto`}>
-        <div className={`grid grid-cols-5 gap-4`}>
-          {props.data.results.map((data, index) => {
-              return (
-                <Link 
-                  key={index}
-                  to={`/pengaturan/kampus/${data.id}`}
-                  className={`pengaturan transition py-2 px-4 flex items-center gap-3 ${!props.kampus_id ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
-                  <HomeIcon className={`w-6 h-6 ${!props.kampus_id ? 'text-white' : 'text-white/60'}`} />
-                  <div>
-                    <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
-                  </div>
-                </Link>)
-            })
-          }
-        </div>
-      </div>
     </div>
   )
 }
