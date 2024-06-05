@@ -21,8 +21,10 @@ def get_all(config):
                     res.append({
                         "id": base64.b64encode(str(d[0]).encode()).decode(),
                         "name": d[1],
-                        "unit_id": base64.b64encode(str(d[2]).encode()).decode(),
-                        "unit_name": d[3]
+                        "unit": {
+                            "id": base64.b64encode(str(d[2]).encode()).decode(),
+                            "name": d[3]
+                        }
                     })
                 return {
                     "data": res

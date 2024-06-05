@@ -2,28 +2,28 @@ import axios from "axios"
 import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth"
 import { Api } from "./internal";
-import { Kampus } from "./kampus";
+import { Unit } from "./unit";
 
-export interface Unit {
+export interface Gedung {
     id?: string,
     name: string,
-    kampus: Kampus
+    unit: Unit
 }
 
-export async function getUnit(context: QueryFunctionContext): Promise<Api<Unit[]>> {
+export async function getGedung(context: QueryFunctionContext): Promise<Api<Gedung[]>> {
     const config = {
         method: 'get',
-        url: `${import.meta.env.VITE_BACKEND_URL}/unit`,
+        url: `${import.meta.env.VITE_BACKEND_URL}/gedung`,
         headers: { 
           'Authorization': `Bearer ${context.queryKey[1]}`
         }
       };
 
       const {data} = await axios(config)
-      return data as Api<Unit[]>
+      return data as Api<Gedung[]>
 }
 
-export async function newUnit(props: Token<Unit>) {
+export async function newGedung(props: Token<Gedung>) {
     const config = {
       method: 'post',
       headers: {
@@ -32,18 +32,16 @@ export async function newUnit(props: Token<Unit>) {
       },
       data: JSON.stringify({
         name: props.data.name,
-        kampus: props.data.kampus.id
+        unit: props.data.unit.id
       })
     }
   
-    const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/unit`, config)
+    const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/gedung`, config)
   
     return res
 }
 
-export async function updateUnit(props: Token<Unit>): Promise<Api<Unit>> {
-
-    console.log(props.data)
+export async function updateGedung(props: Token<Gedung>): Promise<Api<Gedung>> {
   
   const config = {
     method: 'put',
@@ -53,16 +51,16 @@ export async function updateUnit(props: Token<Unit>): Promise<Api<Unit>> {
     },
     data: JSON.stringify({
       name: props.data.name,
-      kampus: props.data.kampus.id
+      unit: props.data.unit.id
     })
   }
 
-  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/unit/${props.data.id}`, config)
+  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/gedung/${props.data.id}`, config)
 
   return data
 }
 
-export async function removeUnit(props: {token: string | null, id: string}) {
+export async function removeGedung(props: {token: string | null, id: string}) {
   const config = {
     method: 'delete',
     headers: {
@@ -70,7 +68,7 @@ export async function removeUnit(props: {token: string | null, id: string}) {
     }
   }
 
-  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/unit/${props.id}`, config)
+  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/gedung/${props.id}`, config)
 
   return res
 }

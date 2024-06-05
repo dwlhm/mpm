@@ -6,24 +6,24 @@ import { useMutation, useQueryClient } from 'react-query'
 import { Api } from '../../../../api/internal'
 import { useAuth } from '../../../../auth'
 import Errors from "../../../../components/Errors"
-import { Unit, updateUnit } from '../../../../api/unit'
+import { Gedung, updateGedung } from '../../../../api/gedung'
 
-export const Route = createLazyFileRoute('/__auth/pengaturan/unit/$unitId/edit')({
-  component: EditUnit
+export const Route = createLazyFileRoute('/__auth/pengaturan/gedung/$gedungId/edit')({
+  component: EditGedung
 })
 
-function EditUnit() {
+function EditGedung() {
 
   const auth = useAuth()
-  const { unitId } = Route.useParams()
+  const { gedungId } = Route.useParams()
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
-  const unitRepo = queryClient.getQueriesData(["unit"])
-  const unitApiData = unitRepo[0][1] as Api<Unit[]>
-  const unit = unitApiData.results.find(item => item.id == unitId)
+  const gedungRepo = queryClient.getQueriesData(["gedung"])
+  const gedungApiData = gedungRepo[0][1] as Api<Gedung[]>
+  const gedung = gedungApiData.results.find(item => item.id == gedungId)
   const [ isSubmitting, setIsSubmitting ] = React.useState<boolean>(false)
   const mutation = useMutation({
-    mutationFn: updateUnit,
+    mutationFn: updateGedung,
     onSettled: () => {
       queryClient.invalidateQueries()
     }
@@ -34,11 +34,11 @@ function EditUnit() {
     try {
       evt.preventDefault()
       const data = new FormData(evt.currentTarget)
-      const payload: Unit = {
-        id: unitId,
+      const payload: Gedung = {
+        id: gedungId,
         name: data.get("name") as string,
-        kampus: {
-          id: data.get("kampus") as string
+        unit: {
+          id: data.get("unit") as string
         }
       }
 
@@ -48,7 +48,7 @@ function EditUnit() {
     }, {
       onSuccess: () => {
         setIsSubmitting(false)
-        navigate({ to: '/pengaturan/unit/$unitId', params: { unitId } })
+        navigate({ to: '/pengaturan/gedung/$gedungId', params: { gedungId } })
       },
       onError: () => {
         setIsSubmitting(false)
@@ -66,40 +66,40 @@ function EditUnit() {
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 
-          to='/pengaturan/unit/$unitId'
-          params={{ unitId }}
+          to='/pengaturan/gedung/$gedungId'
+          params={{ gedungId }}
           className='inline-block float-right'>
             <div className='bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600'>
               <XMarkIcon className="block h-6 w-6 text-white" />
             </div>
         </Link>
         <form className="mt-5 mb-10 max-w-lg mx-auto" onSubmit={onFormSubmit}>
-          <h2 className='mb-10 text-2xl font-semibold text-center'>Edit Unit</h2>
+          <h2 className='mb-10 text-2xl font-semibold text-center'>Edit Gedung</h2>
             <fieldset className="w-full grid gap-2">
               <div className="grid gap-2 items-center min-w-[300px]">
                 <label htmlFor="name-input" className="text-sm font-medium">
-                  Nama Unit
+                  Nama Gedung
                 </label>
                 <input
                   id="name-input"
                   name="name"
-                  placeholder="Masukan Nama Unit Baru"
+                  placeholder="Masukan Nama Gedung Baru"
                   type="text"
-                  defaultValue={unit?.name}
+                  defaultValue={gedung?.name}
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
               </div>
               <div className="grid gap-2 items-center min-w-[300px]">
-                <label htmlFor="kampus-input" className="text-sm font-medium">
-                  ID Kampus
+                <label htmlFor="unit-input" className="text-sm font-medium">
+                  ID Unit
                 </label>
                 <input
-                  id="kampus-input"
-                  name="kampus"
+                  id="unit-input"
+                  name="unit"
                   placeholder="Masukan ID Kampus Baru"
                   type="text"
-                  defaultValue={unit?.kampus?.id}
+                  defaultValue={gedung?.unit?.id}
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
@@ -112,15 +112,15 @@ function EditUnit() {
                   {isSubmitting ? "Loading..." : "Simpan"}
                 </button>
                 <Link
-                  to='/pengaturan/unit/$unitId'
-                  params={{ unitId }}
+                  to='/pengaturan/gedung/$gedungId'
+                  params={{ gedungId }}
                   className="mt-2 bg-red-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:border-red-600"
                 >
                   Batalkan
                 </Link>
               </div>
             </fieldset>
-            <div>{mutation.isError ? <Errors className="mt-3" process="update data perangkat" message={mutation.error as AxiosError} /> : <></> }</div>
+            <div>{mutation.isError ? <Errors className="mt-3" process="update data gedung" message={mutation.error as AxiosError} /> : <></> }</div>
           </form>
       </div>
     </div>

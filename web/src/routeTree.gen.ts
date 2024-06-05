@@ -34,6 +34,9 @@ const authPengaturanUnitLazyImport = createFileRoute(
 const authPengaturanKampusLazyImport = createFileRoute(
   '/__auth/pengaturan/kampus',
 )()
+const authPengaturanGedungLazyImport = createFileRoute(
+  '/__auth/pengaturan/gedung',
+)()
 const authPerangkatPerangkatIdHapusLazyImport = createFileRoute(
   '/__auth/perangkat/$perangkatId/hapus',
 )()
@@ -52,6 +55,12 @@ const authPengaturanKampusBaruLazyImport = createFileRoute(
 const authPengaturanKampusKampusIdLazyImport = createFileRoute(
   '/__auth/pengaturan/kampus/$kampusId',
 )()
+const authPengaturanGedungBaruLazyImport = createFileRoute(
+  '/__auth/pengaturan/gedung/baru',
+)()
+const authPengaturanGedungGedungIdLazyImport = createFileRoute(
+  '/__auth/pengaturan/gedung/$gedungId',
+)()
 const authPengaturanUnitUnitIdHapusLazyImport = createFileRoute(
   '/__auth/pengaturan/unit/$unitId/hapus',
 )()
@@ -63,6 +72,12 @@ const authPengaturanKampusKampusIdHapusLazyImport = createFileRoute(
 )()
 const authPengaturanKampusKampusIdEditLazyImport = createFileRoute(
   '/__auth/pengaturan/kampus/$kampusId/edit',
+)()
+const authPengaturanGedungGedungIdHapusLazyImport = createFileRoute(
+  '/__auth/pengaturan/gedung/$gedungId/hapus',
+)()
+const authPengaturanGedungGedungIdEditLazyImport = createFileRoute(
+  '/__auth/pengaturan/gedung/$gedungId/edit',
 )()
 
 // Create/Update Routes
@@ -155,6 +170,15 @@ const authPengaturanKampusLazyRoute = authPengaturanKampusLazyImport
     import('./routes/__auth/pengaturan/kampus.lazy').then((d) => d.Route),
   )
 
+const authPengaturanGedungLazyRoute = authPengaturanGedungLazyImport
+  .update({
+    path: '/gedung',
+    getParentRoute: () => authPengaturanLazyRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/__auth/pengaturan/gedung.lazy').then((d) => d.Route),
+  )
+
 const authPerangkatPerangkatIdHapusLazyRoute =
   authPerangkatPerangkatIdHapusLazyImport
     .update({
@@ -218,6 +242,27 @@ const authPengaturanKampusKampusIdLazyRoute =
       ),
     )
 
+const authPengaturanGedungBaruLazyRoute = authPengaturanGedungBaruLazyImport
+  .update({
+    path: '/baru',
+    getParentRoute: () => authPengaturanGedungLazyRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/__auth/pengaturan/gedung/baru.lazy').then((d) => d.Route),
+  )
+
+const authPengaturanGedungGedungIdLazyRoute =
+  authPengaturanGedungGedungIdLazyImport
+    .update({
+      path: '/$gedungId',
+      getParentRoute: () => authPengaturanGedungLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__auth/pengaturan/gedung/$gedungId.lazy').then(
+        (d) => d.Route,
+      ),
+    )
+
 const authPengaturanUnitUnitIdHapusLazyRoute =
   authPengaturanUnitUnitIdHapusLazyImport
     .update({
@@ -262,6 +307,30 @@ const authPengaturanKampusKampusIdEditLazyRoute =
     } as any)
     .lazy(() =>
       import('./routes/__auth/pengaturan/kampus/$kampusId.edit.lazy').then(
+        (d) => d.Route,
+      ),
+    )
+
+const authPengaturanGedungGedungIdHapusLazyRoute =
+  authPengaturanGedungGedungIdHapusLazyImport
+    .update({
+      path: '/hapus',
+      getParentRoute: () => authPengaturanGedungGedungIdLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__auth/pengaturan/gedung/$gedungId.hapus.lazy').then(
+        (d) => d.Route,
+      ),
+    )
+
+const authPengaturanGedungGedungIdEditLazyRoute =
+  authPengaturanGedungGedungIdEditLazyImport
+    .update({
+      path: '/edit',
+      getParentRoute: () => authPengaturanGedungGedungIdLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__auth/pengaturan/gedung/$gedungId.edit.lazy').then(
         (d) => d.Route,
       ),
     )
@@ -319,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authUsersLazyImport
       parentRoute: typeof authImport
     }
+    '/__auth/pengaturan/gedung': {
+      id: '/__auth/pengaturan/gedung'
+      path: '/gedung'
+      fullPath: '/pengaturan/gedung'
+      preLoaderRoute: typeof authPengaturanGedungLazyImport
+      parentRoute: typeof authPengaturanLazyImport
+    }
     '/__auth/pengaturan/kampus': {
       id: '/__auth/pengaturan/kampus'
       path: '/kampus'
@@ -353,6 +429,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/register'
       preLoaderRoute: typeof authUsersRegisterLazyImport
       parentRoute: typeof authUsersLazyImport
+    }
+    '/__auth/pengaturan/gedung/$gedungId': {
+      id: '/__auth/pengaturan/gedung/$gedungId'
+      path: '/$gedungId'
+      fullPath: '/pengaturan/gedung/$gedungId'
+      preLoaderRoute: typeof authPengaturanGedungGedungIdLazyImport
+      parentRoute: typeof authPengaturanGedungLazyImport
+    }
+    '/__auth/pengaturan/gedung/baru': {
+      id: '/__auth/pengaturan/gedung/baru'
+      path: '/baru'
+      fullPath: '/pengaturan/gedung/baru'
+      preLoaderRoute: typeof authPengaturanGedungBaruLazyImport
+      parentRoute: typeof authPengaturanGedungLazyImport
     }
     '/__auth/pengaturan/kampus/$kampusId': {
       id: '/__auth/pengaturan/kampus/$kampusId'
@@ -396,6 +486,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPerangkatPerangkatIdHapusLazyImport
       parentRoute: typeof authPerangkatPerangkatIdLazyImport
     }
+    '/__auth/pengaturan/gedung/$gedungId/edit': {
+      id: '/__auth/pengaturan/gedung/$gedungId/edit'
+      path: '/edit'
+      fullPath: '/pengaturan/gedung/$gedungId/edit'
+      preLoaderRoute: typeof authPengaturanGedungGedungIdEditLazyImport
+      parentRoute: typeof authPengaturanGedungGedungIdLazyImport
+    }
+    '/__auth/pengaturan/gedung/$gedungId/hapus': {
+      id: '/__auth/pengaturan/gedung/$gedungId/hapus'
+      path: '/hapus'
+      fullPath: '/pengaturan/gedung/$gedungId/hapus'
+      preLoaderRoute: typeof authPengaturanGedungGedungIdHapusLazyImport
+      parentRoute: typeof authPengaturanGedungGedungIdLazyImport
+    }
     '/__auth/pengaturan/kampus/$kampusId/edit': {
       id: '/__auth/pengaturan/kampus/$kampusId/edit'
       path: '/edit'
@@ -434,6 +538,14 @@ export const routeTree = rootRoute.addChildren({
   authRoute: authRoute.addChildren({
     authAboutLazyRoute,
     authPengaturanLazyRoute: authPengaturanLazyRoute.addChildren({
+      authPengaturanGedungLazyRoute: authPengaturanGedungLazyRoute.addChildren({
+        authPengaturanGedungGedungIdLazyRoute:
+          authPengaturanGedungGedungIdLazyRoute.addChildren({
+            authPengaturanGedungGedungIdEditLazyRoute,
+            authPengaturanGedungGedungIdHapusLazyRoute,
+          }),
+        authPengaturanGedungBaruLazyRoute,
+      }),
       authPengaturanKampusLazyRoute: authPengaturanKampusLazyRoute.addChildren({
         authPengaturanKampusKampusIdLazyRoute:
           authPengaturanKampusKampusIdLazyRoute.addChildren({
