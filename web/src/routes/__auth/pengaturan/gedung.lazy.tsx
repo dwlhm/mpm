@@ -23,9 +23,18 @@ function PengaturanGedung() {
       retry: 2
     })
     const gedung_id = data?.results.find(item => item.id == gedungId )
-      if (isLoading) <Loadings />
+      if (isLoading) return <Loadings />
   
-      if (isError) <Errors process='mendapatkan data list gedung' message={error} />
+      if (isError) return (<>
+          <Errors 
+            process='mendapatkan data list gedung' 
+            message={error}
+            action={<Link 
+              className='bg-blue-900 py-1 px-3 rounded text-white transition hover:bg-blue-900/80'
+              to='/pengaturan/gedung/baru'>Tambah Gedung</Link>}  
+          />
+          <Outlet />
+        </>)
       
       if (isSuccess) return(
           <div>
