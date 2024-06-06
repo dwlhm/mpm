@@ -60,15 +60,14 @@ function PengaturanGedung() {
   }
   
   function ListGedung(props: { data: Api<Gedung[]> }) {
-  
-  
+
       return(
         <div className={`flex grow w-full`}>
           <div className={`w-full py-2 overflow-auto`}>
             <div className={`grid grid-cols-5 gap-4`}>
               {props.data.results.map((data, index) => {
                 
-                    const gedungId = data.id as string
+                  const gedungId = data.id as string
                     
                   return (
                     <Link 
@@ -76,10 +75,11 @@ function PengaturanGedung() {
                       to={`/pengaturan/gedung/$gedungId`}
                       params={{ gedungId }}
                       className={`pengaturan transition py-2 px-4 flex items-center gap-3 text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded`}>
-                      <HomeIcon className={`w-6 h-6 ${!gedungId ? 'text-white' : 'text-white/60'}`} />
-                      <div>
+                      <HomeIcon className={`w-6 h-6 text-white`} />
+                      <div className='ml-2'>
                         <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
-                        <p className='text-sm mt-1'><span>Unit:</span> {data.unit.name}</p>
+                        <p className='text-sm mt-2 text-white/80'><span>Kampus:</span> {data.unit.kampus?.name}</p>
+                        <p className='text-sm text-white/80'><span>Unit:</span> {data.unit.name}</p>
                       </div>
                     </Link>)
                 })

@@ -54,7 +54,9 @@ async def insert_gedung(gedung: Gedung):
         "results": {
             "id": base64.b64encode(str(result.get("data")).encode()).decode(),
             "name": gedung.name,
-            "unit_id": gedung.unit
+            "unit": {
+                "id": gedung.unit
+            }
         }
     }
 
@@ -70,7 +72,9 @@ async def update_gedung(id: str, gedung: Gedung):
         "results": {
             "id": id,
             "name": gedung.name,
-            "unit_id": gedung.unit
+            "unit": {
+                "id": gedung.unit
+            }
         }
     }
 

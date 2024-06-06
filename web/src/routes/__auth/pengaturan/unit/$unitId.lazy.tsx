@@ -21,8 +21,21 @@ function UnitDetail() {
   const unit = data?.results.find(item => item.id == unitId)
   return(
     <div>
-      <p>Nama:</p>
+      <p>ID Unit:</p>
+      <p className='my-2 text-3xl'>{unit?.id}</p>
+      <p>Nama Unit:</p>
       <p className='my-2 text-3xl'>{unit?.name}</p>
+      <div className='flex gap-5 mb-3'>
+        <div>
+          <p>Nama Kampus:</p>
+          <p className='text-3xl'>{unit?.kampus?.name}</p>
+        </div>
+        <div className='border-l border-black/60'></div>
+        <div>
+          <p>ID Kampus:</p>
+          <p className='text-3xl'>{unit?.kampus?.id}</p>
+        </div>
+      </div>
       <Outlet />
       <div className='mt-8 gap-4 flex'>
         <Link

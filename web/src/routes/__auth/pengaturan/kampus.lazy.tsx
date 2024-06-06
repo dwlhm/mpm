@@ -23,9 +23,13 @@ function Kampus() {
   })
   const kampus_id = data?.results.find(item => item.id == kampusId )
 
-  if (isLoading) <Loadings />
+  if (isLoading) return <Loadings />
 
-  if (isError) <Errors process='mendapatkan data list kampus' message={error} />
+  if (isError) return (
+    <>
+      <Errors process='mendapatkan data list kampus' message={error} />
+      <Outlet />
+    </>)
   
   if (isSuccess) return(
     <div>
@@ -63,7 +67,7 @@ function ListKampus(props: { data: Api<KampusInf[]>, kampus_id: string }) {
                   to={`/pengaturan/kampus/${data.id}`}
                   className={`pengaturan transition py-2 px-4 flex items-center gap-3 ${!props.kampus_id ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
                   <HomeIcon className={`w-6 h-6 ${!props.kampus_id ? 'text-white' : 'text-white/60'}`} />
-                  <div>
+                  <div className='ml-2'>
                     <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
                   </div>
                 </Link>)

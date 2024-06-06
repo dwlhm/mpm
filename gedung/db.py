@@ -2,8 +2,9 @@ import psycopg2
 import base64
 
 def get_all(config):
-    sql = """SELECT gedung.id, gedung.name, unit.id, unit.name FROM gedung 
-             LEFT JOIN unit ON gedung.unit = unit.id"""
+    sql = """SELECT gedung.id, gedung.name, unit.id, unit.name, kampus.id, kampus.name FROM gedung 
+             LEFT JOIN unit ON gedung.unit = unit.id
+             LEFT JOIN kampus ON unit.kampus = kampus.id"""
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -16,6 +17,8 @@ def get_all(config):
                     "error": "no data"
                 }
 
+                print(data)
+
                 res = []
                 for d in data:
                     res.append({
@@ -23,7 +26,11 @@ def get_all(config):
                         "name": d[1],
                         "unit": {
                             "id": base64.b64encode(str(d[2]).encode()).decode(),
-                            "name": d[3]
+                            "name": d[3],
+                            "kampus": {
+                                "id": base64.b64encode(str(d[4]).encode()).decode(),
+                                "name": d[5]
+                            }
                         }
                     })
                 return {
@@ -37,8 +44,9 @@ def get_all(config):
         }
 
 def get_by_id(id: str, config):
-    sql = """SELECT gedung.name, unit.id, unit.name FROM gedung 
+    sql = """SELECT gedung.name, unit.id, unit.name, kampus.id, kampus.name FROM gedung 
              LEFT JOIN unit ON gedung.unit = unit.id
+             LEFT JOIN kampus ON unit.kampus = kampus.id
              WHERE gedung.id = %s"""
 
     try:
@@ -54,8 +62,15 @@ def get_by_id(id: str, config):
                 return {
                     "data": {
                         "name": data[0],
-                        "unit_id": base64.b64encode(str(data[1]).encode()).decode(),
-                        "unit_name": data[2]
+                        "unit": {
+                            "id": base64.b64encode(str(data[1]).encode()).decode(),
+                            "name": data[2],
+                            "kampus": {
+                                "id": base64.b64encode(str(data[3]).encode()).decode(),
+                                "name": data[4],
+                            }
+                        }
+                        
                     }
                 }
 

@@ -21,10 +21,32 @@ function GedungDetail() {
   const gedung = data?.results.find(item => item.id == gedungId)
   return(
     <div>
+      <p>ID Gedung:</p>
+      <p className='text-3xl mb-3'>{gedung?.id}</p>
       <p>Nama Gedung:</p>
-      <p className='my-2 text-3xl'>{gedung?.name}</p>
-      <p>Unit:</p>
-      <p className='my-2 text-3xl'>{gedung?.unit.name}</p>
+      <p className='text-3xl mb-3'>{gedung?.name}</p>
+      <div className='flex gap-5 mb-3'>
+        <div>
+          <p>Nama Kampus:</p>
+          <p className='text-3xl'>{gedung?.unit.kampus?.name}</p>
+        </div>
+        <div className='border-l border-black/60'></div>
+        <div>
+          <p>ID Kampus:</p>
+          <p className='text-3xl'>{gedung?.unit.kampus?.id}</p>
+        </div>
+      </div>
+      <div className='flex gap-5 mb-3'>
+        <div>
+          <p>Nama Unit:</p>
+          <p className='text-3xl'>{gedung?.unit.name}</p>
+        </div>
+        <div className='border-l border-black/60'></div>
+        <div>
+          <p>ID Unit:</p>
+          <p className='text-3xl'>{gedung?.unit.id}</p>
+        </div>
+      </div>
       <Outlet />
       <div className='mt-8 gap-4 flex'>
         <Link

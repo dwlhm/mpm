@@ -22,9 +22,14 @@ function PengaturanUnit() {
     retry: 2
   })
   const unit_id = data?.results.find(item => item.id == unitId )
-    if (isLoading) <Loadings />
+    if (isLoading) return <Loadings />
 
-    if (isError) <Errors process='mendapatkan data list unit' message={error} />
+    if (isError) return( 
+      <>
+        <Errors process='mendapatkan data list unit' message={error} />
+        <Outlet />
+      </>
+    )
     
     if (isSuccess) return(
         <div>
@@ -65,8 +70,9 @@ function ListUnit(props: { data: Api<Unit[]>, unit_id: string }) {
                     params={{ unitId }}
                     className={`pengaturan transition py-2 px-4 flex items-center gap-3 ${!unitId ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
                     <HomeIcon className={`w-6 h-6 ${!unitId ? 'text-white' : 'text-white/60'}`} />
-                    <div>
+                    <div className='ml-2'>
                       <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
+                      <p className='text-sm mt-2 text-white/80'><span>Kampus:</span> {data.kampus?.name}</p>
                     </div>
                   </Link>)
               })
