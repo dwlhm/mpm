@@ -1,5 +1,4 @@
 import { Api } from '../../../api/internal'
-import { Kampus as KampusInf, getKampus } from '../../../api/kampus'
 import { useAuth } from '../../../auth'
 import Errors from '../../../components/Errors'
 import Loadings from '../../../components/Loadings'
