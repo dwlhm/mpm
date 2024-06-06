@@ -6,7 +6,7 @@ import { Unit } from "./unit";
 
 export interface Gedung {
     id?: string,
-    name: string,
+    name?: string,
     unit: Unit
 }
 

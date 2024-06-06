@@ -1,4 +1,4 @@
-import { Link, Outlet, createLazyFileRoute, useParams } from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute, useParams } from '@tanstack/react-router'
 import { useQuery } from 'react-query'
 import { Api } from '../../api/internal'
 import { Devices, getDevices } from "../../api/devices"
@@ -8,7 +8,7 @@ import Loadings from "../../components/Loadings"
 import Errors from '../../components/Errors'
 import { CpuChipIcon } from '@heroicons/react/24/outline'
 
-export const Route = createLazyFileRoute('/__auth/perangkat')({
+export const Route = createFileRoute('/__auth/perangkat')({
   component: Dashboard
 })
 

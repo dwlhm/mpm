@@ -2,6 +2,10 @@ import axios from "axios";
 import { QueryFunctionContext } from "react-query";
 import { Token } from "../auth";
 import { Api } from "./internal";
+import { Gedung } from "./gedung";
+import { Powermeter } from "./powermeter";
+import { Kampus } from "./kampus";
+import { Unit } from "./unit";
 
 export type Devices = [string, string, number, string]
 export type Datasheets = [number, number, string, string]
@@ -16,12 +20,17 @@ export interface Data<T> {
 }
 
 export interface DeviceDetail {
+  id?: string,
   name: string,
   ip_addr: string,
-  seri?: 'AW9L' | string 
+  port?: number | 502,
+  kampus?: Kampus,
+  unit?: Unit,
+  gedung: Gedung,
+  powermeter: Powermeter
 }
 
-export async function getDevices(context: QueryFunctionContext): Promise<Api<{ data: Devices[] }>> {
+export async function getDevices(context: QueryFunctionContext): Promise<Api<Devices[]>> {
     const config = {
         method: 'get',
         url: `${import.meta.env.VITE_BACKEND_URL}/devices`,
@@ -31,7 +40,7 @@ export async function getDevices(context: QueryFunctionContext): Promise<Api<{ d
       };
 
       const {data} = await axios(config)
-      return data as Api<{ data: Devices[] }>
+      return data as Api<Devices[]>
 }
 
 export async function getDeviceDetail(context: QueryFunctionContext): Promise<Api<DeviceDetail>> {

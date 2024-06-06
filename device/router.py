@@ -19,7 +19,7 @@ class Perangkat(BaseModel):
     gedung: str
     ip_addr: str
     port: int
-    power_meter: str
+    powermeter: str
 
 @router.get("/")
 async def get_all_perangkat(token: str = Depends(oauth2_scheme)):

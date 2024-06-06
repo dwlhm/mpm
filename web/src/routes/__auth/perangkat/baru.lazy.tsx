@@ -2,8 +2,14 @@ import React from 'react'
 import { Link, createLazyFileRoute, useRouter } from '@tanstack/react-router'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { DeviceDetail, newDevices } from "../../../api/devices"
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useAuth } from "../../../auth"
+import { Api } from '../../../api/internal'
+import { getPowermeter, Powermeter } from '../../../api/powermeter'
+import { AxiosError } from 'axios'
+import { Select } from '@headlessui/react'
+import Loadings from '../../../components/Loadings'
+import { Gedung, getGedung } from '../../../api/gedung'
 
 export const Route: any = createLazyFileRoute('/__auth/perangkat/baru')({
   component: PerangkatBaru
@@ -20,6 +26,18 @@ function PerangkatBaru() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [ 'devices', auth.token ]})
     }
+  })
+
+  const { data: powermeter, isLoading: pmLoading, isSuccess: pmSuccess } = useQuery<Api<Powermeter[]>, AxiosError>({
+    queryKey: ['powermeter', auth.token],
+    queryFn: getPowermeter,
+    retry: 1
+  })
+
+  const { data: gedung, isLoading: gLoading, isSuccess: gSuccess } = useQuery<Api<Gedung[]>, AxiosError>({
+    queryKey: ['gedung', auth.token],
+    queryFn: getGedung,
+    retry: 2
   })
 
   const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
@@ -66,7 +84,7 @@ function PerangkatBaru() {
           <h2 className='mb-10 text-2xl font-semibold text-center'>Perangkat Baru</h2>
             <fieldset className="w-full grid gap-2">
               <div className="grid gap-2 items-center min-w-[300px]">
-                <label htmlFor="username-input" className="text-sm font-medium">
+                <label htmlFor="name-input" className="text-sm font-medium">
                   Nama Perangkat
                 </label>
                 <input
@@ -90,6 +108,40 @@ function PerangkatBaru() {
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="seri-input" className="text-sm font-medium">
+                  Seri Powermeter
+                </label>
+                {
+                  pmLoading && <Loadings />
+                }
+                {
+                  pmSuccess && <Select id='seri-input' name="seri" aria-label="Seri Powermeter" className="p-2 bg-gray-200/60 rounded">
+                    {
+                      powermeter?.results.map(item => (
+                        <option value={item.id}>{item.seri} - {item.brand}</option>
+                      ))
+                    }
+                  </Select>
+                }
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="gedung-input" className="text-sm font-medium">
+                  Lokasi Gedung
+                </label>
+                {
+                  gLoading && <Loadings />
+                }
+                {
+                  gSuccess && <Select id='gedung-input' name="gedung" aria-label="Lokasi Gedung" className="p-2 bg-gray-200/60 rounded">
+                    {
+                      gedung?.results.map(item => (
+                        <option value={item.id}>{item.name}</option>
+                      ))
+                    }
+                  </Select>
+                }
               </div>
               <div className='flex gap-4 mt-5'>
                 <button

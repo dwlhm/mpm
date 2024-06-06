@@ -15,12 +15,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as authImport } from './routes/__auth'
+import { Route as authPerangkatImport } from './routes/__auth/perangkat'
 
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
 const authUsersLazyImport = createFileRoute('/__auth/users')()
-const authPerangkatLazyImport = createFileRoute('/__auth/perangkat')()
 const authPengaturanLazyImport = createFileRoute('/__auth/pengaturan')()
 const authAboutLazyImport = createFileRoute('/__auth/about')()
 const authUsersRegisterLazyImport = createFileRoute('/__auth/users/register')()
@@ -119,13 +119,6 @@ const authUsersLazyRoute = authUsersLazyImport
   } as any)
   .lazy(() => import('./routes/__auth/users.lazy').then((d) => d.Route))
 
-const authPerangkatLazyRoute = authPerangkatLazyImport
-  .update({
-    path: '/perangkat',
-    getParentRoute: () => authRoute,
-  } as any)
-  .lazy(() => import('./routes/__auth/perangkat.lazy').then((d) => d.Route))
-
 const authPengaturanLazyRoute = authPengaturanLazyImport
   .update({
     path: '/pengaturan',
@@ -140,6 +133,11 @@ const authAboutLazyRoute = authAboutLazyImport
   } as any)
   .lazy(() => import('./routes/__auth/about.lazy').then((d) => d.Route))
 
+const authPerangkatRoute = authPerangkatImport.update({
+  path: '/perangkat',
+  getParentRoute: () => authRoute,
+} as any)
+
 const authUsersRegisterLazyRoute = authUsersRegisterLazyImport
   .update({
     path: '/register',
@@ -152,7 +150,7 @@ const authUsersRegisterLazyRoute = authUsersRegisterLazyImport
 const authPerangkatBaruLazyRoute = authPerangkatBaruLazyImport
   .update({
     path: '/baru',
-    getParentRoute: () => authPerangkatLazyRoute,
+    getParentRoute: () => authPerangkatRoute,
   } as any)
   .lazy(() =>
     import('./routes/__auth/perangkat/baru.lazy').then((d) => d.Route),
@@ -161,7 +159,7 @@ const authPerangkatBaruLazyRoute = authPerangkatBaruLazyImport
 const authPerangkatPerangkatIdLazyRoute = authPerangkatPerangkatIdLazyImport
   .update({
     path: '/$perangkatId',
-    getParentRoute: () => authPerangkatLazyRoute,
+    getParentRoute: () => authPerangkatRoute,
   } as any)
   .lazy(() =>
     import('./routes/__auth/perangkat/$perangkatId.lazy').then((d) => d.Route),
@@ -432,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/__auth/perangkat': {
+      id: '/__auth/perangkat'
+      path: '/perangkat'
+      fullPath: '/perangkat'
+      preLoaderRoute: typeof authPerangkatImport
+      parentRoute: typeof authImport
+    }
     '/__auth/about': {
       id: '/__auth/about'
       path: '/about'
@@ -444,13 +449,6 @@ declare module '@tanstack/react-router' {
       path: '/pengaturan'
       fullPath: '/pengaturan'
       preLoaderRoute: typeof authPengaturanLazyImport
-      parentRoute: typeof authImport
-    }
-    '/__auth/perangkat': {
-      id: '/__auth/perangkat'
-      path: '/perangkat'
-      fullPath: '/perangkat'
-      preLoaderRoute: typeof authPerangkatLazyImport
       parentRoute: typeof authImport
     }
     '/__auth/users': {
@@ -493,14 +491,14 @@ declare module '@tanstack/react-router' {
       path: '/$perangkatId'
       fullPath: '/perangkat/$perangkatId'
       preLoaderRoute: typeof authPerangkatPerangkatIdLazyImport
-      parentRoute: typeof authPerangkatLazyImport
+      parentRoute: typeof authPerangkatImport
     }
     '/__auth/perangkat/baru': {
       id: '/__auth/perangkat/baru'
       path: '/baru'
       fullPath: '/perangkat/baru'
       preLoaderRoute: typeof authPerangkatBaruLazyImport
-      parentRoute: typeof authPerangkatLazyImport
+      parentRoute: typeof authPerangkatImport
     }
     '/__auth/users/register': {
       id: '/__auth/users/register'
@@ -643,6 +641,14 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   authRoute: authRoute.addChildren({
+    authPerangkatRoute: authPerangkatRoute.addChildren({
+      authPerangkatPerangkatIdLazyRoute:
+        authPerangkatPerangkatIdLazyRoute.addChildren({
+          authPerangkatPerangkatIdEditLazyRoute,
+          authPerangkatPerangkatIdHapusLazyRoute,
+        }),
+      authPerangkatBaruLazyRoute,
+    }),
     authAboutLazyRoute,
     authPengaturanLazyRoute: authPengaturanLazyRoute.addChildren({
       authPengaturanGedungLazyRoute: authPengaturanGedungLazyRoute.addChildren({
@@ -678,14 +684,6 @@ export const routeTree = rootRoute.addChildren({
           }),
         authPengaturanUnitBaruLazyRoute,
       }),
-    }),
-    authPerangkatLazyRoute: authPerangkatLazyRoute.addChildren({
-      authPerangkatPerangkatIdLazyRoute:
-        authPerangkatPerangkatIdLazyRoute.addChildren({
-          authPerangkatPerangkatIdEditLazyRoute,
-          authPerangkatPerangkatIdHapusLazyRoute,
-        }),
-      authPerangkatBaruLazyRoute,
     }),
     authUsersLazyRoute: authUsersLazyRoute.addChildren({
       authUsersRegisterLazyRoute,

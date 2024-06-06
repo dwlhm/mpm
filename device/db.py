@@ -73,17 +73,20 @@ def get_by_id(id: str, config):
              LEFT JOIN kampus ON unit.kampus = kampus.id
              LEFT JOIN power_meter ON device.power_meter = power_meter.id
              WHERE device.id = %s"""
+    
+    print(str(base64.b64decode(id).decode()))
 
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (base64.b64decode(id).decode(), ))
+                cur.execute(sql, (str(base64.b64decode(id).decode()), ))
 
                 d = cur.fetchone()
 
-                if (d == None,): return {
-                    "error": "no data"
-                }
+                if (d == None): 
+                    return {
+                        "error": "no data"
+                    }
                 return {
                     "data": {
                         "id": base64.b64encode(str(d[0]).encode()).decode(),
