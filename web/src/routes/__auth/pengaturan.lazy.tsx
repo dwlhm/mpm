@@ -20,6 +20,10 @@ const menu = [
     label: "Gedung",
     link: "/pengaturan/gedung"
   } as SideNavData,
+  {
+    label: "Powermeter",
+    link: "/pengaturan/powermeter"
+  } as SideNavData,
 ]
 
 function Pengaturan() {

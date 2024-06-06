@@ -54,7 +54,7 @@ async def insert_powermeter(powermeter: Powermeter):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "id": base64.b64encode(str(result.get("data")).encode()).decode(),
             "seri": powermeter.seri,
             "brand": powermeter.brand
@@ -74,7 +74,7 @@ async def update_powermeter(id: str, powermeter: Powermeter):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "id": id,
             "seri": powermeter.seri,
             "brand": powermeter.brand
@@ -90,7 +90,7 @@ async def delete_powermeter(id: str):
         )
     return {
         "status": "success",
-        "data": {
+        "results": {
             "message": "Powermeter berhasil dihapus"
         }
     }

@@ -14,8 +14,8 @@ def create_tables():
         """
         CREATE TABLE power_meter (
             id SERIAL PRIMARY KEY,
-            seri VARCHAR(50) NOT NULL UNIQUE,
-            brand VARCHAR(50) NOT NULL UNIQUE
+            seri VARCHAR(50) NOT NULL,
+            brand VARCHAR(50) NOT NULL
         )
         """,
         """
@@ -27,7 +27,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS unit (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(50) NOT NULL UNIQUE,
+            name VARCHAR(50) NOT NULL,
             kampus INT NOT NULL,
             CONSTRAINT fk_kampus FOREIGN KEY(kampus) REFERENCES kampus(id)
         )
@@ -35,7 +35,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS gedung (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(50) NOT NULL UNIQUE,
+            name VARCHAR(50) NOT NULL,
             unit INT NOT NULL,
             CONSTRAINT fk_unit FOREIGN KEY(unit) REFERENCES unit(id)
         )
@@ -43,7 +43,7 @@ def create_tables():
         """
         CREATE TABLE device (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(50) NOT NULL UNIQUE,
+            name VARCHAR(50) NOT NULL,
             gedung INT NOT NULL,
             ip_addr VARCHAR(15) NOT NULL,
             port INT DEFAULT 502,
