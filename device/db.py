@@ -21,7 +21,6 @@ def get_all(config):
                 cur.execute(sql)
 
                 data = cur.fetchall()
-                print(data)
 
                 if (len(data) <= 0): return {
                     "error": "no data"
