@@ -64,7 +64,7 @@ function PerangkatBaru() {
       },
       {
         onSuccess: (res) => {
-          console.log(res)
+          console.log("perangkat baru", res)
           setIsSubmitting(false)
           router.invalidate()
           navigate({ to: "/perangkat" })
@@ -130,14 +130,14 @@ function PerangkatBaru() {
                 />
               </div>
               <div className="grid gap-2 items-center min-w-[300px] mt-2">
-                <label htmlFor="seri-input" className="text-sm font-medium">
+                <label htmlFor="powermeter-input" className="text-sm font-medium">
                   Seri Powermeter
                 </label>
                 {
                   pmLoading && <Loadings />
                 }
                 {
-                  pmSuccess && <Select id='seri-input' name="seri" aria-label="Seri Powermeter" className="p-2 bg-gray-200/60 rounded">
+                  pmSuccess && <Select id='powermeter-input' name="powermeter" aria-label="Seri Powermeter" className="p-2 bg-gray-200/60 rounded">
                     {
                       powermeter?.results.map(item => (
                         <option value={item.id}>{item.seri} - {item.brand}</option>

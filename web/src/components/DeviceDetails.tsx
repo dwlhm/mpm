@@ -9,7 +9,7 @@ export default function DeviceDetails(props: { token: string | null, perangkatId
       queryKey: [`devices.${props.perangkatId}`, props.token, props.perangkatId ],
       queryFn: getDeviceDetail,
       onSuccess(data) {
-        props.seri(data.results.seri)
+        props.seri(data.results.powermeter.id)
       },
     })
   
@@ -21,7 +21,7 @@ export default function DeviceDetails(props: { token: string | null, perangkatId
         <div className='flex justify-between items-center'>
           <div>
             <h2 className='font-semibold text-xl'>{data.results.name}</h2>
-            <p className="text-sm">{data.results.ip_addr} - {data.results.seri}</p>  
+            <p className="text-sm">{data.results.ip_addr} - {data.results.powermeter.seri}({data.results.powermeter.brand})</p>  
           </div>
           <div>
             <PerangkatOptions perangkatId={props.perangkatId} />

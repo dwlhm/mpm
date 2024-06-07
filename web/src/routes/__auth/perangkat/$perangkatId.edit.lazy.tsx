@@ -6,6 +6,11 @@ import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AxiosError } from "axios"
+import { Select } from "@headlessui/react"
+import { Api } from "../../../api/internal"
+import { Powermeter, getPowermeter } from "../../../api/powermeter"
+import { Gedung, getGedung } from "../../../api/gedung"
+import Loadings from "../../../components/Loadings"
 
 export const Route = createLazyFileRoute('/__auth/perangkat/$perangkatId/edit')({
   component:EditPerangkat
@@ -21,6 +26,18 @@ function EditPerangkat() {
   const perangkatInfo = useQuery({
     queryFn: getDeviceDetail,
     queryKey: [`devices.${perangkatId}`, user.token, perangkatId ]
+  })
+
+  const { data: powermeter, isLoading: pmLoading, isSuccess: pmSuccess } = useQuery<Api<Powermeter[]>, AxiosError>({
+    queryKey: ['powermeter', user.token],
+    queryFn: getPowermeter,
+    retry: 1
+  })
+
+  const { data: gedung, isLoading: gLoading, isSuccess: gSuccess } = useQuery<Api<Gedung[]>, AxiosError>({
+    queryKey: ['gedung', user.token],
+    queryFn: getGedung,
+    retry: 2
   })
 
   const mutation = useMutation({
@@ -42,12 +59,17 @@ function EditPerangkat() {
     try {
       evt.preventDefault()
     const data = new FormData(evt.currentTarget)
-    const payload: { device: DeviceDetail, id: string } = {
-      device: {
-        name: data.get("name") as string,
-        ip_addr: data.get("ip") as string
+    const payload: DeviceDetail= {
+      id: perangkatId,
+      name: data.get("name") as string,
+      ip_addr: data.get("ip") as string,
+      port: Number(data.get("port")),
+      gedung: {
+        id:data.get("gedung") as string
       },
-      id: perangkatId
+      powermeter: {
+        id: data.get("powermeter") as string
+      }
     }
 
     mutation.mutate({
@@ -85,7 +107,7 @@ function EditPerangkat() {
           <h2 className='mb-10 text-2xl font-semibold text-center'>Edit Perangkat</h2>
             <fieldset className="w-full grid gap-2">
               <div className="grid gap-2 items-center min-w-[300px]">
-                <label htmlFor="username-input" className="text-sm font-medium">
+                <label htmlFor="name-input" className="text-sm font-medium">
                   Nama Perangkat
                 </label>
                 <input
@@ -111,6 +133,54 @@ function EditPerangkat() {
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="port-input" className="text-sm font-medium">
+                  Port Perangkat
+                </label>
+                <input
+                  id="port-input"
+                  name="port"
+                  placeholder="Masukan Port Perangkat Baru"
+                  type="number"
+                  defaultValue={perangkatInfo.data.results.port}
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="powermeter-input" className="text-sm font-medium">
+                  Seri Powermeter
+                </label>
+                {
+                  pmLoading && <Loadings />
+                }
+                {
+                  pmSuccess && <Select id='powermeter-input' name="powermeter" aria-label="Seri Powermeter" className="p-2 bg-gray-200/60 rounded">
+                    {
+                      powermeter?.results.map(item => (
+                        <option value={item.id} selected={item.id == perangkatInfo.data.results.powermeter?.id}>{item.seri} - {item.brand}</option>
+                      ))
+                    }
+                  </Select>
+                }
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="gedung-input" className="text-sm font-medium">
+                  Lokasi Gedung
+                </label>
+                {
+                  gLoading && <Loadings />
+                }
+                {
+                  gSuccess && <Select id='gedung-input' name="gedung" aria-label="Lokasi Gedung" className="p-2 bg-gray-200/60 rounded">
+                    {
+                      gedung?.results.map(item => (
+                        <option value={item.id}>{item.name}</option>
+                      ))
+                    }
+                  </Select>
+                }
               </div>
               <div className='flex gap-4 mt-5'>
                 <button

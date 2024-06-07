@@ -80,7 +80,7 @@ async def insert_perangkat(perangkat: Perangkat):
             "gedung_id": perangkat.gedung,
             "ip_addr": perangkat.ip_addr,
             "port": perangkat.port,
-            "power_meter_id": perangkat.power_meter
+            "power_meter_id": perangkat.powermeter
         }
     }
 
@@ -91,7 +91,7 @@ async def update_gedung(id: str, perangkat: Perangkat):
         gedung_id=perangkat.gedung, 
         ip_addr=perangkat.ip_addr,
         port=perangkat.port,
-        power_meter_id=perangkat.power_meter,
+        power_meter_id=perangkat.powermeter,
         id=id,
         config=load_config()
     )
@@ -107,7 +107,7 @@ async def update_gedung(id: str, perangkat: Perangkat):
             "gedung_id": perangkat.gedung,
             "ip_addr": perangkat.ip_addr,
             "port": perangkat.port,
-            "power_meter_id": perangkat.power_meter
+            "power_meter_id": perangkat.powermeter
         }
     }
 

@@ -1,7 +1,7 @@
 import { Link, Outlet, createFileRoute, useParams } from '@tanstack/react-router'
 import { useQuery } from 'react-query'
 import { Api } from '../../api/internal'
-import { Devices, getDevices } from "../../api/devices"
+import { DeviceDetail, getDevices } from "../../api/devices"
 import { useAuth } from '../../auth'
 import { AxiosError } from 'axios'
 import Loadings from "../../components/Loadings"
@@ -18,7 +18,7 @@ function Dashboard() {
   const { perangkatId } = useParams({ strict: false }) as { perangkatId: string }
   const isViewAllMode = !perangkatId
 
-  const { isLoading, isError, isSuccess, data, error } = useQuery<Api<{data: Devices[] }>, AxiosError>({
+  const { isLoading, isError, isSuccess, data, error } = useQuery<Api<DeviceDetail[]>, AxiosError>({
     queryKey: ['devices', user.token],
     queryFn: getDevices,
     retry: 2
@@ -40,18 +40,21 @@ function Dashboard() {
     <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900'}`}>
       <div className={`${perangkatId && 'max-w-64 sticky top-16 bottom-0 h-[calc(100vh-3.9rem)]'} w-full p-2 overflow-auto`}>
         <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
-          {data.results.data.map((data, index) => {
+          {data.results.map((data, index) => {
+            const perangkatId = data.id as string
               return (
                 <Link 
                   key={index}
-                  to={`/perangkat/${data[2]}`}
+                  to='/perangkat/$perangkatId'
+                  params={{ perangkatId }}
                   className={`perangkat transition py-2 px-3 flex items-center gap-3 ${isViewAllMode ? 'bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
                   <CpuChipIcon className={`w-6 h-6 ${isViewAllMode ? 'text-slate-800' : 'text-white/60'}`} />
                   <div>
-                    <h4 className='font-medium text-lg mb-1 capitalize'>{data[3]}</h4>
-                    <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data[0]}</p>
+                    <h4 className='font-medium text-lg mb-1 capitalize'>{data.name}</h4>
+                    <p className={`text-xs ${isViewAllMode ? 'text-slate-800' :'text-gray-200' }`}>{data.ip_addr}:{data.port}</p>
                   </div>
-                </Link>)
+                </Link>
+                )
             })
           }
         </div>

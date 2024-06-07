@@ -26,38 +26,34 @@ export interface DeviceDetail {
   powermeter: Powermeter
 }
 
-export async function getDevices(context: QueryFunctionContext): Promise<Api<Devices[]>> {
+export async function getDevices(context: QueryFunctionContext): Promise<Api<DeviceDetail[]>> {
     const config = {
         method: 'get',
-        url: `${import.meta.env.VITE_BACKEND_URL}/device`,
+        url: `${import.meta.env.VITE_BACKEND_URL}/device/`,
         headers: { 
           'Authorization': `Bearer ${context.queryKey[1]}`
         }
       };
 
       const {data} = await axios(config)
-      return data as Api<Devices[]>
+      return data as Api<DeviceDetail[]>
 }
 
 export async function getDeviceDetail(context: QueryFunctionContext): Promise<Api<DeviceDetail>> {
   const config = {
     method: 'get',
-    url: `${import.meta.env.VITE_BACKEND_URL}/device/${context.queryKey[2]}`,
+    url: `${import.meta.env.VITE_BACKEND_URL}/device/${context.queryKey[2]}/`,
     headers: {
       'Authorization': `Bearer ${context.queryKey[1]}`
     }
   }
 
   const { data } = await axios(config)
-  data.results = {
-    name: data.results[1],
-    ip_addr: data.results[0],
-    seri: data.results[2]
-  }
   return data
 }
 
 export async function newDevices(props: Token<DeviceDetail>) {
+  console.log(props.data)
   const config = {
     method: 'post',
     headers: {
@@ -73,14 +69,14 @@ export async function newDevices(props: Token<DeviceDetail>) {
     })
   }
 
-  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/device`, config)
+  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/`, config)
+
+  console.log("perangkat baru", res)
 
   return res
 }
 
-export async function updateDevices(props: Token<{device: DeviceDetail, id: string}>): Promise<Api<null>> {
-  
-  console.log(props.data.device)
+export async function updateDevices(props: Token<DeviceDetail>): Promise<Api<null>> {
   
   const config = {
     method: 'put',
@@ -88,10 +84,16 @@ export async function updateDevices(props: Token<{device: DeviceDetail, id: stri
       'Authorization': `Bearer ${props.token}`,
       'Content-Type': 'application/json'
     },
-    data: JSON.stringify(props.data.device)
+    data: JSON.stringify({
+      name: props.data.name,
+      ip_addr: props.data.ip_addr,
+      port: props.data.port,
+      gedung: props.data.gedung?.id,
+      powermeter: props.data.powermeter?.id
+    })
   }
 
-  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${props.data.id}`, config)
+  const {data} = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${props.data.id}/`, config)
 
   return data
 }
@@ -104,7 +106,7 @@ export async function removeDevices(props: {token: string | null, id: string}) {
     }
   }
 
-  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${props.id}`, config)
+  const res = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${props.id}/`, config)
 
   return res
 }
@@ -117,7 +119,7 @@ export async function getSensorData(context: QueryFunctionContext): Promise<Api<
     }
   }
 
-  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${context.queryKey[2]}/latest`, config)
+  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/device/${context.queryKey[2]}/latest/`, config)
   return data
 }
 
@@ -129,6 +131,6 @@ export async function getDatasheetDevices(context: QueryFunctionContext): Promis
     }
   }
 
-  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2] == "undefined" ? "AW9L" : context.queryKey[2]}`, config)
+  const { data } = await axios(`${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2] == "undefined" ? "AW9L" : context.queryKey[2]}/`, config)
   return data
 }
