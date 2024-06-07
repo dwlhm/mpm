@@ -7,7 +7,7 @@ import { Unit } from "./unit";
 export interface Gedung {
     id?: string,
     name?: string,
-    unit: Unit
+    unit?: Unit
 }
 
 export async function getGedung(context: QueryFunctionContext): Promise<Api<Gedung[]>> {
@@ -32,7 +32,7 @@ export async function newGedung(props: Token<Gedung>) {
       },
       data: JSON.stringify({
         name: props.data.name,
-        unit: props.data.unit.id
+        unit: props.data.unit?.id
       })
     }
   
@@ -51,7 +51,7 @@ export async function updateGedung(props: Token<Gedung>): Promise<Api<Gedung>> {
     },
     data: JSON.stringify({
       name: props.data.name,
-      unit: props.data.unit.id
+      unit: props.data.unit?.id
     })
   }
 

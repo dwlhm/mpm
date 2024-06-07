@@ -23,7 +23,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
 	if conn:
 		print(f"connected to {ip_addr}:{port} with device_id: {id} [{pm_seri}]")
 		data = []
-		for index, register in enumerate(registers[seri]):
+		for index, register in enumerate(registers[pm_seri]):
 			read(client, register, data, ip_addr, index)	  
 			sleep                
 		client.close()  
@@ -43,18 +43,18 @@ def read(client, register, data, ip_addr, index):
 		print(f"reading register {register[0]} from {ip_addr}, value: {rr.registers[0]*register[1]} {register[3]}")
 		
 if __name__ == "__main__":
-	devices = get_all(load_config())
-	devices = devices.get("data")
-	print(devices)
-	for device in devices:
-		pm = device.get("powermeter")
-		seri = pm.get("name")
-		scan_device(
-			ip_addr=device.get("ip_addr"),
-			port=device.get("port"),
-			id=device.get("id"),
-			pm_seri=seri
-		)
+	#devices = get_all(load_config())
+	#devices = devices.get("data")
+	#print(devices)
+	#for device in devices:
+		#pm = device.get("powermeter")
+		#seri = pm.get("name")
+	scan_device(
+		ip_addr="10.225.0.207",
+		port=502,
+		id="id",
+		pm_seri="AW9L"
+	)
 	# while True:
 	# 	for device in devices["data"]:
 	# 		scan_device(device[0], device[1], device[2])

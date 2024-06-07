@@ -26,7 +26,10 @@ function PengaturanUnit() {
 
     if (isError) return( 
       <>
-        <Errors process='mendapatkan data list unit' message={error} />
+        <Errors process='mendapatkan data list unit' message={error}
+            action={<Link 
+              className='bg-blue-900 py-1 px-3 rounded text-white transition hover:bg-blue-900/80'
+              to='/pengaturan/unit/baru'>Tambah Unit</Link>}  />
         <Outlet />
       </>
     )

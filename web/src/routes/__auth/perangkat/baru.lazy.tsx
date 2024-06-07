@@ -47,7 +47,14 @@ function PerangkatBaru() {
       const data = new FormData(evt.currentTarget)
       const payload: DeviceDetail = {
         name: data.get('name') as string,
-        ip_addr: data.get('ip') as string
+        ip_addr: data.get('ip') as string,
+        port: Number(data.get('port')),
+        gedung: {
+          id: data.get("gedung") as string,
+        },
+        powermeter: {
+          id: data.get("powermeter") as string
+        }
       }
 
       if (!payload.name || !payload.ip_addr) return
@@ -105,6 +112,19 @@ function PerangkatBaru() {
                   name="ip"
                   placeholder="Masukan IP Perangkat Baru"
                   type="text"
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="grid gap-2 items-center min-w-[300px] mt-2">
+                <label htmlFor="port-input" className="text-sm font-medium">
+                  Port Perangkat
+                </label>
+                <input
+                  id="port-input"
+                  name="port"
+                  placeholder="Masukan Port Perangkat Baru"
+                  type="number"
                   className="border border-gray-300 rounded-md p-2 w-full"
                   required
                 />

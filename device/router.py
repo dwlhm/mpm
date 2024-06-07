@@ -59,12 +59,13 @@ async def get_latest_data_perangkat(id: str):
 
 @router.post("/")
 async def insert_perangkat(perangkat: Perangkat):
+    print(perangkat)
     result = new(
         name=perangkat.name, 
         gedung_id=perangkat.gedung, 
         ip_addr=perangkat.ip_addr,
         port=perangkat.port,
-        power_meter_id=perangkat.power_meter,
+        power_meter_id=perangkat.powermeter,
         config=load_config()
     )
     if (result.get("error")): raise HTTPException(

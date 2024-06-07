@@ -27,7 +27,10 @@ function PengaturanPowermeter() {
 
   if (isError) return (
     <>
-      <Errors process='mendapatkan data list powermeter' message={error} />
+      <Errors process='mendapatkan data list powermeter' message={error}
+            action={<Link 
+              className='bg-blue-900 py-1 px-3 rounded text-white transition hover:bg-blue-900/80'
+              to='/pengaturan/powermeter/baru'>Tambah Powermeter</Link>}  />
       <Outlet />
     </>)
   

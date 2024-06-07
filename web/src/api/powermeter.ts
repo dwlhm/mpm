@@ -5,8 +5,8 @@ import { Api } from "./internal";
 
 export interface Powermeter {
     id?: string,
-    seri: string,
-    brand: string
+    seri?: string,
+    brand?: string
 }
 
 export async function getPowermeter(context: QueryFunctionContext): Promise<Api<Powermeter[]>> {

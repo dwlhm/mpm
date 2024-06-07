@@ -36,19 +36,20 @@ def get_all(config):
                         "port": d[3],
                         "gedung": {
                             "id": base64.b64encode(str(d[4]).encode()).decode(),
-                            "name": d[5]
-                        },
-                        "unit": {
-                            "id": base64.b64encode(str(d[6]).encode()).decode(),
-                            "name": d[7]
-                        },
-                        "kampus": {
-                            "id": base64.b64encode(str(d[8]).encode()).decode(),
-                            "name": d[9]
+                            "name": d[5],
+                            "unit": {
+                                "id": base64.b64encode(str(d[6]).encode()).decode(),
+                                "name": d[7],
+                                "kampus": {
+                                    "id": base64.b64encode(str(d[8]).encode()).decode(),
+                                    "name": d[9]
+                                }
+                            }
                         },
                         "powermeter": {
                             "id": base64.b64encode(str(d[10]).encode()).decode(),
-                            "name": d[11]
+                            "seri": d[11],
+                            "brand": d[12]
                         }
                     })
                 return {
@@ -95,19 +96,20 @@ def get_by_id(id: str, config):
                         "port": d[3],
                         "gedung": {
                             "id": base64.b64encode(str(d[4]).encode()).decode(),
-                            "name": d[5]
-                        },
-                        "unit": {
-                            "id": base64.b64encode(str(d[6]).encode()).decode(),
-                            "name": d[7]
-                        },
-                        "kampus": {
-                            "id": base64.b64encode(str(d[8]).encode()).decode(),
-                            "name": d[9]
+                            "name": d[5],
+                            "unit": {
+                                "id": base64.b64encode(str(d[6]).encode()).decode(),
+                                "name": d[7],
+                                "kampus": {
+                                    "id": base64.b64encode(str(d[8]).encode()).decode(),
+                                    "name": d[9]
+                                }
+                            }
                         },
                         "powermeter": {
                             "id": base64.b64encode(str(d[10]).encode()).decode(),
-                            "name": d[11]
+                            "seri": d[11],
+                            "brand": d[12]
                         }
                     }
                 }
@@ -128,6 +130,8 @@ def new(
         config):
     sql = """INSERT INTO device (name, gedung, ip_addr, port, power_meter)
              VALUES (%s, %s, %s, %s, %s) RETURNING id"""
+
+    print(port)
 
     try:
         with psycopg2.connect(**config) as conn:
