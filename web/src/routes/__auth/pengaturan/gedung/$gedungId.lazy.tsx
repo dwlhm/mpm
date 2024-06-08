@@ -28,23 +28,23 @@ function GedungDetail() {
       <div className='flex gap-5 mb-3'>
         <div>
           <p>Nama Kampus:</p>
-          <p className='text-3xl'>{gedung?.unit.kampus?.name}</p>
+          <p className='text-3xl'>{gedung?.unit?.kampus?.name}</p>
         </div>
         <div className='border-l border-black/60'></div>
         <div>
           <p>ID Kampus:</p>
-          <p className='text-3xl'>{gedung?.unit.kampus?.id}</p>
+          <p className='text-3xl'>{gedung?.unit?.kampus?.id}</p>
         </div>
       </div>
       <div className='flex gap-5 mb-3'>
         <div>
           <p>Nama Unit:</p>
-          <p className='text-3xl'>{gedung?.unit.name}</p>
+          <p className='text-3xl'>{gedung?.unit?.name}</p>
         </div>
         <div className='border-l border-black/60'></div>
         <div>
           <p>ID Unit:</p>
-          <p className='text-3xl'>{gedung?.unit.id}</p>
+          <p className='text-3xl'>{gedung?.unit?.id}</p>
         </div>
       </div>
       <Outlet />

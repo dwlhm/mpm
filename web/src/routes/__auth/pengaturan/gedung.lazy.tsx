@@ -78,8 +78,8 @@ function PengaturanGedung() {
                       <HomeIcon className={`w-6 h-6 text-white`} />
                       <div className='ml-2'>
                         <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
-                        <p className='text-sm mt-2 text-white/80'><span>Kampus:</span> {data.unit.kampus?.name}</p>
-                        <p className='text-sm text-white/80'><span>Unit:</span> {data.unit.name}</p>
+                        <p className='text-sm mt-2 text-white/80'><span>Kampus:</span> {data.unit?.kampus?.name}</p>
+                        <p className='text-sm text-white/80'><span>Unit:</span> {data.unit?.name}</p>
                       </div>
                     </Link>)
                 })
