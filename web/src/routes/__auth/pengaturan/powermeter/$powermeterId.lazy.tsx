@@ -27,6 +27,12 @@ function PowermeterDetail() {
       <p className='my-2 text-3xl'>{powermter_data?.brand}</p>
       <Outlet />
       <div className='mt-8 gap-4 flex'>
+        <Link 
+          to='/pengaturan/powermeter/$powermeterId/register'
+          params={{ powermeterId }}
+          className='inline-block py-2 px-4 rounded border-2 border-gray-900 text-gray-900 text-sm transition hover:border-blue-500'>
+          Lihat Register
+        </Link>
         <Link
           to='/pengaturan/powermeter/$powermeterId/edit'
           params={{ powermeterId }}

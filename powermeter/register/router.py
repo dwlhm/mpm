@@ -1,36 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
 from pydantic import BaseModel
 from dependencies import oauth2_scheme
 from .db import get, new, update, remove, get_by_id
 from configuration.config import load_config
 
 router = APIRouter(
-    prefix="/powermeter/register",
+    prefix="/powermeter",
     tags=["Powermeter Register"],
     dependencies=[Depends(oauth2_scheme)]
 )
 
-@router.get("/")
-async def get_register():
-    result = get(load_config())
-
-    if result.get("error"):
-        raise HTTPException(
-                status_code=400,
-                detail=result.get("error")
-                )
-    return {
-        "status": "success",
-        "results": result.get("data")
-    }
-
 class PowermeterRegister(BaseModel):
-    powermeter_id: str
     register: str 
 
-@router.post("/")
-async def new_register(pmRegister: PowermeterRegister):
-    result = new(pmRegister.powermeter_id, pmRegister.register, load_config())
+@router.post("/{id}/register")
+async def new_register(id: str, pmRegister: PowermeterRegister):
+    print("ereew",id)
+    result = new(id, pmRegister.register, load_config())
 
     if result.get('error'):
         raise HTTPException(
@@ -43,7 +30,7 @@ async def new_register(pmRegister: PowermeterRegister):
         "results": result.get('data')
     }
 
-@router.get("/{id}")
+@router.get("/{id}/register")
 async def get_register_by_id(id: str):
     result = get_by_id(id, load_config())
 
@@ -59,7 +46,7 @@ async def get_register_by_id(id: str):
     }
 
 
-@router.put("/{id}")
+@router.put("/{id}/register")
 async def update_register(id: str, pmReg: PowermeterRegister):
     result = update(id=id, powermeter_id=pmReg.powermeter_id, register=pmReg.register, config=load_config())
 
@@ -74,7 +61,7 @@ async def update_register(id: str, pmReg: PowermeterRegister):
         "results": result.get("data")
     }
 
-@router.delete("/{id}")
+@router.delete("/{id}/register")
 async def delete_register(id: str):
     result = remove(id, load_config())
 

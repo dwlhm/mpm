@@ -5,7 +5,6 @@ def get(config):
     sql = """SELECT power_meter_register.id, power_meter_register.register, power_meter.* 
              FROM power_meter_register
              LEFT JOIN power_meter ON power_meter_register.power_meter = power_meter.id"""
-    print("Hai")
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -46,7 +45,7 @@ def get_by_id(id: str, config):
     sql = """SELECT power_meter_register.id, power_meter_register.register, power_meter.* 
              FROM power_meter_register
              LEFT JOIN power_meter ON power_meter_register.power_meter = power_meter.id
-             WHERE power_meter_register.id = %s"""
+             WHERE power_meter.id = %s"""
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -54,6 +53,8 @@ def get_by_id(id: str, config):
                 cur.execute(sql, (base64.b64decode(id).decode(), ))
 
                 data = cur.fetchone()
+
+                print(data)
 
                 if (data == None): return {
                     "error": "no data"
@@ -80,12 +81,16 @@ def get_by_id(id: str, config):
 
 def new(powermeter_id: str, register: str, config):
     sql = """INSERT INTO power_meter_register (power_meter, register)
-             VALUES (%s, %s) RETURNING id"""
+             VALUES (%s, %s)
+             ON CONFLICT(power_meter)
+             DO UPDATE SET 
+                register = EXCLUDED.register
+             RETURNING id"""
 
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (base64.b64decode(powermeter_id).decode(), register))
+                cur.execute(sql, (base64.b64decode(powermeter_id).decode(), register, ))
 
                 data = cur.fetchone()
 
