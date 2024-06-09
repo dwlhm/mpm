@@ -15,7 +15,7 @@ export const Route = createLazyFileRoute('/__auth/pengaturan/powermeter/$powerme
 function EditPowermeter() {
 
   const auth = useAuth()
-  const { powermeterId } = Route.useParams()
+  const { powermeterId } = Route.useParams<{powermeterId: string}>()
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
   const repo = queryClient.getQueriesData(["powermeter"])
@@ -60,7 +60,7 @@ function EditPowermeter() {
   }
 
   return(
-    <div className='fixed inset-0 flex justify-center items-center'>
+    <div className='fixed inset-0 flex justify-center items-center z-20'>
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 

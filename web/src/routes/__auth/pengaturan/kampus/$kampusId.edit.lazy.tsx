@@ -59,7 +59,7 @@ function EditKampus() {
   }
 
   return(
-    <div className='fixed inset-0 flex justify-center items-center'>
+    <div className='fixed inset-0 flex justify-center items-center z-20'>
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 

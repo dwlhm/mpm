@@ -77,7 +77,7 @@ function PerangkatBaru() {
   }
 
   return(
-    <div className='absolute inset-0 flex justify-center items-center'>
+    <div className='absolute inset-0 flex justify-center items-center z-20'>
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 

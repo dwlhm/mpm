@@ -131,7 +131,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS power_meter_register (
             id SERIAL PRIMARY KEY,
-            power_meter INT NOT NULL,
+            power_meter INT NOT NULL UNIQUE,
             register VARCHAR(5000)
         )
         """,

@@ -11,6 +11,7 @@ import base64
 
 import user.auth.router as auth
 import user.router as user
+import powermeter.register.router as powermeter_register
 import powermeter.router as powermeter
 import kampus.router as kampus
 import unit.router as unit
@@ -46,6 +47,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(powermeter.router)
+app.include_router(powermeter_register.router)
 app.include_router(kampus.router)
 app.include_router(unit.router)
 app.include_router(gedung.router)

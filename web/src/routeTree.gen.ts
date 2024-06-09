@@ -82,6 +82,9 @@ const authPengaturanPowermeterPowermeterIdHapusLazyImport = createFileRoute(
 const authPengaturanPowermeterPowermeterIdEditLazyImport = createFileRoute(
   '/__auth/pengaturan/powermeter/$powermeterId/edit',
 )()
+const authPengaturanPowermeterPowermeterIdDatasheetLazyImport = createFileRoute(
+  '/__auth/pengaturan/powermeter/$powermeterId/datasheet',
+)()
 const authPengaturanKampusKampusIdHapusLazyImport = createFileRoute(
   '/__auth/pengaturan/kampus/$kampusId/hapus',
 )()
@@ -357,6 +360,18 @@ const authPengaturanPowermeterPowermeterIdEditLazyRoute =
       ).then((d) => d.Route),
     )
 
+const authPengaturanPowermeterPowermeterIdDatasheetLazyRoute =
+  authPengaturanPowermeterPowermeterIdDatasheetLazyImport
+    .update({
+      path: '/datasheet',
+      getParentRoute: () => authPengaturanPowermeterPowermeterIdLazyRoute,
+    } as any)
+    .lazy(() =>
+      import(
+        './routes/__auth/pengaturan/powermeter/$powermeterId.datasheet.lazy'
+      ).then((d) => d.Route),
+    )
+
 const authPengaturanKampusKampusIdHapusLazyRoute =
   authPengaturanKampusKampusIdHapusLazyImport
     .update({
@@ -605,6 +620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPengaturanKampusKampusIdHapusLazyImport
       parentRoute: typeof authPengaturanKampusKampusIdLazyImport
     }
+    '/__auth/pengaturan/powermeter/$powermeterId/datasheet': {
+      id: '/__auth/pengaturan/powermeter/$powermeterId/datasheet'
+      path: '/datasheet'
+      fullPath: '/pengaturan/powermeter/$powermeterId/datasheet'
+      preLoaderRoute: typeof authPengaturanPowermeterPowermeterIdDatasheetLazyImport
+      parentRoute: typeof authPengaturanPowermeterPowermeterIdLazyImport
+    }
     '/__auth/pengaturan/powermeter/$powermeterId/edit': {
       id: '/__auth/pengaturan/powermeter/$powermeterId/edit'
       path: '/edit'
@@ -671,6 +693,7 @@ export const routeTree = rootRoute.addChildren({
         authPengaturanPowermeterLazyRoute.addChildren({
           authPengaturanPowermeterPowermeterIdLazyRoute:
             authPengaturanPowermeterPowermeterIdLazyRoute.addChildren({
+              authPengaturanPowermeterPowermeterIdDatasheetLazyRoute,
               authPengaturanPowermeterPowermeterIdEditLazyRoute,
               authPengaturanPowermeterPowermeterIdHapusLazyRoute,
             }),
