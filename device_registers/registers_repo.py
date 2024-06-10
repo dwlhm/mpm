@@ -1,4 +1,4 @@
-register_aw9l = [
+register_aw9ld = [
 	[16384, 0.1, 'Phase voltage A', 'V'], # 4000 1
 	[16386, 0.1, 'Phase voltage B', 'V'], # 4002 1
 	[16388, 0.1, 'Phase voltage C', 'V'], # 4004 1
@@ -82,11 +82,8 @@ register_aw9l = [
     # [17440, 0.01, 'C phase current 0th harmonic', '%'], # 4420
 ]
 
-repo = {
-    "AW9L": register_aw9l 
-}
 
-register_awd9l = [
+register_aw9l = [
 	[16384, 0.1, 'V', 'phase_voltage_a'],
 	[16386, 0.1, 'V', 'phase_voltage_b'],
 	[16388, 0.1, 'V', 'phase_voltage_c'],
@@ -127,12 +124,12 @@ register_awd9l = [
 	[16476, 0.1, '%', 'c_phase_current_total_harmonic_content'],
 	[16478, 0.001, 'A', 'o_phase_current'],
 	[16480, 0.1, 'V', 'phase_voltage_maximum'],
-	[16482, 0.1, 'V', 'Wires_voltage_maximum'],
+	[16482, 0.1, 'V', 'wires_voltage_maximum'],
 	[16484, 0.001, 'A', 'current_maximum'],
 	[16486, 0.1, '%', 'voltage_imbalance'], 
 	[16488, 0.1, '%', 'current_imbalance'],
 	[16490, 1, '°', 'a_b_phase_voltage_angle'],
-	[16492, 1, '°', 'b_C_phase_voltage_angle'],
+	[16492, 1, '°', 'b_c_phase_voltage_angle'],
 	[16494, 1, '°', 'c_a_phase_voltage_angle'], 
 	[16496, 0.001, 'kvarh', 'first_quadrant_reactive_energy'],
 	[16498, 0.001, 'kvarh', 'second_quadrant_reactive_energy'],

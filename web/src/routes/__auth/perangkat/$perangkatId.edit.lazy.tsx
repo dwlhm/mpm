@@ -176,7 +176,7 @@ function EditPerangkat() {
                   gSuccess && <Select id='gedung-input' name="gedung" aria-label="Lokasi Gedung" className="p-2 bg-gray-200/60 rounded">
                     {
                       gedung?.results.map(item => (
-                        <option value={item.id}>{item.name}</option>
+                        <option value={item.id} selected={item.id == perangkatInfo.data.results.gedung?.id}>{item.name}</option>
                       ))
                     }
                   </Select>
