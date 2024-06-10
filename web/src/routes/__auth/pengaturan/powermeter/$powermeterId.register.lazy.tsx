@@ -8,6 +8,8 @@ import { useQuery, useQueryClient } from 'react-query'
 import { AxiosError } from 'axios'
 import { Api } from '../../../../api/internal'
 import { Powermeter, getPowermeter } from '../../../../api/powermeter'
+import { Button } from '@headlessui/react'
+import React from 'react'
 
 export const Route = createLazyFileRoute('/__auth/pengaturan/powermeter/$powermeterId/register')({
   component: PowermeterRegister
@@ -16,8 +18,9 @@ export const Route = createLazyFileRoute('/__auth/pengaturan/powermeter/$powerme
 function PowermeterRegister() {
 
   const auth = useAuth()
+  const listRef = React.useRef<any[]>([])
   const { powermeterId } = Route.useParams()
-  const { data } = useQuery<Api<Register>, AxiosError>({
+  const { data, isSuccess, isLoading } = useQuery<Api<Register>, AxiosError>({
     queryFn: getRegisterByPowermeter,
     queryKey: ['powermeter.register', auth.token, powermeterId]
   })
@@ -27,6 +30,12 @@ function PowermeterRegister() {
     retry: 2
   })
   const pmData = pmRepo?.results.find(item => item.id == powermeterId)
+  const listRegister = JSON.parse(String(data?.results.register)) as RegisterItem[]
+  listRef.current = listRegister.map((_,i) => listRef.current[i] ?? React.createRef())
+
+  const editFn = (ref: any) => {
+    console.log(ref)
+  }
 
   return(
     <div className='fixed inset-0 flex justify-center items-center z-20'>
@@ -61,13 +70,29 @@ function PowermeterRegister() {
           </div>
           <Outlet />
           {
-            (JSON.parse(String(data?.results.register)) as RegisterItem[]).map((v: RegisterItem) => (
-              <div className='register-table'>
+            isLoading && <Loadings />
+          }
+          {isSuccess &&
+            listRegister.map((v: RegisterItem, i: number) => (
+              <div className='register-table' ref={listRef.current[i]}>
                 <p>{String(v[0])}</p>
                 <p>{String(v[1])}</p>
                 <p>{v[2]}</p>
                 <p>{v[3]}</p>
                 <p>{v[4]}</p>
+                <div className='flex gap-4'>
+                <Button
+                  onClick={() => editFn(listRef.current[i])}
+                  className="text-sm bg-blue-900 text-white py-1 px-2 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-blue-900 transition hover:bg-blue-900/50"
+                >
+                  Edit
+                </Button>
+                <Button
+                  className="text-sm bg-red-900 text-white py-1 px-2 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:bg-red-900/50"
+                >
+                  Hapus
+                </Button>
+                </div>
               </div>
             ))
           }
