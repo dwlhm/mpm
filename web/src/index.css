@@ -32,6 +32,9 @@ h2 {
 .register-table.add-edit-register {
   @apply bg-blue-900 py-3
 }
+.register-table.add-edit-register input {
+  @apply bg-white
+}
 .register-table input {
   @apply bg-transparent border border-2 border-transparent
 }

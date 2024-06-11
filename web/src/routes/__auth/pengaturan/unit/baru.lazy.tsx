@@ -2,11 +2,13 @@ import { createLazyFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import { AxiosError, AxiosResponse } from 'axios'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useAuth } from '../../../../auth'
 import Errors from '../../../../components/Errors'
 import { Api } from '../../../../api/internal'
 import { newUnit, Unit } from '../../../../api/unit'
+import { getKampus, Kampus } from '../../../..//api/kampus'
+import { Select } from '@headlessui/react'
 
 export const Route = createLazyFileRoute('/__auth/pengaturan/unit/baru')({
   component: UnitBaru
@@ -23,6 +25,11 @@ function UnitBaru() {
     onSettled: () => {
       queryClient.invalidateQueries()
     }
+  })
+  const { data: kData, isSuccess: kSuccess } = useQuery<Api<Kampus[]>, AxiosError>({
+    queryKey: ['kampus', auth.token],
+    queryFn: getKampus,
+    retry: false
   })
 
   const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
@@ -88,16 +95,17 @@ function UnitBaru() {
               </div>
               <div className="grid gap-2 items-center min-w-[300px]">
                 <label htmlFor="kampus-input" className="text-sm font-medium">
-                  ID Kampus
+                  Kampus
                 </label>
-                <input
-                  id="kampus-input"
-                  name="kampus"
-                  placeholder="Masukan ID Kampus yang Ditambahkan"
-                  type="text"
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                  required
-                />
+                {
+                  kSuccess && <Select id='kampus-input' name="kampus" aria-label="Kampus" className="p-2 bg-gray-200/60 rounded">
+                    {
+                      kData?.results.map((v: Kampus, i: number) => (
+                        <option value={v.id} key={`data-unit_${i}`}>{v.name}</option>
+                      ))
+                    }
+                    </Select>
+                }
               </div>
               <div className='flex gap-4 mt-5'>
                 <button

@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from 'react-query'
 import { Kampus, newKampus } from '../../../api/kampus'
 import { useAuth } from '../../../auth'
 import Errors from '../../../components/Errors'
-import { Api } from '@/src/api/internal'
+import { Api } from '../../../api/internal'
 
 export const Route = createLazyFileRoute('/__auth/pengaturan/kampus/baru')({
   component: KampusBaru

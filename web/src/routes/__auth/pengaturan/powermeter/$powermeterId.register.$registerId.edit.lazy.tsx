@@ -22,7 +22,7 @@ function EditRegister() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { powermeterId, registerId } = Route.useParams();
   const navigate = Route.useNavigate();
-  const rQuery = useRegisterQuery(auth, powermeterId);
+  const { data: rQuery } = useRegisterQuery(auth, powermeterId);
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: addRegister,

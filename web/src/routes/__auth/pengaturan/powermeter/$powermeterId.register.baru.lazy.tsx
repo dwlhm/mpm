@@ -1,17 +1,14 @@
-import { Api } from "../../../../api/internal";
 import {
   REGISTER_PARAM,
-  Register,
   RegisterItem,
   addRegister,
-  getRegisterByPowermeter,
 } from "../../../../api/register";
 import { useAuth } from "../../../../auth";
 import { Input, Select } from "@headlessui/react";
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import React from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "react-query";
+import { useRegisterQuery } from "../../../../components/powermeter/hooks";
 
 export const Route = createLazyFileRoute(
   "/__auth/pengaturan/powermeter/$powermeterId/register/baru",
@@ -32,16 +29,7 @@ function RegisterBaru() {
     },
   });
 
-  let pmRepo: RegisterItem[] = [];
-  const { data: dataBefore, isSuccess } = useQuery<Api<Register>, AxiosError>({
-    queryFn: getRegisterByPowermeter,
-    queryKey: ["powermeter.register", auth.token, powermeterId],
-    retry: 2,
-  });
-
-  if (isSuccess) {
-    pmRepo = [...JSON.parse(dataBefore.results.register)];
-  }
+  const { data: pmRepo } = useRegisterQuery(auth, powermeterId)
 
   const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true);

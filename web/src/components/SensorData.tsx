@@ -1,9 +1,5 @@
-import { useQuery } from "react-query";
-import { getDatasheetDevices } from "../api/devices";
 import Loadings from "./Loadings";
-import Errors from "./Errors";
 import ChartsView from "./ChartsView";
-import { AxiosError } from "axios";
 import { useRegisterQuery } from "./powermeter/hooks";
 import { AuthContext } from "src/auth";
 import React from "react";
@@ -13,7 +9,7 @@ export default function SensorData(props: {
   perangkatId: string;
   powermeterId: string;
 }) {
-  const [rQuery, isLoading] = useRegisterQuery(props.auth, props.powermeterId);
+  const {data: rQuery, isLoading} = useRegisterQuery(props.auth, props.powermeterId);
 
   let repository: number[][] = [];
   let [last_timestamp, setLast_timestamp]= React.useState("");

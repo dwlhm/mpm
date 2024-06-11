@@ -1,9 +1,8 @@
 import { useQuery } from "react-query";
 import { RegisterItem, getRegisterByPowermeter } from "../../api/register";
 import { AuthContext } from "../../auth";
-import React from "react";
 
-export const useRegisterQuery = (auth: AuthContext, powermeterId: string): [RegisterItem[], boolean] => {
+export const useRegisterQuery = (auth: AuthContext, powermeterId: string): {data: RegisterItem[], isLoading: boolean} => {
     
     let r:RegisterItem[] = []
     
@@ -14,6 +13,7 @@ export const useRegisterQuery = (auth: AuthContext, powermeterId: string): [Regi
     })
 
     if (rQuery.isSuccess) r = [...JSON.parse(rQuery.data.results.register)]
+    console.log(rQuery.data)
 
-    return [r, rQuery.isLoading]
+    return {data: r, isLoading: rQuery.isLoading}
 }

@@ -18,7 +18,7 @@ function HapusRegister() {
   const auth = useAuth();
   const { powermeterId, registerId } = Route.useParams();
   const navigate = Route.useNavigate()
-  const rQuery = useRegisterQuery(auth, powermeterId);
+  const {data: rQuery} = useRegisterQuery(auth, powermeterId);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const queryClient = useQueryClient()
   const mutation = useMutation({
