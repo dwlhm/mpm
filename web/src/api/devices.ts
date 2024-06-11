@@ -9,7 +9,7 @@ export type Devices = [string, string, number, string]
 export type Datasheets = [number, number, string, string]
 
 export interface SensorData {
-  data: string,
+  data: Number[],
   timestamp: string
 }
 

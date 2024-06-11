@@ -4,12 +4,12 @@ import PerangkatOptions from "./PerangkatOptions"
 import Loadings from "./Loadings"
 import Errors from "./Errors"
 
-export default function DeviceDetails(props: { token: string | null, perangkatId: string, seri: (data: string | undefined) => void }) {
+export default function DeviceDetails(props: { token: string | null, perangkatId: string, powermeterId: (data: string | undefined) => void }) {
     const { isLoading, isError, isSuccess, data, ...queryInfo } = useQuery({
       queryKey: [`devices.${props.perangkatId}`, props.token, props.perangkatId ],
       queryFn: getDeviceDetail,
       onSuccess(data) {
-        props.seri(data.results.powermeter.id)
+        props.powermeterId(data.results.powermeter.id)
       },
     })
   

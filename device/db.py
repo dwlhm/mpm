@@ -275,7 +275,10 @@ def get_latest_data(id: str, config):
                     "error": "no data"
                 }
                 return {
-                    "data": d
+                    "data": {
+                        "data": d[:-1],
+                        "timestamp": d[-1]
+                    }
                 }
 
 
