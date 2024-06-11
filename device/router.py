@@ -48,6 +48,7 @@ async def get_perangkat(id: str):
 @router.get("/{id}/latest")
 async def get_latest_data_perangkat(id: str):
     result = get_latest_data(id, load_config())
+    
     if (result.get("error")): raise HTTPException(
             status_code=400,
             detail=result.get("error")

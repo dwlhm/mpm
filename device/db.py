@@ -207,7 +207,59 @@ def remove(id: str, config):
         }
     
 def get_latest_data(id: str, config):
-    sql = """SELECT DISTINCT ON (id) *
+    sql = """SELECT DISTINCT ON (id) 
+        phase_voltage_a,
+        phase_voltage_b,
+        phase_voltage_c,
+        wire_voltage_ab,
+        wire_voltage_bc,
+        wire_voltage_ca,
+        phase_current_a,
+        phase_current_b,
+        phase_current_c,
+        active_power_a,
+        active_power_b,
+        active_power_c,
+        reactive_power_a,
+        reactive_power_b,
+        reactive_power_c,
+        apparent_power_a,
+        apparent_power_b,
+        apparent_power_c,
+        power_factor_a,
+        power_factor_b,
+        power_factor_c,
+        frequency,
+        active_power,
+        reactive_power,
+        positive_active_power,
+        negative_active_power,
+        positive_reactive_power,
+        negative_reactive_power,
+        current_active_power_demand,
+        maximum_active_power_demand,
+        current_reactive_power_demand,
+        maximum_reactive_power_demand,
+        a_phase_voltage_total_harmonic_content,
+        b_phase_voltage_total_harmonic_content,
+        c_phase_voltage_total_harmonic_content,
+        a_phase_current_total_harmonic_content,
+        b_phase_current_total_harmonic_content,
+        c_phase_current_total_harmonic_content,
+        o_phase_current,
+        phase_voltage_maximum,
+        Wires_voltage_maximum,
+        current_maximum,
+        voltage_imbalance,
+        current_imbalance,
+        a_b_phase_voltage_angle,
+        b_C_phase_voltage_angle,
+        c_a_phase_voltage_angle,
+        first_quadrant_reactive_energy,
+        second_quadrant_reactive_energy,
+        third_quadrant_reactive_energy,
+        fourth_quadrant_reactive_power,
+        timestamp
              FROM data
              WHERE device_id = %s
              ORDER BY id DESC
@@ -219,9 +271,7 @@ def get_latest_data(id: str, config):
 
                 d = cur.fetchone()
 
-                print(d)
-
-                if (d == None,): return {
+                if (d == None): return {
                     "error": "no data"
                 }
                 return {
@@ -240,57 +290,6 @@ def insert_latest_data(
     config,
     timestamp,
     data
-    # phase_voltage_a: Optional[float] = None,
-    # phase_voltage_b: Optional[float] = None,
-    # phase_voltage_c: Optional[float] = None,
-    # wire_voltage_ab: Optional[float] = None,
-    # wire_voltage_bc: Optional[float] = None,
-    # wire_voltage_ca: Optional[float] = None,
-    # phase_current_a: Optional[float] = None,
-    # phase_current_b: Optional[float] = None,
-    # phase_current_c: Optional[float] = None,
-    # active_power_a: Optional[float] = None,
-    # active_power_b: Optional[float] = None,
-    # active_power_c: Optional[float] = None,
-    # reactive_power_a: Optional[float] = None,
-    # reactive_power_b: Optional[float] = None,
-    # reactive_power_c: Optional[float] = None,
-    # apparent_power_a: Optional[float] = None,
-    # apparent_power_b: Optional[float] = None,
-    # apparent_power_c: Optional[float] = None,
-    # power_factor_a: Optional[float] = None,
-    # power_factor_b: Optional[float] = None,
-    # power_factor_c: Optional[float] = None,
-    # frequency: Optional[float] = None,
-    # active_power: Optional[float] = None,
-    # reactive_power: Optional[float] = None,
-    # positive_active_power: Optional[float] = None,
-    # negative_active_power: Optional[float] = None,
-    # positive_reactive_power: Optional[float] = None,
-    # negative_reactive_power: Optional[float] = None,
-    # current_active_power_demand: Optional[float] = None,
-    # maximum_active_power_demand: Optional[float] = None,
-    # current_reactive_power_demand: Optional[float] = None,
-    # maximum_reactive_power_demand: Optional[float] = None,
-    # a_phase_voltage_total_harmonic_content: Optional[float] = None,
-    # b_phase_voltage_total_harmonic_content: Optional[float] = None,
-    # c_phase_voltage_total_harmonic_content: Optional[float] = None,
-    # a_phase_current_total_harmonic_content: Optional[float] = None,
-    # b_phase_current_total_harmonic_content: Optional[float] = None,
-    # c_phase_current_total_harmonic_content: Optional[float] = None,
-    # o_phase_current: Optional[float] = None,
-    # phase_voltage_maximum: Optional[float] = None,
-    # wires_voltage_maximum: Optional[float] = None,
-    # current_maximum: Optional[float] = None,
-    # voltage_imbalance: Optional[float] = None,
-    # current_imbalance: Optional[float] = None,
-    # a_b_phase_voltage_angle: Optional[float] = None,
-    # b_c_phase_voltage_angle: Optional[float] = None,
-    # c_a_phase_voltage_angle: Optional[float] = None,
-    # first_quadrant_reactive_energy: Optional[float] = None,
-    # second_quadrant_reactive_energy: Optional[float] = None,
-    # third_quadrant_reactive_energy: Optional[float] = None,
-    # fourth_quadrant_reactive_power: Optional[float] = None,
     ):
     sql = """
     INSERT INTO data (
