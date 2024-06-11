@@ -99,6 +99,14 @@ const authPengaturanGedungGedungIdEditLazyImport = createFileRoute(
 )()
 const authPengaturanPowermeterPowermeterIdRegisterBaruLazyImport =
   createFileRoute('/__auth/pengaturan/powermeter/$powermeterId/register/baru')()
+const authPengaturanPowermeterPowermeterIdRegisterRegisterIdHapusLazyImport =
+  createFileRoute(
+    '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/hapus',
+  )()
+const authPengaturanPowermeterPowermeterIdRegisterRegisterIdEditLazyImport =
+  createFileRoute(
+    '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/edit',
+  )()
 
 // Create/Update Routes
 
@@ -435,6 +443,32 @@ const authPengaturanPowermeterPowermeterIdRegisterBaruLazyRoute =
       ).then((d) => d.Route),
     )
 
+const authPengaturanPowermeterPowermeterIdRegisterRegisterIdHapusLazyRoute =
+  authPengaturanPowermeterPowermeterIdRegisterRegisterIdHapusLazyImport
+    .update({
+      path: '/$registerId/hapus',
+      getParentRoute: () =>
+        authPengaturanPowermeterPowermeterIdRegisterLazyRoute,
+    } as any)
+    .lazy(() =>
+      import(
+        './routes/__auth/pengaturan/powermeter/$powermeterId.register.$registerId.hapus.lazy'
+      ).then((d) => d.Route),
+    )
+
+const authPengaturanPowermeterPowermeterIdRegisterRegisterIdEditLazyRoute =
+  authPengaturanPowermeterPowermeterIdRegisterRegisterIdEditLazyImport
+    .update({
+      path: '/$registerId/edit',
+      getParentRoute: () =>
+        authPengaturanPowermeterPowermeterIdRegisterLazyRoute,
+    } as any)
+    .lazy(() =>
+      import(
+        './routes/__auth/pengaturan/powermeter/$powermeterId.register.$registerId.edit.lazy'
+      ).then((d) => d.Route),
+    )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -677,6 +711,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPengaturanPowermeterPowermeterIdRegisterBaruLazyImport
       parentRoute: typeof authPengaturanPowermeterPowermeterIdRegisterLazyImport
     }
+    '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/edit': {
+      id: '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/edit'
+      path: '/$registerId/edit'
+      fullPath: '/pengaturan/powermeter/$powermeterId/register/$registerId/edit'
+      preLoaderRoute: typeof authPengaturanPowermeterPowermeterIdRegisterRegisterIdEditLazyImport
+      parentRoute: typeof authPengaturanPowermeterPowermeterIdRegisterLazyImport
+    }
+    '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/hapus': {
+      id: '/__auth/pengaturan/powermeter/$powermeterId/register/$registerId/hapus'
+      path: '/$registerId/hapus'
+      fullPath: '/pengaturan/powermeter/$powermeterId/register/$registerId/hapus'
+      preLoaderRoute: typeof authPengaturanPowermeterPowermeterIdRegisterRegisterIdHapusLazyImport
+      parentRoute: typeof authPengaturanPowermeterPowermeterIdRegisterLazyImport
+    }
   }
 }
 
@@ -719,7 +767,11 @@ export const routeTree = rootRoute.addChildren({
               authPengaturanPowermeterPowermeterIdHapusLazyRoute,
               authPengaturanPowermeterPowermeterIdRegisterLazyRoute:
                 authPengaturanPowermeterPowermeterIdRegisterLazyRoute.addChildren(
-                  { authPengaturanPowermeterPowermeterIdRegisterBaruLazyRoute },
+                  {
+                    authPengaturanPowermeterPowermeterIdRegisterBaruLazyRoute,
+                    authPengaturanPowermeterPowermeterIdRegisterRegisterIdEditLazyRoute,
+                    authPengaturanPowermeterPowermeterIdRegisterRegisterIdHapusLazyRoute,
+                  },
                 ),
             }),
           authPengaturanPowermeterBaruLazyRoute,

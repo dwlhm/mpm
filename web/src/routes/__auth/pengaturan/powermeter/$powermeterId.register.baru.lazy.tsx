@@ -81,8 +81,6 @@ function RegisterBaru() {
           },
         },
       );
-
-      console.log(pmRepo);
     } catch (error) {
       setIsSubmitting(false);
     }
@@ -90,7 +88,7 @@ function RegisterBaru() {
   return (
     <form className="register-table add-edit-register" onSubmit={onFormSubmit}>
       <Input type="number" name="alamat" placeholder="ex: 2304" />
-      <Input type="number" name="pengkali" placeholder="ex: 0.1" />
+      <Input type="number" name="pengkali" placeholder="ex: 0.1" step={0.00001} />
       <Input type="text" name="besaran" placeholder="ex: V" />
       <Input type="text" name="nama" placeholder="ex: Tegangan A" />
       <Select name="param" aria-label="Param Register">

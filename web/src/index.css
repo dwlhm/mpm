@@ -32,3 +32,12 @@ h2 {
 .register-table.add-edit-register {
   @apply bg-blue-900 py-3
 }
+.register-table input {
+  @apply bg-transparent border border-2 border-transparent
+}
+.register-table.edit:nth-child(even) input {
+  @apply bg-white
+}
+.register-table.edit:nth-child(odd) input {
+  @apply border-gray-200
+}
