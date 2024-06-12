@@ -28,6 +28,7 @@ export default function ChartsView(props: {
   unit: string;
 }) {
   console.log("value", props.value);
+  if (props.value == undefined) return <Loadings />
   if (props.value.length <= 0) return <Loadings />;
   return (
     <div className="rounded bg-gray-900 py-4 px-5 text-gray-200">
