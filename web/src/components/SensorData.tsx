@@ -1,34 +1,90 @@
 import Loadings from "./Loadings";
+import { AuthContext } from "../auth";
+import { RegisterItem } from "../api/register";
+import { useQuery } from "react-query";
+import { SensorData as SensorDataInf, getSensorData } from "../api/devices";
+import Errors from "./Errors";
+import { Api } from "../api/internal";
+import { AxiosError } from "axios";
 import ChartsView from "./ChartsView";
-import { useRegisterQuery } from "./powermeter/hooks";
-import { AuthContext } from "src/auth";
-import React from "react";
+
+export interface RepositoryInf {
+  [key: string]: number[];
+}
+
+let localRepo: RepositoryInf = {};
+let localTimestamp: string[] = [];
+let lastTimestamp: string = "";
+let idLast: string = "";
 
 export default function SensorData(props: {
   auth: AuthContext;
   perangkatId: string;
-  powermeterId: string;
+  register: RegisterItem[];
 }) {
-  const {data: rQuery, isLoading} = useRegisterQuery(props.auth, props.powermeterId);
+  const { data, isLoading, isError, isSuccess, error } = useQuery<
+    Api<SensorDataInf>,
+    AxiosError
+  >({
+    queryKey: [
+      `latest.${props.perangkatId}`,
+      props.auth.token,
+      props.perangkatId,
+    ],
+    queryFn: getSensorData,
+    retry: false,
+    refetchInterval: 1000,
+    onSuccess: (data) => {
+      console.log(idLast, props.perangkatId);
+      if (
+        data.results.timestamp != lastTimestamp &&
+        idLast == props.perangkatId
+      ) {
+        lastTimestamp = data.results.timestamp;
 
-  let repository: number[][] = [];
-  let [last_timestamp, setLast_timestamp]= React.useState("");
-  let timestamp_repo: string[] = [];
-  const set_last_timestamp = (key: string) => {
-    setLast_timestamp(key)
-  }
+        props.register.forEach((item) => {
+          localRepo[item[4]].push(data.results.data[item[4]]);
+        });
+        localTimestamp.push(
+          new Date(data.results.timestamp).toLocaleTimeString(),
+        );
+      }
+      if (idLast !== props.perangkatId) {
+        idLast = props.perangkatId;
+        props.register.forEach((item) => {
+          localRepo[item[4]] = [];
+          localTimestamp = [];
+          return () => {
+            localRepo[item[4]] = [];
+            localTimestamp = [];
+            lastTimestamp = "";
+          };
+        });
+      }
+    },
+  });
 
   if (isLoading) return <Loadings />;
-  else
+  if (isError)
+    return <Errors process="get latest sensor data" message={error} />;
+  if (isSuccess) {
     return (
-      <ChartsView
-        register={rQuery}
-        perangkatId={props.perangkatId}
-        auth={props.auth}
-        repository={repository}
-        last_timestamp={last_timestamp}
-        timestamp_repo={timestamp_repo}
-        set_last_timestamp={set_last_timestamp}
-      />
+      <>
+        <p className="text-sm">
+          Diperbaharui pada: {new Date(data.results.timestamp).toLocaleString()}
+        </p>
+        <div className="grid grid-cols-3 gap-2 mt-6">
+          {props.register.map((item) => (
+            <ChartsView
+              title={item[3]}
+              value={localRepo[item[4]]}
+              unit={item[2]}
+              timestamp={localTimestamp}
+              key={`data.sensor.${item[3]}`}
+            />
+          ))}
+        </div>
+      </>
     );
+  }
 }

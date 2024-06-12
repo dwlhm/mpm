@@ -8,6 +8,7 @@ import Errors from "../../../components/Errors";
 import { Api } from "../../../api/internal";
 import { AxiosError } from "axios";
 import PerangkatOptions from "../../../components/PerangkatOptions";
+import { RegisterItem } from "src/api/register";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId")({
   component: PreviewPerangkat,
@@ -54,7 +55,7 @@ function PreviewPerangkat() {
         <SensorData
           auth={user}
           perangkatId={perangkatId}
-          powermeterId={dDetail.results.powermeter.id as string}
+          register={dDetail.results.powermeter.register as RegisterItem[]}
         />
       </div>
     );
