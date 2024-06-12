@@ -43,6 +43,7 @@ export default function SensorData(props: {
         lastTimestamp = data.results.timestamp;
 
         props.register.forEach((item) => {
+          if (localRepo[item[4]] == undefined) localRepo[item[4]] = [];
           localRepo[item[4]].push(data.results.data[item[4]]);
         });
         localTimestamp.push(
