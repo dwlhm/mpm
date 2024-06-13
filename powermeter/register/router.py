@@ -12,12 +12,12 @@ router = APIRouter(
 )
 
 class PowermeterRegister(BaseModel):
-    register: str 
+    registers: str 
 
 @router.post("/{id}/register")
 async def new_register(id: str, pmRegister: PowermeterRegister):
     print("ereew",id)
-    result = new(id, pmRegister.register, load_config())
+    result = new(id, pmRegister.registers, load_config())
 
     if result.get('error'):
         raise HTTPException(

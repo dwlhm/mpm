@@ -12,7 +12,7 @@ def create_tables():
     """ Create tables in the PostgreSQL database """
     commands = (
         """
-        CREATE TABLE power_meter (
+        CREATE TABLE IF NOT EXISTS power_meter (
             id SERIAL PRIMARY KEY,
             seri VARCHAR(50) NOT NULL,
             brand VARCHAR(50) NOT NULL
@@ -41,7 +41,7 @@ def create_tables():
         )
         """,
         """
-        CREATE TABLE device (
+        CREATE TABLE IF NOT EXISTS device (
             id SERIAL PRIMARY KEY,
             name VARCHAR(50) NOT NULL,
             gedung INT NOT NULL,
@@ -129,10 +129,20 @@ def create_tables():
         )
         """,
         """
+        CREATE TABLE IF NOT EXISTS device_status (
+            id SERIAL PRIMARY KEY,
+            device INT NOT NULL UNIQUE,
+            status BOOLEAN NOT NULL DEFAULT FALSE,
+            update_at TIMESTAMPTZ NOT NULL,
+            CONSTRAINT fk_device_device_status FOREIGN KEY(device) REFERENCES device(id)
+        )
+        """,
+        """
         CREATE TABLE IF NOT EXISTS power_meter_register (
             id SERIAL PRIMARY KEY,
             power_meter INT NOT NULL UNIQUE,
-            register VARCHAR(5000)
+            register VARCHAR(5000),
+            CONSTRAINT fk_power_meter_register FOREIGN KEY(power_meter) REFERENCES power_meter(id)
         )
         """,
         """
