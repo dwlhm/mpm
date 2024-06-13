@@ -1,5 +1,6 @@
 import psycopg2
 import base64
+from datetime import datetime
 from ast import literal_eval
 from typing import Optional
 from .internal import DataPerangkat
@@ -9,12 +10,14 @@ def get_all(config):
                     gedung.id, gedung.name, 
                     unit.id, unit.name, 
                     kampus.id, kampus.name,
-                    power_meter.id, power_meter.seri, power_meter.brand
+                    power_meter.id, power_meter.seri, power_meter.brand,
+                    device_status.status
                     FROM device 
              LEFT JOIN gedung ON device.gedung = gedung.id
              LEFT JOIN unit ON gedung.unit = unit.id
              LEFT JOIN kampus ON unit.kampus = kampus.id
-             LEFT JOIN power_meter ON device.power_meter = power_meter.id"""
+             LEFT JOIN power_meter ON device.power_meter = power_meter.id
+             LEFT JOIN device_status ON device_status.device = device.id"""
 
     try:
         with psycopg2.connect(**config) as conn:
@@ -50,7 +53,8 @@ def get_all(config):
                             "id": base64.b64encode(str(d[10]).encode()).decode(),
                             "seri": d[11],
                             "brand": d[12]
-                        }
+                        },
+                        "status": "online" if d[13] == True else "offline"
                     })
                 return {
                     "data": res
@@ -68,13 +72,14 @@ def get_by_id(id: str, config):
                     unit.id, unit.name, 
                     kampus.id, kampus.name,
                     power_meter.id, power_meter.seri, power_meter.brand,
-                    power_meter_register.register
+                    power_meter_register.register, device_status.status
                     FROM device 
              LEFT JOIN gedung ON device.gedung = gedung.id
              LEFT JOIN unit ON gedung.unit = unit.id
              LEFT JOIN kampus ON unit.kampus = kampus.id
              LEFT JOIN power_meter ON device.power_meter = power_meter.id
              LEFT JOIN power_meter_register ON power_meter_register.power_meter = power_meter.id    
+             LEFT JOIN device_status ON device_status.device = device.id
              WHERE device.id = %s"""
     
     try:
@@ -111,7 +116,8 @@ def get_by_id(id: str, config):
                             "seri": d[11],
                             "brand": d[12],
                             "register": literal_eval(d[13])
-                        }
+                        },
+                        "status": "online" if d[14] == True else "offline"
                     }
                 }
 
@@ -131,9 +137,6 @@ def new(
         config):
     sql = """INSERT INTO device (name, gedung, ip_addr, port, power_meter)
              VALUES (%s, %s, %s, %s, %s) RETURNING id"""
-
-    print(port)
-
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
@@ -200,6 +203,55 @@ def remove(id: str, config):
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, (base64.b64decode(id).decode(), ))
+                return {
+                    "data": True
+                }
+    except (Exception, psycopg2.DatabaseError) as Error:
+        return {
+            "error": str(Error)
+        }
+    
+def get_device_status(device_id: str, config):
+    sql = """SELECT status FROM device_status
+             WHERE device = %s"""
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (str(base64.b64decode(device_id).decode()), ))
+
+                d = cur.fetchone()
+
+                if (d == None): 
+                    return {
+                        "error": "no data"
+                    }
+                return {
+                    "data": {
+                        "status": d[0]
+                    }
+                }
+
+    except (Exception, psycopg2.DatabaseError) as Error:
+        print(Error)
+        return {
+            "error": str(Error)
+        }
+    
+
+def set_device_status(device_id: str, status: bool, config):
+    sql = """INSERT INTO device_status (device, status, update_at)
+             VALUES (%s, %s, %s)
+             ON CONFLICT(device)
+             DO UPDATE SET
+                status = EXCLUDED.status"""
+    
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (base64.b64decode(device_id).decode(), status, datetime.now(), ))
+                conn.commit()
+                print(f"{device_id} ACTIVE")
+
                 return {
                     "data": True
                 }

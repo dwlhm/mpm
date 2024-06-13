@@ -5,7 +5,7 @@ from logger import logger
 from concurrent.futures import ThreadPoolExecutor
 
 from configuration.config import load_config
-from device.db import get_all, insert_latest_data
+from device.db import get_all, insert_latest_data, set_device_status
 from device.internal import DataPerangkat
 from device_registers.registers_repo import repo as registers
 
@@ -19,7 +19,6 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
     if conn:
         logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Memulai pembacaan Modbus")
         data = {}
-        active_count = 0
         for register in registers[pm_seri]:  
             sleep(.3) 
             rr = client.read_holding_registers(
@@ -30,7 +29,6 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
             if rr.isError():
                 logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> {register[0]} - {rr}")
             else:
-                if active_count > 3: active = True 
                 data[register[3]] = rr.registers[0]*register[1]
         client.close() 
         result = insert_latest_data(
@@ -40,8 +38,12 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
             data=data
         )
         logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Pembacaan Modbus selesai")
-        if result.get("error"): logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Error db: {result.get("error")}")
-        if result.get("data"): logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Data disimpan di db")
+        if result.get("error"): 
+            set_device_status(id, False, load_config())
+            logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Error db: {result.get("error")}")
+        if result.get("data"): 
+            set_device_status(id, True, load_config())
+            logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Data disimpan di db")
         logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Koneksi Modbus ditutup")
         return
     else:

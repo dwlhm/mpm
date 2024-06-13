@@ -44,3 +44,23 @@ h2 {
 .register-table.edit:nth-child(odd) input {
   @apply border-gray-200
 }
+.device-status {
+  @apply flex items-center text-sm text-green-900
+}
+.device-status.offline {
+  @apply text-red-900
+}
+.device-status::before {
+  content: " ";
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 10px;
+  margin-right: 12px;
+  box-shadow: 0 0 0px 4px #00800069;
+  @apply bg-green-900
+}
+.device-status.offline::before {
+  box-shadow: 0 0 0px 4px #80000069;
+  @apply bg-red-900
+}

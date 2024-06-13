@@ -42,7 +42,11 @@ function PreviewPerangkat() {
         <Outlet />
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="font-semibold text-xl">{dDetail.results.name}</h2>
+            <div className="flex gap-4 items-center">
+              <h2 className="font-semibold text-xl">{dDetail.results.name}</h2>
+              <p className={`capitalize device-status ${dDetail.results.status}`}>{dDetail.results.status}</p>
+            </div>
+            
             <p className="text-sm">
               {dDetail.results.ip_addr} - {dDetail.results.powermeter.seri}(
               {dDetail.results.powermeter.brand})

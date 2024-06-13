@@ -24,6 +24,7 @@ export interface DeviceDetail {
   port?: number | 502;
   gedung: Gedung;
   powermeter: Powermeter;
+  status?: string;
 }
 
 export async function getDevices(
