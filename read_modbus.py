@@ -5,7 +5,7 @@ from logger import logger
 from concurrent.futures import ThreadPoolExecutor
 
 from configuration.config import load_config
-from device.db import get_all, insert_latest_data, set_device_status
+from device.db import get_all, insert_latest_data, set_device_status, insert_device_logs
 from device.internal import DataPerangkat
 from device_registers.registers_repo import repo as registers
 
@@ -28,6 +28,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
             )
             if rr.isError():
                 logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> {register[0]} - {rr}")
+                insert_device_logs(device_id=id, type="error", message={f"{register[0]} - {rr}"}, config=load_config())
             else:
                 data[register[3]] = rr.registers[0]*register[1]
         client.close() 
@@ -41,6 +42,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
         if result.get("error"): 
             set_device_status(id, False, load_config())
             logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Error db: {result.get("error")}")
+            insert_device_logs(device_id=id, type="error", message=result.get("error"), config=load_config())
         if result.get("data"): 
             set_device_status(id, True, load_config())
             logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Data disimpan di db")
@@ -48,6 +50,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
         return
     else:
         logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Gagal koneksi Modbus")
+        insert_device_logs(device_id=id, type="error", message="Gagal koneksi Modbus", config=load_config())
         return   
 
 def tFunc(device):

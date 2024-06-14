@@ -17,6 +17,12 @@ export interface Data<T> {
   data: T;
 }
 
+export interface DeviceLog {
+  type: string;
+  message: string;
+  created_at: string;
+}
+
 export interface DeviceDetail {
   id?: string;
   name: string;
@@ -155,6 +161,23 @@ export async function getDatasheetDevices(
 
   const { data } = await axios(
     `${import.meta.env.VITE_BACKEND_URL}/datasheet/${context.queryKey[2] == "undefined" ? "AW9L" : context.queryKey[2]}/`,
+    config,
+  );
+  return data;
+}
+
+export async function getDeviceLogs(
+  context: QueryFunctionContext,
+): Promise<Api<DeviceLog[]>> {
+  const config = {
+    method: "get",
+    headers: {
+      Authorization: `Bearer ${context.queryKey[1]}`,
+    },
+  };
+
+  const { data } = await axios(
+    `${import.meta.env.VITE_BACKEND_URL}/device/${context.queryKey[2]}/logs`,
     config,
   );
   return data;

@@ -63,4 +63,4 @@ h2 {
 .device-status.offline::before {
   box-shadow: 0 0 0px 4px #80000069;
   @apply bg-red-900
-}
+} 

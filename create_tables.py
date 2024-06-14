@@ -146,6 +146,16 @@ def create_tables():
         )
         """,
         """
+        CREATE TABLE IF NOT EXISTS device_logs (
+            id SERIAL PRIMARY KEY,
+            device INT NOT NULL,
+            type VARCHAR(50),
+            message VARCHAR(1000),
+            created_at TIMESTAMPTZ NOT NULL,
+            CONSTRAINT fk_device_logs FOREIGN KEY(device) REFERENCES device(id)
+        )
+        """,
+        """
         CREATE INDEX IF NOT EXISTS device_id
         ON device(id)
         """

@@ -232,11 +232,58 @@ def get_device_status(device_id: str, config):
                 }
 
     except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error)
         return {
             "error": str(Error)
         }
     
+def insert_device_logs(device_id: str, type: str, message: str, config):
+    sql = """INSERT INTO device_logs (device, type, message, created_at)
+             VALUES (%s, %s, %s, %s)"""
+    
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (base64.b64decode(device_id).decode(), type, str(message), datetime.now(), ))
+                conn.commit()
+
+                return {
+                    "data": True
+                }
+    except (Exception, psycopg2.DatabaseError) as Error:
+        return {
+            "error": str(Error)
+        }
+    
+def get_device_logs(device_id: str, config):
+    sql = """SELECT type, message, created_at FROM device_logs
+             WHERE device = %s"""
+    try:
+        with psycopg2.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, (str(base64.b64decode(device_id).decode()), ))
+
+                d = cur.fetchall()
+
+                if (d == None): 
+                    return {
+                        "error": "no data"
+                    }
+                res = []
+                for data in d:
+                    res.append({
+                        "type": data[0],
+                        "message": data[1],
+                        "created_at": data[2]
+                    })
+
+                return {
+                    "data": res
+                }
+
+    except (Exception, psycopg2.DatabaseError) as Error:
+        return {
+            "error": str(Error)
+        }
 
 def set_device_status(device_id: str, status: bool, config):
     sql = """INSERT INTO device_status (device, status, update_at)
@@ -250,7 +297,6 @@ def set_device_status(device_id: str, status: bool, config):
             with conn.cursor() as cur:
                 cur.execute(sql, (base64.b64decode(device_id).decode(), status, datetime.now(), ))
                 conn.commit()
-                print(f"{device_id} ACTIVE")
 
                 return {
                     "data": True
@@ -389,7 +435,6 @@ def get_latest_data(id: str, config):
 
 
     except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error)
         return {
             "error": str(Error)
         }
@@ -522,17 +567,17 @@ def insert_latest_data(
                     data['fourth_quadrant_reactive_power'],
                     timestamp,
                 ))
-
-                data = cur.fetchone()
-
-                print(data)
+                
+                conn.commit()
 
                 return {
-                    "data": data[0]
+                    "data": True
                 }
 
     except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error)
+        print("Error Tipe: ", type(Error), data[str(Error)], Error)
         return {
-            "error": str(Error)
+            "error": {
+                "type": "dbError",
+                "message": str(Error)}
         }
