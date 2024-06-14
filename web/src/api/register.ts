@@ -95,7 +95,7 @@ export async function addRegister(props: Token<Register>) {
       "Content-Type": "application/json",
     },
     data: JSON.stringify({
-      register: props.data.register,
+      registers: props.data.register,
     }),
   };
 

@@ -48,7 +48,7 @@ async def get_register_by_id(id: str):
 
 @router.put("/{id}/register")
 async def update_register(id: str, pmReg: PowermeterRegister):
-    result = update(id=id, powermeter_id=pmReg.powermeter_id, register=pmReg.register, config=load_config())
+    result = update(id=id, powermeter_id=pmReg.powermeter_id, register=pmReg.registers, config=load_config())
 
     if result.get("error"):
         raise HTTPException(
