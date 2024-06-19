@@ -1,6 +1,6 @@
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { AxiosError } from "axios";
-import { QueryClient, useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { DeviceDetail, DeviceLog, getDeviceLogs } from "../../../api/devices";
 import { Api } from "../../../api/internal";
 import { useAuth } from "../../../auth";
