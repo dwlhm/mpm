@@ -1,11 +1,41 @@
 import psycopg2
 import base64
+from datetime import datetime, timedelta
+
+def get_date(mode_id: str):
+    match mode_id:
+        case "hourly":
+            return {
+                "from": datetime.today(),
+                "to": datetime.today() - timedelta(hours=1)
+            }
+        case "daily":
+            return {
+                "from": datetime.today(),
+                "to": datetime.today() - timedelta(days=1)
+            }
+        case "weekly":
+            return {
+                "from": datetime.today(),
+                "to": datetime.today() - timedelta(weeks=1)
+            }
+        case "monthly":
+            return {
+                "from": datetime.today(),
+                "to": (datetime.today().replace(day=1) - timedelta(days=31)).replace(day=1)
+            }
+        case _:
+            return {
+                "from": datetime.today(),
+                "to": datetime.today() - timedelta(hours=1)
+            }
 
 def get_data(mode_id: str, id:str, config: any):
     try:
+        date = get_date(mode_id=mode_id)
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(mode[mode_id], (base64.b64decode(id).decode(), ))
+                cur.execute(mode[mode_id], (base64.b64decode(id).decode(), date.get("from"), date.get("to"), ))
 
                 d = cur.fetchone()
 
@@ -132,7 +162,7 @@ mode = {
         fourth_quadrant_reactive_power,
         timestamp
              FROM data_hourly
-             WHERE device = %s
+             WHERE device = %s BETWEEN %s AND %s
              ORDER BY id DESC
              """,
     "daily": """SELECT DISTINCT ON (id) 
@@ -189,7 +219,7 @@ mode = {
         fourth_quadrant_reactive_power,
         timestamp
              FROM data_daily
-             WHERE device = %s
+             WHERE device = %s BETWEEN %s AND %s
              ORDER BY id DESC
              """,
     "weekly": """SELECT DISTINCT ON (id) 
@@ -246,7 +276,7 @@ mode = {
         fourth_quadrant_reactive_power,
         timestamp
              FROM data_weekly
-             WHERE device = %s
+             WHERE device = %s BETWEEN %s AND %s
              ORDER BY id DESC
              """,
     "monthly": """SELECT DISTINCT ON (id) 
@@ -303,7 +333,7 @@ mode = {
         fourth_quadrant_reactive_power,
         timestamp
              FROM data_monthly
-             WHERE device = %s
+             WHERE device = %s BETWEEN %s AND %s
              ORDER BY id DESC
              """,
     "yearly": """SELECT DISTINCT ON (id) 
@@ -360,7 +390,7 @@ mode = {
         fourth_quadrant_reactive_power,
         timestamp
              FROM data_yearly
-             WHERE device = %s
+             WHERE device = %s BETWEEN %s AND %s
              ORDER BY id DESC
              """
 }

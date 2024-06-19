@@ -3,10 +3,10 @@ from datetime import datetime
 from time import sleep
 from logger import logger
 from concurrent.futures import ThreadPoolExecutor
+import atexit
 
 from configuration.config import load_config
 from device.db import get_all, insert_latest_data, set_device_status, insert_device_logs
-from device.internal import DataPerangkat
 from device_registers.registers_repo import repo as registers
 
 def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
@@ -62,6 +62,9 @@ def tFunc(device):
         id=device.get("id"),
         pm_seri=pm_seri
     )
+
+def handler_exit():
+    print("EXITTTT")
         
 if __name__ == "__main__":
     while True:
