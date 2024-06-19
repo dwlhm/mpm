@@ -1,13 +1,5 @@
-from datetime import datetime, timedelta, timezone
-from typing import Union, Annotated
-
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, Field
-from passlib.context import CryptContext
-from jose import JWTError, jwt
-import base64
 
 import user.auth.router as auth
 import user.router as user
@@ -17,13 +9,9 @@ import kampus.router as kampus
 import unit.router as unit
 import gedung.router as gedung
 import device.router as device
+import data.router as data
 
 from configuration.config import load_config
-import database.get as get
-import database.insert as insert
-import database.delete as delete
-import database.update as update
-from device_registers.registers_repo import repo as registers
 
 config = load_config()
 
@@ -52,3 +40,4 @@ app.include_router(kampus.router)
 app.include_router(unit.router)
 app.include_router(gedung.router)
 app.include_router(device.router)
+app.include_router(data.router)

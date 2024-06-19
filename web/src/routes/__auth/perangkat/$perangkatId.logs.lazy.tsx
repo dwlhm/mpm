@@ -1,7 +1,7 @@
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { AxiosError } from "axios";
-import { useQuery } from "react-query";
-import { DeviceLog, getDeviceLogs } from "../../../api/devices";
+import { QueryClient, useQuery, useQueryClient } from "react-query";
+import { DeviceDetail, DeviceLog, getDeviceLogs } from "../../../api/devices";
 import { Api } from "../../../api/internal";
 import { useAuth } from "../../../auth";
 import Errors from "../../../components/Errors";
@@ -17,6 +17,10 @@ export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/logs")(
 function DeviceLogs() {
   const auth = useAuth();
   const { perangkatId } = Route.useParams();
+  const clientQuery = useQueryClient()
+  const perangkat = clientQuery.getQueryData<Api<DeviceDetail>>(
+    [`device.detail.${perangkatId}`, auth.token, perangkatId]
+  )
   const { data, error, isLoading, isError, isSuccess } = useQuery<
     Api<DeviceLog[]>,
     AxiosError
@@ -32,7 +36,10 @@ function DeviceLogs() {
       <div className="my-10 fixed inset-0 z-30 flex items-center justify-center">
         <div className="max-w-5xl overflow-y-auto bg-white rounded max-h-full">
           <div className="flex justify-between items-center sticky inset-0 bg-white/50 p-5 backdrop-blur">
-            <h3 className="text-lg font-medium">Log Perangkat</h3>
+            <div>
+              <h3 className="text-lg font-medium">Log Perangkat</h3>
+              <p className="text-sm text-gray-800 font-medium">Perangkat: {perangkat?.results.name}</p>
+            </div>
             <Link
               to="/perangkat/$perangkatId"
               params={{ perangkatId }}
