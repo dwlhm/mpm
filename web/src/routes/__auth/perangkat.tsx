@@ -13,6 +13,7 @@ import Loadings from "../../components/Loadings";
 import Errors from "../../components/Errors";
 import { CpuChipIcon } from "@heroicons/react/24/outline";
 import React from "react";
+import { CompButton } from "@/common";
 
 export const Route = createFileRoute("/__auth/perangkat")({
   component: Dashboard,
@@ -80,6 +81,13 @@ function Dashboard() {
               {menu ? "Tutup" : "Daftar Perangkat"}
             </button>
           )}
+
+          <CompButton
+            as="div"
+            className={`sm:bottom-10 sm:right-10 sm:z-10 ${menu ? "block mb-5" : !perangkatId ? "block mb-5" : "hidden sm:block"} sm:fixed sm:max-w-48 sm:shadow-lg transition hover:bg-gray-900/95`}
+          >
+            <Link to={"/perangkat/baru"}>+ Perangkat Baru</Link>
+          </CompButton>
           <div
             className={`grid ${!perangkatId ? "sm:grid-cols-3 lg:grid-cols-5" : `${menu ? "grid" : "hidden"} sm:grid`} gap-4`}
           >
@@ -90,6 +98,7 @@ function Dashboard() {
                   key={index}
                   to="/perangkat/$perangkatId"
                   params={{ perangkatId }}
+                  onClick={() => setMenu(false)}
                   className={`perangkat transition py-2 px-3 flex items-center gap-3 ${isViewAllMode ? "bg-white border border-2 border-white hover:border-blue-800 shadow-md hover:shadow-xl rounded" : "text-gray-100 hover:bg-gray-800/50 hover:rounded"}`}
                 >
                   <CpuChipIcon
@@ -108,16 +117,6 @@ function Dashboard() {
                 </Link>
               );
             })}
-          </div>
-          <div
-            className={`bottom-10 right-10 z-10 ${menu ? "hidden" : "fixed"}`}
-          >
-            <Link
-              to={"/perangkat/baru"}
-              className="bg-blue-900 rounded-full py-2 px-5 text-white shadow-md border border-2 border-blue-900 hover:border-blue-600 transition hover:shadow-lg"
-            >
-              + Perangkat Baru
-            </Link>
           </div>
         </div>
         <div
