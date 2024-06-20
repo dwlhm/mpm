@@ -1,14 +1,8 @@
-import { Outlet, createLazyFileRoute } from "@tanstack/react-router";
-import { useAuth } from "../../../auth";
-import SensorData from "../../../components/SensorData";
-import { useQuery } from "react-query";
-import { DeviceDetail, getDeviceDetail } from "../../../api/devices";
-import Loadings from "../../../components/Loadings";
-import Errors from "../../../components/Errors";
-import { Api } from "../../../api/internal";
-import { AxiosError } from "axios";
-import PerangkatOptions from "../../../components/PerangkatOptions";
-import { RegisterItem } from "src/api/register";
+import { MatchRoute, Outlet, createLazyFileRoute } from "@tanstack/react-router";
+import { useAuth } from "@/auth";
+import { CompLoading, CompError } from "@/common"
+import { PerangkatEnergyOverview, PerangkatOptions } from "@/perangkat/layouts"
+import { useQueryDetailPerangkat } from "@/perangkat/hooks";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId")({
   component: PreviewPerangkat,
@@ -24,22 +18,19 @@ function PreviewPerangkat() {
     isSuccess,
     data: dDetail,
     error: dError,
-  } = useQuery<Api<DeviceDetail>, AxiosError>({
-    queryKey: [`device.detail.${perangkatId}`, user.token, perangkatId],
-    queryFn: getDeviceDetail,
-  });
+  } = useQueryDetailPerangkat(user.token, perangkatId)
 
-  if (isLoading) return <Loadings />;
+  if (isLoading) return <CompLoading />;
 
   if (isError)
     return (
-      <Errors process="mendapatkan data detail perangkat" message={dError} />
+      <CompError process="mendapatkan data detail perangkat" message={dError} />
     );
 
   if (isSuccess)
     return (
       <>
-        <div className="flex justify-between gap-4 items-center sticky top-16 p-2 sm:p-6 lg:p-8 bg-white rounded-t">
+        <div className="flex justify-between gap-4 items-center sticky top-16 p-2 sm:p-6 lg:p-8 sm:pb-2 lg:pb-2 bg-white rounded-t">
           <div>
             <div className="flex gap-4 items-center">
               <h2 className="font-semibold text-xl">{dDetail.results.name}</h2>
@@ -59,6 +50,9 @@ function PreviewPerangkat() {
             <PerangkatOptions perangkatId={perangkatId} />
           </div>
         </div>
+        <MatchRoute to="/perangkat/$perangkatId">
+          <PerangkatEnergyOverview />
+        </MatchRoute>
         <Outlet />
       </>
     );

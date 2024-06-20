@@ -35,7 +35,6 @@ export default function SensorData(props: {
     retry: false,
     refetchInterval: 1000,
     onSuccess: (data) => {
-      console.log(idLast, props.perangkatId);
       if (
         data.results.timestamp != lastTimestamp &&
         idLast == props.perangkatId

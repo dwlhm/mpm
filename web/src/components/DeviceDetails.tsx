@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
 import { getDeviceDetail } from "../api/devices"
-import PerangkatOptions from "./PerangkatOptions"
+import { PerangkatOptions } from "@/perangkat/layouts"
 import Loadings from "./Loadings"
 import Errors from "./Errors"
 

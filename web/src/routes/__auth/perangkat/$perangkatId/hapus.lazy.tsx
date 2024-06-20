@@ -1,3 +1,4 @@
+import { PerangkatSubBody } from '@/perangkat/components'
 import { removeDevices } from '../../../../api/devices'
 import { useAuth } from '../../../../auth'
 import { Link, createLazyFileRoute } from '@tanstack/react-router'
@@ -30,6 +31,7 @@ function HapusPerangkat() {
         })
     }
     return(
+        <PerangkatSubBody>
         <div className='bg-red-300 border border-red-500 p-3 rounded mb-5 flex justify-between items-center transition'>
             <p>Yakin menghapus perangkat ini?</p>
             <div>
@@ -45,5 +47,6 @@ function HapusPerangkat() {
                 </Link>
             </div>
         </div>
+        </PerangkatSubBody>
     )
 }

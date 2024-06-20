@@ -1,12 +1,15 @@
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { AxiosError } from "axios";
-import { useQuery, useQueryClient } from "react-query";
-import { DeviceDetail, DeviceLog, getDeviceLogs } from "../../../../api/devices";
+import { useQuery } from "react-query";
+import {
+  DeviceLog,
+  getDeviceLogs,
+} from "../../../../api/devices";
 import { Api } from "../../../../api/internal";
 import { useAuth } from "../../../../auth";
 import Errors from "../../../../components/Errors";
 import Loadings from "../../../../components/Loadings";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PerangkatSubBody, PerangkatSubHeadingPanel, PerangkatSubTitle } from "@/perangkat/components";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/logs")(
   {
@@ -17,10 +20,6 @@ export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/logs")(
 function DeviceLogs() {
   const auth = useAuth();
   const { perangkatId } = Route.useParams();
-  const clientQuery = useQueryClient()
-  const perangkat = clientQuery.getQueryData<Api<DeviceDetail>>(
-    [`device.detail.${perangkatId}`, auth.token, perangkatId]
-  )
   const { data, error, isLoading, isError, isSuccess } = useQuery<
     Api<DeviceLog[]>,
     AxiosError
@@ -33,27 +32,15 @@ function DeviceLogs() {
   if (isError) return <Errors process="get log perangkat" message={error} />;
   if (isSuccess)
     return (
-      <div className="my-10 fixed inset-0 z-30 flex items-center justify-center">
-        <div className="max-w-5xl overflow-y-auto bg-white rounded max-h-full">
-          <div className="flex justify-between items-center sticky inset-0 bg-white/50 p-5 backdrop-blur">
-            <div>
-              <h3 className="text-lg font-medium">Log Perangkat</h3>
-              <p className="text-sm text-gray-800 font-medium">Perangkat: {perangkat?.results.name}</p>
-            </div>
-            <Link
-              to="/perangkat/$perangkatId/data"
-              params={{ perangkatId }}
-              className="inline-block float-right"
-            >
-              <div className="bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600">
-                <XMarkIcon className="block h-6 w-6 text-white" />
-              </div>
-            </Link>
-          </div>
-          <ul className="p-5">
+      <>
+        <PerangkatSubHeadingPanel>
+          <PerangkatSubTitle>Log Perangkat</PerangkatSubTitle>
+        </PerangkatSubHeadingPanel>
+        <PerangkatSubBody>
+        <ul>
             {data.results.map((item, index) => (
               <li key={`logs.${perangkatId}.${index}`} className="mb-5">
-                <p className="flex items-center capitalize font-medium gap-2 mb-2">
+                <p className="flex items-center capitalize gap-2 mb-2">
                   {new Date(item.created_at).toLocaleString()}:
                   <span
                     className={
@@ -71,7 +58,7 @@ function DeviceLogs() {
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+        </PerangkatSubBody>
+      </>
     );
 }

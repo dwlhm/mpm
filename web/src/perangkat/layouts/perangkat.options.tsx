@@ -10,6 +10,8 @@ import {
   TrashIcon,
   PencilIcon,
   CodeBracketSquareIcon,
+  CircleStackIcon,
+  ChartPieIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "@tanstack/react-router";
 
@@ -18,7 +20,7 @@ export default function PerangkatOptions(props: { perangkatId: string }) {
     <Menu>
       <MenuButton className="inline-flex items-center gap-2 rounded-md bg-gray-800 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
         Pengaturan
-        <ChevronDownIcon className="size-4 fill-white/60" />
+        <ChevronDownIcon className="size-4 fill-white/0" />
       </MenuButton>
       <Transition
         enter="transition ease-out duration-75"
@@ -32,6 +34,27 @@ export default function PerangkatOptions(props: { perangkatId: string }) {
           anchor="bottom end"
           className="mt-2 w-52 origin-top-right rounded-xl border border-white bg-gray-800 p-1 text-sm/6 text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
         >
+        <MenuItem>
+          <Link
+            to="/perangkat/$perangkatId"
+            params={{ perangkatId: props.perangkatId }}
+            className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+          >
+            <ChartPieIcon className="size-4 fill-white/30" />
+            Dashboard
+          </Link>
+        </MenuItem>
+          <MenuItem>
+            <Link
+              to="/perangkat/$perangkatId/data"
+              params={{ perangkatId: props.perangkatId }}
+              className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+            >
+              <CircleStackIcon className="size-4 fill-white/30" />
+              Data
+            </Link>
+          </MenuItem>
+          <div className="my-1 h-px bg-white/5" />
           <MenuItem>
             <Link
               to="/perangkat/$perangkatId/logs"
