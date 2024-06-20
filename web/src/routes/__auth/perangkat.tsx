@@ -21,8 +21,6 @@ export const Route = createFileRoute("/__auth/perangkat")({
 function Dashboard() {
   const user = useAuth();
   const [menu, setMenu] = React.useState<boolean>(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-  const outletRef = React.useRef<HTMLDivElement>(null);
   const { perangkatId } = useParams({ strict: false }) as {
     perangkatId: string;
   };
@@ -79,7 +77,7 @@ function Dashboard() {
               className={`${menu ? "sticky top-0" : "block"} sm:hidden bg-gray-900 text-gray-200 text-sm py-2 px-5 w-full text-center rounded mb-2`}
               onClick={() => openMenu()}
             >
-              {menu ? 'Tutup' : 'Daftar Perangkat'}
+              {menu ? "Tutup" : "Daftar Perangkat"}
             </button>
           )}
           <div
@@ -111,7 +109,9 @@ function Dashboard() {
               );
             })}
           </div>
-          <div className={`bottom-10 right-10 z-10 ${menu ? 'hidden' : 'fixed'}`}>
+          <div
+            className={`bottom-10 right-10 z-10 ${menu ? "hidden" : "fixed"}`}
+          >
             <Link
               to={"/perangkat/baru"}
               className="bg-blue-900 rounded-full py-2 px-5 text-white shadow-md border border-2 border-blue-900 hover:border-blue-600 transition hover:shadow-lg"
@@ -120,7 +120,9 @@ function Dashboard() {
             </Link>
           </div>
         </div>
-        <div className={`${menu ? "hidden" : "block grow"} bg-white rounded shadow`}>
+        <div
+          className={`${menu ? "hidden" : "block grow"} bg-white rounded shadow`}
+        >
           <Outlet />
         </div>
       </div>
