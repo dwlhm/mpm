@@ -7,6 +7,7 @@ import { AxiosError } from 'axios'
 import Loadings from "../../components/Loadings"
 import Errors from '../../components/Errors'
 import { CpuChipIcon } from '@heroicons/react/24/outline'
+import React from 'react'
 
 export const Route = createFileRoute('/__auth/perangkat')({
   component: Dashboard
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/__auth/perangkat')({
 function Dashboard() {
 
   const user = useAuth()
+  const menuRef = React.useRef<HTMLDivElement>(null)
   const { perangkatId } = useParams({ strict: false }) as { perangkatId: string }
   const isViewAllMode = !perangkatId
 
@@ -23,6 +25,11 @@ function Dashboard() {
     queryFn: getDevices,
     retry: 2
   })
+
+  const openMenu = (ref: React.RefObject<HTMLDivElement>) => {
+    if (ref.current?.classList.contains("hidden")) ref.current?.classList.replace("hidden", "grid")
+    else ref.current?.classList.replace("grid", "hidden")
+  }
 
   if (isLoading) return <>
     <Loadings />
@@ -37,9 +44,9 @@ function Dashboard() {
     <Outlet />
     </>
   if (isSuccess) return (
-    <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900'}`}>
-      <div className={`${perangkatId && 'max-w-64 sticky top-16 bottom-0 h-[calc(100vh-3.9rem)]'} w-full p-2 overflow-auto`}>
-        <div className={`grid ${!perangkatId && 'grid-cols-5'} gap-4`}>
+    <div className={`flex grow w-full ${!perangkatId ? 'bg-gray-200' : 'bg-blue-900 flex-col sm:flex-row'}`}>
+      <div className={`${perangkatId && 'sm:max-w-64 sticky top-16 sm:bottom-0 sm:h-[calc(100vh-3.9rem)]'} w-full p-2 overflow-auto`}>
+        <div className={`grid ${!perangkatId ? 'sm:grid-cols-3 lg:grid-cols-5' : 'hidden sm:grid'} gap-4`} ref={menuRef}>
           {data.results.map((data, index) => {
             const perangkatId = data.id as string
               return (
@@ -58,6 +65,9 @@ function Dashboard() {
             })
           }
         </div>
+        {
+          perangkatId && <button className='sm:hidden bg-gray-900 text-gray-200 text-sm py-2 px-5 w-full text-center rounded mb-2' onClick={() => openMenu(menuRef)}>Daftar Perangkat</button>
+        }
         <div className='fixed bottom-10 right-10'>
           <Link 
             to={'/perangkat/baru'}

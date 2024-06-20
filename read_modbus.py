@@ -41,7 +41,7 @@ def scan_device(ip_addr: str, port: int, id: str, pm_seri: str):
         logger.info(f"{ip_addr}:{port}:{id}:{pm_seri} -> Pembacaan Modbus selesai")
         if result.get("error"): 
             set_device_status(id, False, load_config())
-            logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Error db: {result.get("error")}")
+            logger.warning(f"{ip_addr}:{port}:{id}:{pm_seri} -> Error db: {result.get('error')}")
             insert_device_logs(device_id=id, type="error", message=result.get("error"), config=load_config())
         if result.get("data"): 
             set_device_status(id, True, load_config())
