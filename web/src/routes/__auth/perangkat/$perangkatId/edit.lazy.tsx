@@ -1,16 +1,16 @@
-import Errors from "../../../components/Errors"
-import { DeviceDetail, getDeviceDetail, updateDevices } from "../../../api/devices"
-import { useAuth } from "../../../auth"
+import Errors from "../../../../components/Errors"
+import { DeviceDetail, getDeviceDetail, updateDevices } from "../../../../api/devices"
+import { useAuth } from "../../../../auth"
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import React from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AxiosError } from "axios"
 import { Select } from "@headlessui/react"
-import { Api } from "../../../api/internal"
-import { Powermeter, getPowermeter } from "../../../api/powermeter"
-import { Gedung, getGedung } from "../../../api/gedung"
-import Loadings from "../../../components/Loadings"
+import { Api } from "../../../../api/internal"
+import { Powermeter, getPowermeter } from "../../../../api/powermeter"
+import { Gedung, getGedung } from "../../../../api/gedung"
+import Loadings from "../../../../components/Loadings"
 
 export const Route = createLazyFileRoute('/__auth/perangkat/$perangkatId/edit')({
   component:EditPerangkat
@@ -21,7 +21,7 @@ function EditPerangkat() {
   const user = useAuth()
   const { perangkatId } = Route.useParams()
   const queryClient = useQueryClient()
-  const navigate = useNavigate({ from: "/perangkat/$perangkatId" })
+  const navigate = useNavigate({ from: "/perangkat/$perangkatId/data" })
 
   const perangkatInfo = useQuery({
     queryFn: getDeviceDetail,
@@ -78,7 +78,7 @@ function EditPerangkat() {
     }, {
       onSuccess: () => {
         setIsSubmitting(false)
-        navigate({ to: "/perangkat/$perangkatId" })
+        navigate({ to: "/perangkat/$perangkatId/data" })
       },
       onError: () => {
         setIsSubmitting(false)
@@ -96,7 +96,7 @@ function EditPerangkat() {
       <div 
         className='bg-white rounded shadow-md w-full max-w-2xl p-3'>
         <Link 
-          to='/perangkat/$perangkatId'
+          to='/perangkat/$perangkatId/data'
           params={{ perangkatId: perangkatId }}
           className='inline-block float-right'>
             <div className='bg-red-900 p-1 rounded w-full transition border border-2 border-red-900 transition hover:border-red-600'>
@@ -190,7 +190,7 @@ function EditPerangkat() {
                   {isSubmitting ? "Loading..." : "Simpan"}
                 </button>
                 <Link
-                  to="/perangkat/$perangkatId"
+                  to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: perangkatId }}
                   className="mt-2 bg-red-900 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500 text-center border border-2 border-red-900 transition hover:border-red-600"
                 >

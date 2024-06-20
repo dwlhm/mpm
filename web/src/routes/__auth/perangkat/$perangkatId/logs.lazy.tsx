@@ -1,11 +1,11 @@
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { AxiosError } from "axios";
 import { useQuery, useQueryClient } from "react-query";
-import { DeviceDetail, DeviceLog, getDeviceLogs } from "../../../api/devices";
-import { Api } from "../../../api/internal";
-import { useAuth } from "../../../auth";
-import Errors from "../../../components/Errors";
-import Loadings from "../../../components/Loadings";
+import { DeviceDetail, DeviceLog, getDeviceLogs } from "../../../../api/devices";
+import { Api } from "../../../../api/internal";
+import { useAuth } from "../../../../auth";
+import Errors from "../../../../components/Errors";
+import Loadings from "../../../../components/Loadings";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/logs")(
@@ -41,7 +41,7 @@ function DeviceLogs() {
               <p className="text-sm text-gray-800 font-medium">Perangkat: {perangkat?.results.name}</p>
             </div>
             <Link
-              to="/perangkat/$perangkatId"
+              to="/perangkat/$perangkatId/data"
               params={{ perangkatId }}
               className="inline-block float-right"
             >

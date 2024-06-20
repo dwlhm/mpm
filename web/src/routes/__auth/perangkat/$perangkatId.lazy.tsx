@@ -39,8 +39,7 @@ function PreviewPerangkat() {
   if (isSuccess)
     return (
       <>
-        <Outlet />
-        <div className="flex justify-between items-center sticky top-16 p-2 sm:p-6 lg:p-8 bg-white rounded-t">
+        <div className="flex justify-between gap-4 items-center sticky top-16 p-2 sm:p-6 lg:p-8 bg-white rounded-t">
           <div>
             <div className="flex gap-4 items-center">
               <h2 className="font-semibold text-xl">{dDetail.results.name}</h2>
@@ -60,13 +59,7 @@ function PreviewPerangkat() {
             <PerangkatOptions perangkatId={perangkatId} />
           </div>
         </div>
-        <div className="p-2 sm:p-6 lg:p-8">
-          <SensorData
-            auth={user}
-            perangkatId={perangkatId}
-            register={dDetail.results.powermeter.register as RegisterItem[]}
-          />
-        </div>
+        <Outlet />
       </>
     );
 }

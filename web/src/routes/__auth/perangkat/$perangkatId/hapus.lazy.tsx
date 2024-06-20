@@ -1,5 +1,5 @@
-import { removeDevices } from '../../../api/devices'
-import { useAuth } from '../../../auth'
+import { removeDevices } from '../../../../api/devices'
+import { useAuth } from '../../../../auth'
 import { Link, createLazyFileRoute } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from 'react-query'
 
@@ -37,7 +37,7 @@ function HapusPerangkat() {
                     onClick={onRemove} 
                     className='py-2 px-5 rounded bg-red-500/50 mx-2 text-sm'>Hapus</button>
                 <Link 
-                    to='/perangkat/$perangkatId'
+                    to='/perangkat/$perangkatId/data'
                     params={{ perangkatId: perangkatId }}
                     className='py-2 px-5 rounded bg-blue-900 mx-2 text-sm text-white'
                 >

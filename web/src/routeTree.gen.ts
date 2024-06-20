@@ -49,6 +49,9 @@ const authPerangkatPerangkatIdHapusLazyImport = createFileRoute(
 const authPerangkatPerangkatIdEditLazyImport = createFileRoute(
   '/__auth/perangkat/$perangkatId/edit',
 )()
+const authPerangkatPerangkatIdDataLazyImport = createFileRoute(
+  '/__auth/perangkat/$perangkatId/data',
+)()
 const authPengaturanUnitBaruLazyImport = createFileRoute(
   '/__auth/pengaturan/unit/baru',
 )()
@@ -224,7 +227,7 @@ const authPerangkatPerangkatIdLogsLazyRoute =
       getParentRoute: () => authPerangkatPerangkatIdLazyRoute,
     } as any)
     .lazy(() =>
-      import('./routes/__auth/perangkat/$perangkatId.logs.lazy').then(
+      import('./routes/__auth/perangkat/$perangkatId/logs.lazy').then(
         (d) => d.Route,
       ),
     )
@@ -236,7 +239,7 @@ const authPerangkatPerangkatIdHapusLazyRoute =
       getParentRoute: () => authPerangkatPerangkatIdLazyRoute,
     } as any)
     .lazy(() =>
-      import('./routes/__auth/perangkat/$perangkatId.hapus.lazy').then(
+      import('./routes/__auth/perangkat/$perangkatId/hapus.lazy').then(
         (d) => d.Route,
       ),
     )
@@ -248,7 +251,19 @@ const authPerangkatPerangkatIdEditLazyRoute =
       getParentRoute: () => authPerangkatPerangkatIdLazyRoute,
     } as any)
     .lazy(() =>
-      import('./routes/__auth/perangkat/$perangkatId.edit.lazy').then(
+      import('./routes/__auth/perangkat/$perangkatId/edit.lazy').then(
+        (d) => d.Route,
+      ),
+    )
+
+const authPerangkatPerangkatIdDataLazyRoute =
+  authPerangkatPerangkatIdDataLazyImport
+    .update({
+      path: '/data',
+      getParentRoute: () => authPerangkatPerangkatIdLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__auth/perangkat/$perangkatId/data.lazy').then(
         (d) => d.Route,
       ),
     )
@@ -642,6 +657,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPengaturanUnitBaruLazyImport
       parentRoute: typeof authPengaturanUnitLazyImport
     }
+    '/__auth/perangkat/$perangkatId/data': {
+      id: '/__auth/perangkat/$perangkatId/data'
+      path: '/data'
+      fullPath: '/perangkat/$perangkatId/data'
+      preLoaderRoute: typeof authPerangkatPerangkatIdDataLazyImport
+      parentRoute: typeof authPerangkatPerangkatIdLazyImport
+    }
     '/__auth/perangkat/$perangkatId/edit': {
       id: '/__auth/perangkat/$perangkatId/edit'
       path: '/edit'
@@ -758,6 +780,7 @@ export const routeTree = rootRoute.addChildren({
     authPerangkatRoute: authPerangkatRoute.addChildren({
       authPerangkatPerangkatIdLazyRoute:
         authPerangkatPerangkatIdLazyRoute.addChildren({
+          authPerangkatPerangkatIdDataLazyRoute,
           authPerangkatPerangkatIdEditLazyRoute,
           authPerangkatPerangkatIdHapusLazyRoute,
           authPerangkatPerangkatIdLogsLazyRoute,
