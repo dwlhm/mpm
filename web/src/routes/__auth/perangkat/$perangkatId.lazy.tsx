@@ -38,15 +38,19 @@ function PreviewPerangkat() {
 
   if (isSuccess)
     return (
-      <div className="grow p-2 sm:p-6 lg:p-8 bg-white rounded shadow">
+      <>
         <Outlet />
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center sticky top-16 p-2 sm:p-6 lg:p-8 bg-white rounded-t">
           <div>
             <div className="flex gap-4 items-center">
               <h2 className="font-semibold text-xl">{dDetail.results.name}</h2>
-              <p className={`capitalize device-status ${dDetail.results.status}`}>{dDetail.results.status}</p>
+              <p
+                className={`capitalize device-status ${dDetail.results.status}`}
+              >
+                {dDetail.results.status}
+              </p>
             </div>
-            
+
             <p className="text-sm">
               {dDetail.results.ip_addr} - {dDetail.results.powermeter.seri}(
               {dDetail.results.powermeter.brand})
@@ -56,11 +60,13 @@ function PreviewPerangkat() {
             <PerangkatOptions perangkatId={perangkatId} />
           </div>
         </div>
-        <SensorData
-          auth={user}
-          perangkatId={perangkatId}
-          register={dDetail.results.powermeter.register as RegisterItem[]}
-        />
-      </div>
+        <div className="p-2 sm:p-6 lg:p-8">
+          <SensorData
+            auth={user}
+            perangkatId={perangkatId}
+            register={dDetail.results.powermeter.register as RegisterItem[]}
+          />
+        </div>
+      </>
     );
 }

@@ -11,7 +11,7 @@ h2 {
 }
 
 .perangkat.active {
-  @apply bg-slate-900/50 rounded sticky top-0 backdrop-blur-sm
+  @apply bg-slate-900/50 rounded sticky top-12 sm:top-0 backdrop-blur-sm
 }
 
 .live-data li {

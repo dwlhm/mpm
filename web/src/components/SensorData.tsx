@@ -74,7 +74,7 @@ export default function SensorData(props: {
         <p className="text-sm">
           Diperbaharui pada: {new Date(data.results.timestamp).toLocaleString()}
         </p>
-        <div className="grid grid-cols-3 gap-2 mt-6">
+        <div className="grid sm:grid-cols-3 gap-2 mt-6">
           {props.register.map((item) => (
             <ChartsView
               title={item[3]}
