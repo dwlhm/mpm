@@ -4,12 +4,11 @@ import { useQuery } from "react-query";
 import {
   DeviceLog,
   getDeviceLogs,
-} from "../../../../api/devices";
-import { Api } from "../../../../api/internal";
-import { useAuth } from "../../../../auth";
-import Errors from "../../../../components/Errors";
-import Loadings from "../../../../components/Loadings";
+} from "@/api/devices";
+import { Api } from "@/api/internal";
+import { useAuth } from "@/auth";
 import { PerangkatSubBody, PerangkatSubHeadingPanel, PerangkatSubTitle } from "@/perangkat/components";
+import { CompLoading, LayoutError } from "@/common";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/logs")(
   {
@@ -28,8 +27,8 @@ function DeviceLogs() {
     queryFn: getDeviceLogs,
   });
 
-  if (isLoading) return <Loadings />;
-  if (isError) return <Errors process="get log perangkat" message={error} />;
+  if (isLoading) return <CompLoading />;
+  if (isError) return <LayoutError process="get log perangkat" message={error} />;
   if (isSuccess)
     return (
       <>

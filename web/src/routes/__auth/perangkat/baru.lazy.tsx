@@ -8,8 +8,8 @@ import { Api } from "../../../api/internal";
 import { getPowermeter, Powermeter } from "../../../api/powermeter";
 import { AxiosError } from "axios";
 import { Select } from "@headlessui/react";
-import Loadings from "../../../components/Loadings";
 import { Gedung, getGedung } from "../../../api/gedung";
+import { CompLoading } from "@/common";
 
 export const Route: any = createLazyFileRoute("/__auth/perangkat/baru")({
   component: PerangkatBaru,
@@ -141,7 +141,7 @@ function PerangkatBaru() {
               <label htmlFor="powermeter-input" className="text-sm font-medium">
                 Seri Powermeter
               </label>
-              {pmLoading && <Loadings />}
+              {pmLoading && <CompLoading />}
               {pmSuccess && (
                 <Select
                   id="powermeter-input"
@@ -161,7 +161,7 @@ function PerangkatBaru() {
               <label htmlFor="gedung-input" className="text-sm font-medium">
                 Lokasi Gedung
               </label>
-              {gLoading && <Loadings />}
+              {gLoading && <CompLoading />}
               {gSuccess && (
                 <Select
                   id="gedung-input"

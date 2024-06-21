@@ -1,12 +1,12 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { AxiosError } from "axios";
 
-export default function CompError(props: {
+export const LayoutError = (props: {
   process: string;
   message: AxiosError | string;
   action?: React.ReactNode | null;
   className?: string;
-}) {
+}) => {
   const err_msg: string | string[] =
     typeof props.message == "string"
       ? props.message

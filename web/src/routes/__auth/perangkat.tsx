@@ -9,11 +9,9 @@ import { Api } from "../../api/internal";
 import { DeviceDetail, getDevices } from "../../api/devices";
 import { useAuth } from "../../auth";
 import { AxiosError } from "axios";
-import Loadings from "../../components/Loadings";
-import Errors from "../../components/Errors";
 import { CpuChipIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { CompButton } from "@/common";
+import { CompButton, CompLoading, LayoutError } from "@/common";
 
 export const Route = createFileRoute("/__auth/perangkat")({
   component: Dashboard,
@@ -43,14 +41,14 @@ function Dashboard() {
   if (isLoading)
     return (
       <>
-        <Loadings />
+        <CompLoading />
         <Outlet />
       </>
     );
   if (isError)
     return (
       <>
-        <Errors
+        <LayoutError
           process="mendapatkan list data perangkat"
           message={error}
           action={

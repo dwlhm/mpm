@@ -1,6 +1,6 @@
 import { PerangkatSubBody } from '@/perangkat/components'
-import { removeDevices } from '../../../../api/devices'
-import { useAuth } from '../../../../auth'
+import { removeDevices } from '@/api/devices'
+import { useAuth } from '@/auth'
 import { Link, createLazyFileRoute } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from 'react-query'
 

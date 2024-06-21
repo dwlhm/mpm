@@ -1,6 +1,6 @@
 import { MatchRoute, Outlet, createLazyFileRoute } from "@tanstack/react-router";
 import { useAuth } from "@/auth";
-import { CompLoading, CompError } from "@/common"
+import { CompLoading, LayoutError } from "@/common"
 import { PerangkatEnergyOverview, PerangkatOptions } from "@/perangkat/layouts"
 import { useQueryDetailPerangkat } from "@/perangkat/hooks";
 
@@ -24,7 +24,7 @@ function PreviewPerangkat() {
 
   if (isError)
     return (
-      <CompError process="mendapatkan data detail perangkat" message={dError} />
+      <LayoutError process="mendapatkan data detail perangkat" message={dError} />
     );
 
   if (isSuccess)

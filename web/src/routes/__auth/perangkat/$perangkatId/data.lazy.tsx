@@ -1,14 +1,13 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery } from "react-query";
-import { Api } from "../../../../api/internal";
-import { DeviceDetail, getDeviceDetail } from "../../../../api/devices";
-import SensorData from "../../../../components/SensorData";
-import { useAuth } from "../../../../auth";
+import { Api } from "@/api/internal";
+import { DeviceDetail, getDeviceDetail } from "@/api/devices";
+import SensorData from "@/components/SensorData";
+import { useAuth } from "@/auth";
 import { AxiosError } from "axios";
-import { RegisterItem } from "../../../../api/register";
-import Loadings from "../../../../components/Loadings";
-import Errors from "../../../../components/Errors";
+import { RegisterItem } from "@/api/register";
 import { PerangkatSubBody, PerangkatSubHeadingPanel, PerangkatSubTitle } from "@/perangkat/components";
+import { CompLoading, LayoutError } from "@/common";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/data")(
   {
@@ -31,9 +30,9 @@ function DataPerangkat() {
     queryFn: getDeviceDetail,
   });
 
-  if (isLoading) return <Loadings />;
+  if (isLoading) return <CompLoading />;
 
-  if (isError) return <Errors process="get latest data" message={dError} />;
+  if (isError) return <LayoutError process="get latest data" message={dError} />;
 
   if (isSuccess)
     return (

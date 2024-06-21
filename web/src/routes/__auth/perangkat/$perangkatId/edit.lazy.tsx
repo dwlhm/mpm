@@ -1,24 +1,23 @@
-import Errors from "../../../../components/Errors";
 import {
   DeviceDetail,
   getDeviceDetail,
   updateDevices,
-} from "../../../../api/devices";
-import { useAuth } from "../../../../auth";
+} from "@/api/devices";
+import { useAuth } from "@/auth";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AxiosError } from "axios";
 import { Select } from "@headlessui/react";
-import { Api } from "../../../../api/internal";
-import { Powermeter, getPowermeter } from "../../../../api/powermeter";
-import { Gedung, getGedung } from "../../../../api/gedung";
-import Loadings from "../../../../components/Loadings";
+import { Api } from "@/api/internal";
+import { Powermeter, getPowermeter } from "@/api/powermeter";
+import { Gedung, getGedung } from "@/api/gedung";
 import {
   PerangkatSubBody,
   PerangkatSubHeadingPanel,
   PerangkatSubTitle,
 } from "@/perangkat/components";
+import { CompLoading, LayoutError } from "@/common";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/edit")(
   {
@@ -167,7 +166,7 @@ function EditPerangkat() {
                 >
                   Seri Powermeter
                 </label>
-                {pmLoading && <Loadings />}
+                {pmLoading && <CompLoading />}
                 {pmSuccess && (
                   <Select
                     id="powermeter-input"
@@ -179,10 +178,7 @@ function EditPerangkat() {
                     {powermeter?.results.map((item) => (
                       <option
                       key={`e.p_p_${item.id}`}
-                        value={item.id}
-                        // selected={
-                        //   item.id == perangkatInfo.data.results.powermeter?.id
-                        // }
+                      defaultValue={item.id}
                       >
                         {item.seri} - {item.brand}
                       </option>
@@ -194,7 +190,7 @@ function EditPerangkat() {
                 <label htmlFor="gedung-input" className="text-sm font-medium">
                   Lokasi Gedung
                 </label>
-                {gLoading && <Loadings />}
+                {gLoading && <CompLoading />}
                 {gSuccess && (
                   <Select
                     id="gedung-input"
@@ -206,10 +202,7 @@ function EditPerangkat() {
                     {gedung?.results.map((item) => (
                       <option
                       key={`e.p_g_${item.id}`}
-                        value={item.id}
-                        // selected={
-                        //   item.id == perangkatInfo.data.results.gedung?.id
-                        // }
+                      defaultValue={item.id}
                       >
                         {item.name}
                       </option>
@@ -228,7 +221,7 @@ function EditPerangkat() {
             </fieldset>
             <div>
               {mutation.isError ? (
-                <Errors
+                <LayoutError
                   className="mt-3"
                   process="update data perangkat"
                   message={mutation.error as AxiosError}
