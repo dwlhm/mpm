@@ -1,0 +1,21 @@
+.btn_group button {
+    @apply w-fit flex gap-2 rounded-none p-0 items-center justify-center
+}
+.btn_group button a {
+    @apply flex gap-2 transition hover:bg-gray-800 py-2 px-5
+}
+.btn_group button a.active {
+    @apply bg-blue-900
+}
+.btn_group button:nth-child(1) {
+    @apply rounded-l border-r border-white/10
+}
+.btn_group button:nth-last-child(1) {
+    @apply rounded-r border-none
+}
+.btn_group button:nth-child(1) a {
+    @apply rounded-l
+}
+.btn_group button:nth-last-child(1) a {
+    @apply rounded-r
+}
