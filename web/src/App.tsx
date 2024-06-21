@@ -1,42 +1,45 @@
-import './App.css'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { RouterProvider, createRouter } from '@tanstack/react-router';
+import "./App.css";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const queryClient = new QueryClient();
 
-import { routeTree } from './routeTree.gen';
-import { AuthProvider, useAuth } from './auth';
+import { routeTree } from "./routeTree.gen";
+import { AuthProvider, useAuth } from "./auth";
 
-const router = createRouter({ 
+const router = createRouter({
   routeTree,
-  defaultPreload: 'intent',
+  defaultPreload: "intent",
   context: {
     auth: undefined!,
-    queryClient
+    queryClient,
   },
   defaultPreloadStaleTime: 0,
-})
+});
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }
 
 function InnerApp() {
-  const auth = useAuth()
-  return <RouterProvider router={router} context={{ auth }} />
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ auth }} />;
 }
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <InnerApp />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <InnerApp />
+        </LocalizationProvider>
       </AuthProvider>
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;

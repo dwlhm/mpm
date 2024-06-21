@@ -64,3 +64,21 @@ h2 {
   box-shadow: 0 0 0px 4px #80000069;
   @apply bg-red-900
 } 
+.date_time div:first-child .MuiInputBase-root {
+  @apply rounded-r-none rounded-l border-none
+}
+.date_time div:last-child .MuiInputBase-root {
+  @apply rounded-l-none rounded-r border-none
+}
+.date_time .MuiFormLabel-root {
+  @apply text-gray-200
+}
+.date_time .MuiInputLabel-shrink {
+  @apply bg-blue-900 px-2 py-1 rounded
+}
+.date_time input {
+  @apply text-gray-200
+}
+.date_time .MuiSvgIcon-root {
+  @apply fill-gray-200
+}

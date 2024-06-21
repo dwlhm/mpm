@@ -21,6 +21,7 @@ import {
   TableCellsIcon,
   ViewColumnsIcon,
 } from "@heroicons/react/24/outline";
+import { PerangkatFilterBar } from "@/perangkat/layouts";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/data")(
   {
@@ -52,48 +53,7 @@ function DataPerangkat() {
           <PerangkatSubTitle>Data</PerangkatSubTitle>
         </PerangkatSubHeadingPanel>
         <PerangkatSubBody>
-          <div className="mb-2 flex justify-between">
-            <CompButton className="w-fit flex gap-4">
-              Realtime <ChevronDownIcon className="size-5" />
-            </CompButton>
-            <div>
-              <CompButton className="px-2 w-48">
-                From<CalendarIcon className="size-5" />
-              </CompButton>
-            </div>
-            <CompButtonLinkGroup>
-              <CompButton>
-                <Link
-                  to="/perangkat/$perangkatId/data"
-                  search={{
-                    mode: "grafik",
-                  }}
-                  params={{ perangkatId }}
-                  activeProps={{
-                    className: "bg-blue-900"
-                  }}
-                >
-                  <ChartBarIcon className="size-5" />
-                  Grafik
-                </Link>
-              </CompButton>
-              <CompButton>
-                <Link
-                  to="/perangkat/$perangkatId/data"
-                  params={{ perangkatId }}
-                  search={{
-                    mode: "tabel",
-                  }}
-                  activeProps={{
-                    className: "bg-blue-900"
-                  }}
-                >
-                  <ViewColumnsIcon className="size-5" />
-                  Tabel
-                </Link>
-              </CompButton>
-            </CompButtonLinkGroup>
-          </div>
+          <PerangkatFilterBar perangkatId={perangkatId} />
           <SensorData
             auth={user}
             perangkatId={perangkatId}
