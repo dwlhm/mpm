@@ -1,0 +1,3 @@
+.card_panel a {
+    @apply transition py-1 px-4 flex items-center gap-4 text-gray-100 bg-blue-900 rounded hover:bg-blue-800 border-4 border-blue-900 hover:shadow-md
+}
