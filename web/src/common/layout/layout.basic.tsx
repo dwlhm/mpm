@@ -2,7 +2,7 @@ import React from "react"
 
 export const LayoutBasic = (props: { children: React.ReactNode }) => {
     return(
-        <div className={`flex grow w-full bg-blue-900`}>
+        <div className={`flex grow w-full bg-blue-900 flex-col sm:flex-row`}>
             {props.children}
         </div>
     )

@@ -6,7 +6,7 @@ import Loadings from '../../../components/Loadings'
 import { Link, Outlet, createLazyFileRoute, useParams } from '@tanstack/react-router'
 import { AxiosError } from 'axios'
 import { useQuery } from 'react-query'
-import { HomeIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, ChevronRightIcon, BuildingLibraryIcon } from '@heroicons/react/24/outline'
 
 export const Route = createLazyFileRoute('/__auth/pengaturan/kampus')({
   component: Kampus
@@ -62,16 +62,18 @@ function ListKampus(props: { data: Api<KampusInf[]>, kampus_id: string }) {
   return(
     <div className={`flex grow w-full ${props.kampus_id && 'bg-gray-200'}`}>
       <div className={`w-full py-2 overflow-auto`}>
-        <div className={`grid grid-cols-5 gap-4`}>
+        <div className={`grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4`}>
           {props.data.results.map((data, index) => {
               return (
                 <Link 
                   key={index}
                   to={`/pengaturan/kampus/${data.id}`}
-                  className={`pengaturan transition py-2 px-4 flex items-center gap-3 ${!props.kampus_id ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
-                  <HomeIcon className={`w-6 h-6 ${!props.kampus_id ? 'text-white' : 'text-white/60'}`} />
-                  <div className='ml-2'>
-                    <h4 className='font-medium text-lg capitalize'>{data.name}</h4>
+                  className={`pengaturan transition py-2 px-4 grid grid-cols-3 ${!props.kampus_id ? 'text-white bg-blue-900 border border-2 border-blue-900 hover:border-slate-800 rounded' : 'text-gray-100 hover:bg-gray-800/50 hover:rounded'}`}>
+                  <div className='flex items-center'>
+                  <BuildingLibraryIcon className={`size-6 ${!props.kampus_id ? 'text-white' : 'text-white/60'}`} />
+                  </div>
+                  <div className='col-span-2 flex items-center'>
+                    <h4 className='font-medium text-lg capitalize text-balance'>{data.name}</h4>
                   </div>
                 </Link>)
             })
