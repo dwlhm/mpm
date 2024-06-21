@@ -50,10 +50,10 @@ function PreviewPerangkat() {
             <PerangkatOptions perangkatId={perangkatId} />
           </div>
         </div>
+        <Outlet />
         <MatchRoute to="/perangkat/$perangkatId">
           <PerangkatEnergyOverview />
         </MatchRoute>
-        <Outlet />
       </>
     );
 }

@@ -22,7 +22,7 @@ export default function SensorData(props: {
   perangkatId: string;
   register: RegisterItem[];
 }) {
-  const { data, isLoading, isError, isSuccess, error } = useQuery<
+  const { isLoading, isError, isSuccess, error } = useQuery<
     Api<SensorDataInf>,
     AxiosError
   >({
@@ -70,10 +70,7 @@ export default function SensorData(props: {
   if (isSuccess) {
     return (
       <>
-        <p className="text-sm">
-          Diperbaharui pada: {new Date(data.results.timestamp).toLocaleString()}
-        </p>
-        <div className="grid sm:grid-cols-3 gap-2 mt-6">
+        <div className="grid sm:grid-cols-3 gap-2">
           {props.register.map((item) => (
             <ChartsView
               title={item[3]}

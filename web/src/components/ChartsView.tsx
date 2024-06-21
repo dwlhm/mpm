@@ -27,7 +27,6 @@ export default function ChartsView(props: {
   value: number[];
   unit: string;
 }) {
-  console.log("value", props.value);
   if (props.value == undefined) return <Loadings />
   if (props.value.length <= 0) return <Loadings />;
   return (
