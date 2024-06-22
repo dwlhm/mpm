@@ -10,18 +10,18 @@ router = APIRouter(
     dependencies=[Depends(oauth2_scheme)]
 )
 
-@router.get("/{id}")
-async def get_data_with_filter(id: str, mode: Literal["hourly", "daily", "weekly", "monthly", "yearly"]):
-    result = get_data(
-        mode_id=mode,
-        id=id,
-        config=load_config()
-    )
-    if (result.get("error")): raise HTTPException(
-            status_code=400,
-            detail=result.get("error")
-        )
-    return {
-        "status": "success",
-        "results": result.get("data")
-    }
+# @router.get("/{id}")
+# async def get_data_with_filter(id: str, mode: Literal["hourly", "daily", "weekly", "monthly", "yearly"]):
+#     result = get_data(
+#         mode_id=mode,
+#         id=id,
+#         config=load_config()
+#     )
+#     if (result.get("error")): raise HTTPException(
+#             status_code=400,
+#             detail=result.get("error")
+#         )
+#     return {
+#         "status": "success",
+#         "results": result.get("data")
+#     }
