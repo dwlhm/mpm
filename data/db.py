@@ -1,33 +1,102 @@
 import psycopg2
+from psycopg2 import sql
 import base64
 from datetime import datetime, timedelta
+from database.internal import get as get_db
+
+def get_data(mode_id, id, config):
+    mode_name = "data_hourly"
+    if mode_id == "hourly": mode_name = "data_hourly"
+    if mode_id == "daily": mode_name = "data_daily"
+    if mode_id == "weekly": mode_name = "data_weekly"
+    if mode_id == "monthly": mode_name = "data_monthly"
+    print("mode)name: ", mode_name)
+    
+    sql_query = """SELECT DISTINCT ON (id)
+        phase_voltage_a::NUMERIC(10,2),
+        phase_voltage_b::NUMERIC(10,2),
+        phase_voltage_c::NUMERIC(10,2),
+        wire_voltage_ab::NUMERIC(10,2),
+        wire_voltage_bc::NUMERIC(10,2),
+        wire_voltage_ca::NUMERIC(10,2),
+        phase_current_a::NUMERIC(10,2),
+        phase_current_b::NUMERIC(10,2),
+        phase_current_c::NUMERIC(10,2),
+        active_power_a::NUMERIC(10,2),
+        active_power_b::NUMERIC(10,2),
+        active_power_c::NUMERIC(10,2),
+        reactive_power_a::NUMERIC(10,2),
+        reactive_power_b::NUMERIC(10,2),
+        reactive_power_c::NUMERIC(10,2),
+        apparent_power_a::NUMERIC(10,2),
+        apparent_power_b::NUMERIC(10,2),
+        apparent_power_c::NUMERIC(10,2),
+        power_factor_a::NUMERIC(10,2),
+        power_factor_b::NUMERIC(10,2),
+        power_factor_c::NUMERIC(10,2),
+        frequency::NUMERIC(10,2),
+        active_power::NUMERIC(10,2),
+        reactive_power::NUMERIC(10,2),
+        positive_active_power::NUMERIC(10,2),
+        negative_active_power::NUMERIC(10,2),
+        positive_reactive_power::NUMERIC(10,2),
+        negative_reactive_power::NUMERIC(10,2),
+        current_active_power_demand::NUMERIC(10,2),
+        maximum_active_power_demand::NUMERIC(10,2),
+        current_reactive_power_demand::NUMERIC(10,2),
+        maximum_reactive_power_demand::NUMERIC(10,2),
+        a_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        b_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        c_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        a_phase_current_total_harmonic_content::NUMERIC(10,2),
+        b_phase_current_total_harmonic_content::NUMERIC(10,2),
+        c_phase_current_total_harmonic_content::NUMERIC(10,2),
+        o_phase_current::NUMERIC(10,2),
+        phase_voltage_maximum::NUMERIC(10,2),
+        Wires_voltage_maximum::NUMERIC(10,2),
+        current_maximum::NUMERIC(10,2),
+        voltage_imbalance::NUMERIC(10,2),
+        current_imbalance::NUMERIC(10,2),
+        a_b_phase_voltage_angle::NUMERIC(10,2),
+        b_C_phase_voltage_angle::NUMERIC(10,2),
+        c_a_phase_voltage_angle::NUMERIC(10,2),
+        first_quadrant_reactive_energy::NUMERIC(10,2),
+        second_quadrant_reactive_energy::NUMERIC(10,2),
+        third_quadrant_reactive_energy::NUMERIC(10,2),
+        fourth_quadrant_reactive_power::NUMERIC(10,2),
+        timestamp
+        FROM {table_name}
+        WHERE device = %s
+        ORDER BY id ASC
+        LIMIT 1"""
+    return get_db(sql.SQL(sql_query).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), ), config)
 
 def get_date(mode_id: str):
     match mode_id:
         case "hourly":
             return {
-                "from": datetime(2024,6,22,10,15,00),
-                "to": datetime(2024,6,22,10,15,00) - timedelta(hours=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(hours=1)
             }
         case "daily":
             return {
-                "from": datetime.today(),
-                "to": datetime.today() - timedelta(days=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(days=1)
             }
         case "weekly":
             return {
-                "from": datetime.today(),
-                "to": datetime.today() - timedelta(weeks=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(weeks=1)
             }
         case "monthly":
             return {
-                "from": datetime.today(),
-                "to": (datetime.today().replace(day=1) - timedelta(days=31)).replace(day=1)
+                "to": datetime.now(),
+                "from": (datetime.now().replace(day=1) - timedelta(days=31)).replace(day=1)
             }
         case _:
             return {
-                "from": datetime.today(),
-                "to": datetime.today() - timedelta(hours=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(hours=1)
             }
 
 def data_action_avg(mode_id: str, id:str, config: any):
@@ -35,16 +104,19 @@ def data_action_avg(mode_id: str, id:str, config: any):
         date = get_date(mode_id=mode_id)
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.execute(mode[mode_id], (base64.b64decode(id).decode(), date.get("to"), base64.b64decode(id).decode(), date.get("to"), date.get("from"),)) 
+                cur.execute(mode[mode_id], (base64.b64decode(id).decode(), date.get("to"), base64.b64decode(id).decode(), date.get("from"), date.get("to"),)) 
                 
                 d = cur.fetchone()
+
+                print("D: ", d)
                 conn.commit()
                 
                 cur.execute(latest[mode_id], (base64.b64decode(id).decode(), date.get("to"),))
 
                 e = cur.fetchone()
+                print("E: ", e, date.get("to"))
 
-                cur.execute(update[mode_id], (e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9], e[10], d))
+                cur.execute(update[mode_id], (e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9], e[10], d, ))
 
                 f = cur.fetchone()
                 
@@ -610,7 +682,7 @@ update = {
 }
 
 latest = {
-    "hourly": """SELECT DISTINCT ON (id)
+    "hourly": """SELECT DISTINCT ON (timestamp)
         first_quadrant_reactive_energy::NUMERIC(10,2),
         second_quadrant_reactive_energy::NUMERIC(10,2),
         third_quadrant_reactive_energy::NUMERIC(10,2),
@@ -625,8 +697,9 @@ latest = {
         FROM data
         WHERE device_id = %s AND
         timestamp <= cast(%s AS TIMESTAMPTZ)
+        ORDER BY timestamp DESC
         LIMIT 1""",
-    "daily": """SELECT DISTINCT ON (id)
+    "daily": """SELECT 
         first_quadrant_reactive_energy::NUMERIC(10,2),
         second_quadrant_reactive_energy::NUMERIC(10,2),
         third_quadrant_reactive_energy::NUMERIC(10,2),
@@ -654,7 +727,7 @@ latest = {
         positive_reactive_power::NUMERIC(10,2),
         negative_reactive_power::NUMERIC(10,2),
         timestamp
-        FROM data_weekly
+        FROM data_daily
         WHERE device = %s AND
         timestamp <= cast(%s AS TIMESTAMPTZ)
         LIMIT 1""",
@@ -670,7 +743,7 @@ latest = {
         positive_reactive_power::NUMERIC(10,2),
         negative_reactive_power::NUMERIC(10,2),
         timestamp
-        FROM data_monthly
+        FROM data_weekly
         WHERE device = %s AND
         timestamp <= cast(%s AS TIMESTAMPTZ)
         LIMIT 1""",
@@ -686,7 +759,7 @@ latest = {
         positive_reactive_power::NUMERIC(10,2),
         negative_reactive_power::NUMERIC(10,2),
         timestamp
-        FROM data_yearly
+        FROM data_monthly
         WHERE device = %s AND
         timestamp <= cast(%s AS TIMESTAMPTZ)
         LIMIT 1"""

@@ -453,6 +453,10 @@ def create_tables():
         """
         CREATE INDEX IF NOT EXISTS device_id
         ON device(id)
+        """,
+        """
+        CREATE INDEX IF NOT EXISTS timestamp
+        ON data_hourly(timestamp)
         """
     )
     config_db = config.load_config()
