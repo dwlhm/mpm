@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
 from typing import Literal
-from .db import get_data
+from .db import get_data_with_datetime, get_data_with_limit, get_data_with_datetime_limit
 from dependencies import oauth2_scheme
 from configuration.config import load_config
 
@@ -11,75 +12,153 @@ router = APIRouter(
 )
 
 @router.get("/{id}")
-async def get_latest_data_by_interval(id: str, mode: Literal["hourly", "daily", "weekly", "monthly", "yearly"]):
-    result = get_data(
-        mode_id=mode,
-        id=id,
-        config=load_config()
-    )
+async def get_data_by_interval(id: str, interval: Literal["realtime","hourly", "daily", "weekly", "monthly", "yearly"], dfrom:str = None, dto:str= None, limit:int = None):
+    result = {}
+    if (dfrom == None and dto == None):
+        if (limit == None):
+            limit = 1
+        result = get_data_with_limit(
+            interval=interval,
+            id=id,
+            limit=limit,
+            config=load_config()
+        )
+    else:
+        if limit == None:
+            result = get_data_with_datetime(
+                interval=interval,
+                id=id,
+                date_from=dfrom,
+                date_to=dto,
+                config=load_config()
+            )
+        else:
+            result = get_data_with_datetime_limit(
+                interval=interval,
+                id=id,
+                date_from=dfrom,
+                date_to=dto,
+                limit=limit,
+                config=load_config()
+            )
+        
+        
     if (result.get("error")): raise HTTPException(
             status_code=400,
             detail=result.get("error")
         )
-
-    d = result.get("data")[0]
-    print(d)
+    
+    item = result.get("data")
+    data = { "data": {
+                "phase_voltage_a": [],
+                "phase_voltage_b": [],
+                "phase_voltage_c": [],
+                "wire_voltage_ab": [],
+                "wire_voltage_bc": [],
+                "wire_voltage_ca": [],
+                "phase_current_a": [],
+                "phase_current_b": [],
+                "phase_current_c": [],
+                "active_power_a": [],
+                "active_power_b": [],
+                "active_power_c": [],
+                "reactive_power_a": [],
+                "reactive_power_b": [],
+                "reactive_power_c": [],
+                "apparent_power_a": [],
+                "apparent_power_b": [],
+                "apparent_power_c": [],
+                "power_factor_a": [],
+                "power_factor_b": [],
+                "power_factor_c": [],
+                "frequency": [],
+                "active_power": [],
+                "reactive_power": [],
+                "positive_active_power": [],
+                "negative_active_power": [],
+                "positive_reactive_power": [],
+                "negative_reactive_power": [],
+                "current_active_power_demand": [],
+                "maximum_active_power_demand": [],
+                "current_reactive_power_demand": [],
+                "maximum_reactive_power_demand": [],
+                "a_phase_voltage_total_harmonic_content": [],
+                "b_phase_voltage_total_harmonic_content": [],
+                "c_phase_voltage_total_harmonic_content": [],
+                "a_phase_current_total_harmonic_content": [],
+                "b_phase_current_total_harmonic_content": [],
+                "c_phase_current_total_harmonic_content": [],
+                "o_phase_current": [],
+                "phase_voltage_maximum": [],
+                "Wires_voltage_maximum": [],
+                "current_maximum": [],
+                "voltage_imbalance": [],
+                "current_imbalance": [],
+                "a_b_phase_voltage_angle": [],
+                "b_C_phase_voltage_angle": [],
+                "c_a_phase_voltage_angle": [],
+                "first_quadrant_reactive_energy": [],
+                "second_quadrant_reactive_energy": [],
+                "third_quadrant_reactive_energy": [],
+                "fourth_quadrant_reactive_power": [],
+            },
+            "timestamp": [],
+            "length": len(item)
+        }
+    for d in item:
+        data["data"]["phase_voltage_a"].append(d[0])
+        data["data"]["phase_voltage_b"].append(d[1]),
+        data["data"]["phase_voltage_c"].append(d[2]),
+        data["data"]["wire_voltage_ab"].append(d[3]),
+        data["data"]["wire_voltage_bc"].append(d[4]),
+        data["data"]["wire_voltage_ca"].append(d[5]),
+        data["data"]["phase_current_a"].append(d[6]),
+        data["data"]["phase_current_b"].append(d[7]),
+        data["data"]["phase_current_c"].append(d[8]),
+        data["data"]["active_power_a"].append(d[9]),
+        data["data"]["active_power_b"].append(d[10]),
+        data["data"]["active_power_c"].append(d[11]),
+        data["data"]["reactive_power_a"].append(d[12]),
+        data["data"]["reactive_power_b"].append(d[13]),
+        data["data"]["reactive_power_c"].append(d[14]),
+        data["data"]["apparent_power_a"].append(d[15]),
+        data["data"]["apparent_power_b"].append(d[16]),
+        data["data"]["apparent_power_c"].append(d[17]),
+        data["data"]["power_factor_a"].append(d[18]),
+        data["data"]["power_factor_b"].append(d[19]),
+        data["data"]["power_factor_c"].append(d[20]),
+        data["data"]["frequency"].append(d[21]),
+        data["data"]["active_power"].append(d[22]),
+        data["data"]["reactive_power"].append(d[23]),
+        data["data"]["positive_active_power"].append(d[24]),
+        data["data"]["negative_active_power"].append(d[25]),
+        data["data"]["positive_reactive_power"].append(d[26]),
+        data["data"]["negative_reactive_power"].append(d[27]),
+        data["data"]["current_active_power_demand"].append(d[28]),
+        data["data"]["maximum_active_power_demand"].append(d[29]),
+        data["data"]["current_reactive_power_demand"].append(d[30]),
+        data["data"]["maximum_reactive_power_demand"].append(d[31]),
+        data["data"]["a_phase_voltage_total_harmonic_content"].append(d[32]),
+        data["data"]["b_phase_voltage_total_harmonic_content"].append(d[33]),
+        data["data"]["c_phase_voltage_total_harmonic_content"].append(d[34]),
+        data["data"]["a_phase_current_total_harmonic_content"].append(d[35]),
+        data["data"]["b_phase_current_total_harmonic_content"].append(d[36]),
+        data["data"]["c_phase_current_total_harmonic_content"].append(d[37]),
+        data["data"]["o_phase_current"].append(d[38]),
+        data["data"]["phase_voltage_maximum"].append(d[39]),
+        data["data"]["Wires_voltage_maximum"].append(d[40]),
+        data["data"]["current_maximum"].append(d[41]),
+        data["data"]["voltage_imbalance"].append(d[42]),
+        data["data"]["current_imbalance"].append(d[43]),
+        data["data"]["a_b_phase_voltage_angle"].append(d[44]),
+        data["data"]["b_C_phase_voltage_angle"].append(d[45]),
+        data["data"]["c_a_phase_voltage_angle"].append(d[46]),
+        data["data"]["first_quadrant_reactive_energy"].append(d[47]),
+        data["data"]["second_quadrant_reactive_energy"].append(d[48]),
+        data["data"]["third_quadrant_reactive_energy"].append(d[49]),
+        data["data"]["fourth_quadrant_reactive_power"].append(d[50]),
+        data["timestamp"].append(d[-1])
     return {
         "status": "success",
-        "results": {
-            "data": {
-                            "phase_voltage_a": d[0],
-                            "phase_voltage_b": d[1],
-                            "phase_voltage_c": d[2],
-                            "wire_voltage_ab": d[3],
-                            "wire_voltage_bc": d[4],
-                            "wire_voltage_ca": d[5],
-                            "phase_current_a": d[6],
-                            "phase_current_b": d[7],
-                            "phase_current_c": d[8],
-                            "active_power_a": d[9],
-                            "active_power_b": d[10],
-                            "active_power_c": d[11],
-                            "reactive_power_a": d[12],
-                            "reactive_power_b": d[13],
-                            "reactive_power_c": d[14],
-                            "apparent_power_a": d[15],
-                            "apparent_power_b": d[16],
-                            "apparent_power_c": d[17],
-                            "power_factor_a": d[18],
-                            "power_factor_b": d[19],
-                            "power_factor_c": d[20],
-                            "frequency": d[21],
-                            "active_power": d[22],
-                            "reactive_power": d[23],
-                            "positive_active_power": d[24],
-                            "negative_active_power": d[25],
-                            "positive_reactive_power": d[26],
-                            "negative_reactive_power": d[27],
-                            "current_active_power_demand": d[28],
-                            "maximum_active_power_demand": d[29],
-                            "current_reactive_power_demand": d[30],
-                            "maximum_reactive_power_demand": d[31],
-                            "a_phase_voltage_total_harmonic_content": d[32],
-                            "b_phase_voltage_total_harmonic_content": d[33],
-                            "c_phase_voltage_total_harmonic_content": d[34],
-                            "a_phase_current_total_harmonic_content": d[35],
-                            "b_phase_current_total_harmonic_content": d[36],
-                            "c_phase_current_total_harmonic_content": d[37],
-                            "o_phase_current": d[38],
-                            "phase_voltage_maximum": d[39],
-                            "Wires_voltage_maximum": d[40],
-                            "current_maximum": d[41],
-                            "voltage_imbalance": d[42],
-                            "current_imbalance": d[43],
-                            "a_b_phase_voltage_angle": d[44],
-                            "b_C_phase_voltage_angle": d[45],
-                            "c_a_phase_voltage_angle": d[46],
-                            "first_quadrant_reactive_energy": d[47],
-                            "second_quadrant_reactive_energy": d[48],
-                            "third_quadrant_reactive_energy": d[49],
-                            "fourth_quadrant_reactive_power": d[50],
-                        },
-                        "timestamp": d[-1]
-        }
+        "results": data
     }
