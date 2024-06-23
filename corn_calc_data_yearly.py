@@ -3,7 +3,7 @@ from data import db
 from configuration.config import load_config
 
 if __name__ == "__main__":
-    all_data = db.data_action_avg(id="MQ==",mode_id="yearly", config=load_config())
+    all_data = db.data_action_avg(id="MQ==",interval="yearly", config=load_config())
     if (all_data.get("error")): print("Error: ", all_data.get("error"))
     
     if (all_data.get("data")):

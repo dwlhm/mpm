@@ -3,9 +3,9 @@ from data import db
 from configuration.config import load_config
 
 if __name__ == "__main__":
-    all_data = db.data_action_avg(id="MQ==",mode_id="hourly", config=load_config())
+    all_data = db.data_action_avg(id="MQ==",interval="hourly", config=load_config())
     if (all_data.get("error")): print("Error: ", all_data.get("error"))
     
     if (all_data.get("data")):
         data = all_data.get("data")
-        print(f"data location: {data[0]}")
+        print(f"data location: {data}")

@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 @router.get("/{id}")
-async def get_data_by_interval(id: str, interval: Literal["realtime","hourly", "daily", "weekly", "monthly", "yearly"], dfrom:str = None, dto:str= None, limit:int = None):
+async def get_data_by_interval_and_datetime(id: str, interval: Literal["realtime","hourly", "daily", "weekly", "monthly", "yearly"], dfrom:str = None, dto:str= None, limit:int = None):
     result = {}
     if (dfrom == None and dto == None):
         if (limit == None):

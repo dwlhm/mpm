@@ -21,13 +21,13 @@ def get(sql, param, config):
             "error": str(Error)
         }
         
-def upsert(sql, param):
+def upsert(sql, param, config):
     try:
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, param) 
                 
-                d = cur.fetchall()
+                d = cur.fetchone()
 
                 conn.commit()
                 

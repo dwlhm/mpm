@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import sql
 import base64
 from datetime import datetime, timedelta
-from database.internal import get as get_db
+from database.internal import get as get_db, upsert as upsert_db
 
 def get_data_with_datetime_limit(interval, id, date_from, date_to, limit, config):
 
@@ -11,7 +11,96 @@ def get_data_with_datetime_limit(interval, id, date_from, date_to, limit, config
     else:
         mode_name = "data_" + interval
     
-    sql_query = """SELECT DISTINCT ON (id)
+    return get_db(sql.SQL(sql_get_data_w_datetime_limit).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, date_to, limit, ), config)
+
+def get_data_with_datetime(interval, id, date_from, date_to, config):
+
+    if (interval == "realtime"):
+        mode_name = "data"
+    else:
+        mode_name = "data_" + interval
+    
+    return get_db(sql.SQL(sql_get_data_w_datetime).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, date_to, ), config)
+
+def get_data_with_limit(interval, id, limit, config):
+    
+    if (interval == "realtime"):
+        mode_name = "data"
+    else:
+        mode_name = "data_" + interval
+
+    return get_db(sql.SQL(sql_get_data_w_limit).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), limit, ), config)
+
+def data_action_avg(interval: str, id:str, config: any):
+
+    mode_name = "data_" + interval
+    ref = "data"
+    match interval:
+        case "hourly":
+            ref = "data"
+        case "daily":
+            ref = "data_hourly"
+        case "weekly":
+            ref = "data_daily"
+        case "monthly":
+            ref = "data_weekly"
+        case "yearly":
+            ref = "data_monthly"
+        case _:
+            return {
+                "error": "invalid interval"
+            }
+
+    date = get_date(mode_id=interval)
+
+    main_row =  upsert_db(
+        sql=sql.SQL(sql_copy_avg).format(table_name=sql.Identifier(mode_name), table_ref=sql.Identifier(ref)),
+        param=(base64.b64decode(id).decode(), date.get("to"), base64.b64decode(id).decode(), date.get("from"), date.get("to"), ),
+        config=config
+    )
+
+    if main_row.get("error"): return main_row.get("error")
+
+    main_row_value = main_row.get("data")
+
+    main_row_id = main_row_value[0]
+
+    return upsert_db(
+        sql=sql.SQL(sql_update_avg_row).format(table_name=sql.Identifier(mode_name), table_ref=sql.Identifier(ref)),
+        param=(base64.b64decode(id).decode(), date.get("to"), main_row_id, ),
+        config=config
+    )
+
+
+def get_date(mode_id: str):
+    match mode_id:
+        case "hourly":
+            return {
+                "to": datetime(2024, 6, 22,11,15,00),
+                "from": datetime(2024, 6, 22,10,15,00) - timedelta(hours=1)
+            }
+        case "daily":
+            return {
+                "to": datetime(2024, 6, 22,11,15,00),
+                "from": datetime(2024, 6, 22,11,15,00) - timedelta(days=1)
+            }
+        case "weekly":
+            return {
+                "to": datetime(2024, 6, 22,11,15,00),
+                "from": datetime(2024, 6, 22,11,15,00) - timedelta(weeks=1)
+            }
+        case "monthly":
+            return {
+                "to": datetime(2024, 6, 22,11,15,00),
+                "from": (datetime(2024, 6, 22,11,15,00).replace(day=1) - timedelta(days=31)).replace(day=1)
+            }
+        case _:
+            return {
+                "to": datetime(2024, 6, 22,11,15,00),
+                "from": datetime(2024, 6, 22,11,15,00) - timedelta(hours=1)
+            }
+    
+sql_get_data_w_datetime_limit = """SELECT DISTINCT ON (id)
         phase_voltage_a::NUMERIC(10,2),
         phase_voltage_b::NUMERIC(10,2),
         phase_voltage_c::NUMERIC(10,2),
@@ -69,16 +158,8 @@ def get_data_with_datetime_limit(interval, id, date_from, date_to, limit, config
         timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
         ORDER BY id DESC
         LIMIT %s"""
-    return get_db(sql.SQL(sql_query).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, date_to, limit, ), config)
 
-def get_data_with_datetime(interval, id, date_from, date_to, config):
-
-    if (interval == "realtime"):
-        mode_name = "data"
-    else:
-        mode_name = "data_" + interval
-    
-    sql_query = """SELECT DISTINCT ON (id)
+sql_get_data_w_datetime = """SELECT DISTINCT ON (id)
         phase_voltage_a::NUMERIC(10,2),
         phase_voltage_b::NUMERIC(10,2),
         phase_voltage_c::NUMERIC(10,2),
@@ -135,16 +216,8 @@ def get_data_with_datetime(interval, id, date_from, date_to, config):
         WHERE device_id = %s AND
         timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
         ORDER BY id DESC"""
-    return get_db(sql.SQL(sql_query).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, date_to, ), config)
 
-def get_data_with_limit(interval, id, limit, config):
-    
-    if (interval == "realtime"):
-        mode_name = "data"
-    else:
-        mode_name = "data_" + interval
-
-    sql_query = """SELECT DISTINCT ON (id)
+sql_get_data_w_limit = """SELECT DISTINCT ON (id)
         phase_voltage_a::NUMERIC(10,2),
         phase_voltage_b::NUMERIC(10,2),
         phase_voltage_c::NUMERIC(10,2),
@@ -201,74 +274,8 @@ def get_data_with_limit(interval, id, limit, config):
         WHERE device_id = %s 
         ORDER BY id DESC
         LIMIT %s"""
-    return get_db(sql.SQL(sql_query).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), limit, ), config)
 
-def get_date(mode_id: str):
-    match mode_id:
-        case "hourly":
-            return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": datetime(2024, 6, 22,10,15,00) - timedelta(hours=1)
-            }
-        case "daily":
-            return {
-                "to": datetime.now(),
-                "from": datetime.now() - timedelta(days=1)
-            }
-        case "weekly":
-            return {
-                "to": datetime.now(),
-                "from": datetime.now() - timedelta(weeks=1)
-            }
-        case "monthly":
-            return {
-                "to": datetime.now(),
-                "from": (datetime.now().replace(day=1) - timedelta(days=31)).replace(day=1)
-            }
-        case _:
-            return {
-                "to": datetime.now(),
-                "from": datetime.now() - timedelta(hours=1)
-            }
-
-def data_action_avg(mode_id: str, id:str, config: any):
-    try:
-        date = get_date(mode_id=mode_id)
-        with psycopg2.connect(**config) as conn:
-            with conn.cursor() as cur:
-                cur.execute(mode[mode_id], (base64.b64decode(id).decode(), date.get("to"), base64.b64decode(id).decode(), date.get("from"), date.get("to"),)) 
-                
-                d = cur.fetchone()
-
-                print("D: ", d)
-                conn.commit()
-                
-                cur.execute(latest[mode_id], (base64.b64decode(id).decode(), date.get("to"),))
-
-                e = cur.fetchone()
-                print("E: ", e, date.get("to"))
-
-                cur.execute(update[mode_id], (e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9], e[10], d, ))
-
-                f = cur.fetchone()
-                
-                conn.commit()
-                
-                if (d == None): return {
-                    "error": "no data"
-                }
-                return {
-                    "data": f
-                }
-
-    except (Exception, psycopg2.DatabaseError) as Error:
-        print(Error, type(Error))
-        return {
-            "error": str(Error)
-        }
-    
-mode = {
-    "hourly": """INSERT INTO data_hourly (
+sql_copy_avg = """INSERT INTO {table_name} (
         phase_voltage_a,
         phase_voltage_b,
         phase_voltage_c,
@@ -310,7 +317,7 @@ mode = {
         a_b_phase_voltage_angle,
         b_C_phase_voltage_angle,
         c_a_phase_voltage_angle,
-        device,
+        device_id,
         timestamp
     ) 
     SELECT    
@@ -357,546 +364,40 @@ mode = {
         AVG(c_a_phase_voltage_angle)::NUMERIC(10,2),
         %s,
         cast(%s AS TIMESTAMPTZ)
-             FROM data
+             FROM {table_ref}
              WHERE device_id = %s AND
              timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
         RETURNING id
-             """,
-    "daily": """INSERT INTO data_daily (
-        phase_voltage_a,
-        phase_voltage_b,
-        phase_voltage_c,
-        wire_voltage_ab,
-        wire_voltage_bc,
-        wire_voltage_ca,
-        phase_current_a,
-        phase_current_b,
-        phase_current_c,
-        active_power_a,
-        active_power_b,
-        active_power_c,
-        reactive_power_a,
-        reactive_power_b,
-        reactive_power_c,
-        apparent_power_a,
-        apparent_power_b,
-        apparent_power_c,
-        power_factor_a,
-        power_factor_b,
-        power_factor_c,
-        frequency,
-        current_active_power_demand,
-        maximum_active_power_demand,
-        current_reactive_power_demand,
-        maximum_reactive_power_demand,
-        a_phase_voltage_total_harmonic_content,
-        b_phase_voltage_total_harmonic_content,
-        c_phase_voltage_total_harmonic_content,
-        a_phase_current_total_harmonic_content,
-        b_phase_current_total_harmonic_content,
-        c_phase_current_total_harmonic_content,
-        o_phase_current,
-        phase_voltage_maximum,
-        Wires_voltage_maximum,
-        current_maximum,
-        voltage_imbalance,
-        current_imbalance,
-        a_b_phase_voltage_angle,
-        b_C_phase_voltage_angle,
-        c_a_phase_voltage_angle,
-        device,
-        timestamp
-    ) 
-    SELECT    
-        AVG(phase_voltage_a)::NUMERIC(10,2),
-        AVG(phase_voltage_b)::NUMERIC(10,2),
-        AVG(phase_voltage_c)::NUMERIC(10,2),
-        AVG(wire_voltage_ab)::NUMERIC(10,2),
-        AVG(wire_voltage_bc)::NUMERIC(10,2),
-        AVG(wire_voltage_ca)::NUMERIC(10,2),
-        AVG(phase_current_a)::NUMERIC(10,2),
-        AVG(phase_current_b)::NUMERIC(10,2),
-        AVG(phase_current_c)::NUMERIC(10,2),
-        AVG(active_power_a)::NUMERIC(10,2),
-        AVG(active_power_b)::NUMERIC(10,2),
-        AVG(active_power_c)::NUMERIC(10,2),
-        AVG(reactive_power_a)::NUMERIC(10,2),
-        AVG(reactive_power_b)::NUMERIC(10,2),
-        AVG(reactive_power_c)::NUMERIC(10,2),
-        AVG(apparent_power_a)::NUMERIC(10,2),
-        AVG(apparent_power_b)::NUMERIC(10,2),
-        AVG(apparent_power_c)::NUMERIC(10,2),
-        AVG(power_factor_a)::NUMERIC(10,2),
-        AVG(power_factor_b)::NUMERIC(10,2),
-        AVG(power_factor_c)::NUMERIC(10,2),
-        AVG(frequency)::NUMERIC(10,2),
-        AVG(current_active_power_demand)::NUMERIC(10,2),
-        AVG(maximum_active_power_demand)::NUMERIC(10,2),
-        AVG(current_reactive_power_demand)::NUMERIC(10,2),
-        AVG(maximum_reactive_power_demand)::NUMERIC(10,2),
-        AVG(a_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(a_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(o_phase_current)::NUMERIC(10,2),
-        AVG(phase_voltage_maximum)::NUMERIC(10,2),
-        AVG(Wires_voltage_maximum)::NUMERIC(10,2),
-        AVG(current_maximum)::NUMERIC(10,2),
-        AVG(voltage_imbalance)::NUMERIC(10,2),
-        AVG(current_imbalance)::NUMERIC(10,2),
-        AVG(a_b_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(b_C_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(c_a_phase_voltage_angle)::NUMERIC(10,2),
-        %s,
-        cast(%s AS TIMESTAMPTZ)
-             FROM data_hourly
-             WHERE device = %s AND
-             timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
-        RETURNING id
-             """,
-    "weekly": """INSERT INTO data_weekly (
-        phase_voltage_a,
-        phase_voltage_b,
-        phase_voltage_c,
-        wire_voltage_ab,
-        wire_voltage_bc,
-        wire_voltage_ca,
-        phase_current_a,
-        phase_current_b,
-        phase_current_c,
-        active_power_a,
-        active_power_b,
-        active_power_c,
-        reactive_power_a,
-        reactive_power_b,
-        reactive_power_c,
-        apparent_power_a,
-        apparent_power_b,
-        apparent_power_c,
-        power_factor_a,
-        power_factor_b,
-        power_factor_c,
-        frequency,
-        current_active_power_demand,
-        maximum_active_power_demand,
-        current_reactive_power_demand,
-        maximum_reactive_power_demand,
-        a_phase_voltage_total_harmonic_content,
-        b_phase_voltage_total_harmonic_content,
-        c_phase_voltage_total_harmonic_content,
-        a_phase_current_total_harmonic_content,
-        b_phase_current_total_harmonic_content,
-        c_phase_current_total_harmonic_content,
-        o_phase_current,
-        phase_voltage_maximum,
-        Wires_voltage_maximum,
-        current_maximum,
-        voltage_imbalance,
-        current_imbalance,
-        a_b_phase_voltage_angle,
-        b_C_phase_voltage_angle,
-        c_a_phase_voltage_angle,
-        device,
-        timestamp
-    ) 
-    SELECT    
-        AVG(phase_voltage_a)::NUMERIC(10,2),
-        AVG(phase_voltage_b)::NUMERIC(10,2),
-        AVG(phase_voltage_c)::NUMERIC(10,2),
-        AVG(wire_voltage_ab)::NUMERIC(10,2),
-        AVG(wire_voltage_bc)::NUMERIC(10,2),
-        AVG(wire_voltage_ca)::NUMERIC(10,2),
-        AVG(phase_current_a)::NUMERIC(10,2),
-        AVG(phase_current_b)::NUMERIC(10,2),
-        AVG(phase_current_c)::NUMERIC(10,2),
-        AVG(active_power_a)::NUMERIC(10,2),
-        AVG(active_power_b)::NUMERIC(10,2),
-        AVG(active_power_c)::NUMERIC(10,2),
-        AVG(reactive_power_a)::NUMERIC(10,2),
-        AVG(reactive_power_b)::NUMERIC(10,2),
-        AVG(reactive_power_c)::NUMERIC(10,2),
-        AVG(apparent_power_a)::NUMERIC(10,2),
-        AVG(apparent_power_b)::NUMERIC(10,2),
-        AVG(apparent_power_c)::NUMERIC(10,2),
-        AVG(power_factor_a)::NUMERIC(10,2),
-        AVG(power_factor_b)::NUMERIC(10,2),
-        AVG(power_factor_c)::NUMERIC(10,2),
-        AVG(frequency)::NUMERIC(10,2),
-        AVG(current_active_power_demand)::NUMERIC(10,2),
-        AVG(maximum_active_power_demand)::NUMERIC(10,2),
-        AVG(current_reactive_power_demand)::NUMERIC(10,2),
-        AVG(maximum_reactive_power_demand)::NUMERIC(10,2),
-        AVG(a_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(a_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(o_phase_current)::NUMERIC(10,2),
-        AVG(phase_voltage_maximum)::NUMERIC(10,2),
-        AVG(Wires_voltage_maximum)::NUMERIC(10,2),
-        AVG(current_maximum)::NUMERIC(10,2),
-        AVG(voltage_imbalance)::NUMERIC(10,2),
-        AVG(current_imbalance)::NUMERIC(10,2),
-        AVG(a_b_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(b_C_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(c_a_phase_voltage_angle)::NUMERIC(10,2),
-        %s,
-        cast(%s AS TIMESTAMPTZ)
-             FROM data_daily
-             WHERE device = %s AND
-             timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
-        RETURNING id
-             """,
-    "monthly": """INSERT INTO data_monthly (
-        phase_voltage_a,
-        phase_voltage_b,
-        phase_voltage_c,
-        wire_voltage_ab,
-        wire_voltage_bc,
-        wire_voltage_ca,
-        phase_current_a,
-        phase_current_b,
-        phase_current_c,
-        active_power_a,
-        active_power_b,
-        active_power_c,
-        reactive_power_a,
-        reactive_power_b,
-        reactive_power_c,
-        apparent_power_a,
-        apparent_power_b,
-        apparent_power_c,
-        power_factor_a,
-        power_factor_b,
-        power_factor_c,
-        frequency,
-        current_active_power_demand,
-        maximum_active_power_demand,
-        current_reactive_power_demand,
-        maximum_reactive_power_demand,
-        a_phase_voltage_total_harmonic_content,
-        b_phase_voltage_total_harmonic_content,
-        c_phase_voltage_total_harmonic_content,
-        a_phase_current_total_harmonic_content,
-        b_phase_current_total_harmonic_content,
-        c_phase_current_total_harmonic_content,
-        o_phase_current,
-        phase_voltage_maximum,
-        Wires_voltage_maximum,
-        current_maximum,
-        voltage_imbalance,
-        current_imbalance,
-        a_b_phase_voltage_angle,
-        b_C_phase_voltage_angle,
-        c_a_phase_voltage_angle,
-        device,
-        timestamp
-    ) 
-    SELECT    
-        AVG(phase_voltage_a)::NUMERIC(10,2),
-        AVG(phase_voltage_b)::NUMERIC(10,2),
-        AVG(phase_voltage_c)::NUMERIC(10,2),
-        AVG(wire_voltage_ab)::NUMERIC(10,2),
-        AVG(wire_voltage_bc)::NUMERIC(10,2),
-        AVG(wire_voltage_ca)::NUMERIC(10,2),
-        AVG(phase_current_a)::NUMERIC(10,2),
-        AVG(phase_current_b)::NUMERIC(10,2),
-        AVG(phase_current_c)::NUMERIC(10,2),
-        AVG(active_power_a)::NUMERIC(10,2),
-        AVG(active_power_b)::NUMERIC(10,2),
-        AVG(active_power_c)::NUMERIC(10,2),
-        AVG(reactive_power_a)::NUMERIC(10,2),
-        AVG(reactive_power_b)::NUMERIC(10,2),
-        AVG(reactive_power_c)::NUMERIC(10,2),
-        AVG(apparent_power_a)::NUMERIC(10,2),
-        AVG(apparent_power_b)::NUMERIC(10,2),
-        AVG(apparent_power_c)::NUMERIC(10,2),
-        AVG(power_factor_a)::NUMERIC(10,2),
-        AVG(power_factor_b)::NUMERIC(10,2),
-        AVG(power_factor_c)::NUMERIC(10,2),
-        AVG(frequency)::NUMERIC(10,2),
-        AVG(current_active_power_demand)::NUMERIC(10,2),
-        AVG(maximum_active_power_demand)::NUMERIC(10,2),
-        AVG(current_reactive_power_demand)::NUMERIC(10,2),
-        AVG(maximum_reactive_power_demand)::NUMERIC(10,2),
-        AVG(a_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(a_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(o_phase_current)::NUMERIC(10,2),
-        AVG(phase_voltage_maximum)::NUMERIC(10,2),
-        AVG(Wires_voltage_maximum)::NUMERIC(10,2),
-        AVG(current_maximum)::NUMERIC(10,2),
-        AVG(voltage_imbalance)::NUMERIC(10,2),
-        AVG(current_imbalance)::NUMERIC(10,2),
-        AVG(a_b_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(b_C_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(c_a_phase_voltage_angle)::NUMERIC(10,2),
-        %s,
-        cast(%s AS TIMESTAMPTZ)
-             FROM data_weekly
-             WHERE device = %s AND
-             timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
-        RETURNING id
-             """,
-    "yearly": """INSERT INTO data_yearly (
-        phase_voltage_a,
-        phase_voltage_b,
-        phase_voltage_c,
-        wire_voltage_ab,
-        wire_voltage_bc,
-        wire_voltage_ca,
-        phase_current_a,
-        phase_current_b,
-        phase_current_c,
-        active_power_a,
-        active_power_b,
-        active_power_c,
-        reactive_power_a,
-        reactive_power_b,
-        reactive_power_c,
-        apparent_power_a,
-        apparent_power_b,
-        apparent_power_c,
-        power_factor_a,
-        power_factor_b,
-        power_factor_c,
-        frequency,
-        current_active_power_demand,
-        maximum_active_power_demand,
-        current_reactive_power_demand,
-        maximum_reactive_power_demand,
-        a_phase_voltage_total_harmonic_content,
-        b_phase_voltage_total_harmonic_content,
-        c_phase_voltage_total_harmonic_content,
-        a_phase_current_total_harmonic_content,
-        b_phase_current_total_harmonic_content,
-        c_phase_current_total_harmonic_content,
-        o_phase_current,
-        phase_voltage_maximum,
-        Wires_voltage_maximum,
-        current_maximum,
-        voltage_imbalance,
-        current_imbalance,
-        a_b_phase_voltage_angle,
-        b_C_phase_voltage_angle,
-        c_a_phase_voltage_angle,
-        device,
-        timestamp
-    ) 
-    SELECT    
-        AVG(phase_voltage_a)::NUMERIC(10,2),
-        AVG(phase_voltage_b)::NUMERIC(10,2),
-        AVG(phase_voltage_c)::NUMERIC(10,2),
-        AVG(wire_voltage_ab)::NUMERIC(10,2),
-        AVG(wire_voltage_bc)::NUMERIC(10,2),
-        AVG(wire_voltage_ca)::NUMERIC(10,2),
-        AVG(phase_current_a)::NUMERIC(10,2),
-        AVG(phase_current_b)::NUMERIC(10,2),
-        AVG(phase_current_c)::NUMERIC(10,2),
-        AVG(active_power_a)::NUMERIC(10,2),
-        AVG(active_power_b)::NUMERIC(10,2),
-        AVG(active_power_c)::NUMERIC(10,2),
-        AVG(reactive_power_a)::NUMERIC(10,2),
-        AVG(reactive_power_b)::NUMERIC(10,2),
-        AVG(reactive_power_c)::NUMERIC(10,2),
-        AVG(apparent_power_a)::NUMERIC(10,2),
-        AVG(apparent_power_b)::NUMERIC(10,2),
-        AVG(apparent_power_c)::NUMERIC(10,2),
-        AVG(power_factor_a)::NUMERIC(10,2),
-        AVG(power_factor_b)::NUMERIC(10,2),
-        AVG(power_factor_c)::NUMERIC(10,2),
-        AVG(frequency)::NUMERIC(10,2),
-        AVG(current_active_power_demand)::NUMERIC(10,2),
-        AVG(maximum_active_power_demand)::NUMERIC(10,2),
-        AVG(current_reactive_power_demand)::NUMERIC(10,2),
-        AVG(maximum_reactive_power_demand)::NUMERIC(10,2),
-        AVG(a_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_voltage_total_harmonic_content)::NUMERIC(10,2),
-        AVG(a_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(b_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(c_phase_current_total_harmonic_content)::NUMERIC(10,2),
-        AVG(o_phase_current)::NUMERIC(10,2),
-        AVG(phase_voltage_maximum)::NUMERIC(10,2),
-        AVG(Wires_voltage_maximum)::NUMERIC(10,2),
-        AVG(current_maximum)::NUMERIC(10,2),
-        AVG(voltage_imbalance)::NUMERIC(10,2),
-        AVG(current_imbalance)::NUMERIC(10,2),
-        AVG(a_b_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(b_C_phase_voltage_angle)::NUMERIC(10,2),
-        AVG(c_a_phase_voltage_angle)::NUMERIC(10,2),
-        %s,
-        cast(%s AS TIMESTAMPTZ)
-             FROM data_monthly
-             WHERE device = %s AND
-             timestamp BETWEEN cast(%s AS TIMESTAMPTZ) AND cast(%s AS TIMESTAMPTZ)
-        RETURNING id
              """
-}
 
-update = {
-    "hourly": """UPDATE data_hourly 
-        SET first_quadrant_reactive_energy = %s,
-        second_quadrant_reactive_energy = %s,
-        third_quadrant_reactive_energy = %s,
-        fourth_quadrant_reactive_power = %s,
-        active_power = %s,
-        reactive_power = %s,
-        positive_active_power = %s,
-        negative_active_power = %s,
-        positive_reactive_power = %s,
-        negative_reactive_power = %s,
-        timestamp = cast(%s AS TIMESTAMPTZ)
-        WHERE id = %s
-        RETURNING id""",
-    "daily": """UPDATE data_daily 
-        SET first_quadrant_reactive_energy = %s,
-        second_quadrant_reactive_energy = %s,
-        third_quadrant_reactive_energy = %s,
-        fourth_quadrant_reactive_power = %s,
-        active_power = %s,
-        reactive_power = %s,
-        positive_active_power = %s,
-        negative_active_power = %s,
-        positive_reactive_power = %s,
-        negative_reactive_power = %s,
-        timestamp = cast(%s AS TIMESTAMPTZ)
-        WHERE id = %s
-        RETURNING id""",
-    "weekly": """UPDATE data_weekly 
-        SET first_quadrant_reactive_energy = %s,
-        second_quadrant_reactive_energy = %s,
-        third_quadrant_reactive_energy = %s,
-        fourth_quadrant_reactive_power = %s,
-        active_power = %s,
-        reactive_power = %s,
-        positive_active_power = %s,
-        negative_active_power = %s,
-        positive_reactive_power = %s,
-        negative_reactive_power = %s,
-        timestamp = cast(%s AS TIMESTAMPTZ)
-        WHERE id = %s
-        RETURNING id""",
-    "monthly": """UPDATE data_monthly 
-        SET first_quadrant_reactive_energy = %s,
-        second_quadrant_reactive_energy = %s,
-        third_quadrant_reactive_energy = %s,
-        fourth_quadrant_reactive_power = %s,
-        active_power = %s,
-        reactive_power = %s,
-        positive_active_power = %s,
-        negative_active_power = %s,
-        positive_reactive_power = %s,
-        negative_reactive_power = %s,
-        timestamp = cast(%s AS TIMESTAMPTZ)
-        WHERE id = %s
-        RETURNING id""",
-    "yearly": """UPDATE data_yearly 
-        SET first_quadrant_reactive_energy = %s,
-        second_quadrant_reactive_energy = %s,
-        third_quadrant_reactive_energy = %s,
-        fourth_quadrant_reactive_power = %s,
-        active_power = %s,
-        reactive_power = %s,
-        positive_active_power = %s,
-        negative_active_power = %s,
-        positive_reactive_power = %s,
-        negative_reactive_power = %s,
-        timestamp = cast(%s AS TIMESTAMPTZ)
+sql_update_avg_row = """UPDATE {table_name} 
+        SET first_quadrant_reactive_energy = sq.first_quadrant_reactive_energy,
+            second_quadrant_reactive_energy = sq.second_quadrant_reactive_energy,
+            third_quadrant_reactive_energy = sq.third_quadrant_reactive_energy,
+            fourth_quadrant_reactive_power = sq.fourth_quadrant_reactive_power,
+            active_power = sq.active_power,
+            reactive_power = sq.reactive_power,
+            positive_active_power = sq.positive_active_power,
+            negative_active_power = sq.negative_active_power,
+            positive_reactive_power = sq.positive_reactive_power,
+            negative_reactive_power = sq.negative_reactive_power,
+            timestamp = sq.timestamp
+        FROM (SELECT DISTINCT ON (id)
+                first_quadrant_reactive_energy::NUMERIC(10,2),
+                second_quadrant_reactive_energy::NUMERIC(10,2),
+                third_quadrant_reactive_energy::NUMERIC(10,2),
+                fourth_quadrant_reactive_power::NUMERIC(10,2),
+                active_power::NUMERIC(10,2),
+                reactive_power::NUMERIC(10,2),
+                positive_active_power::NUMERIC(10,2),
+                negative_active_power::NUMERIC(10,2),
+                positive_reactive_power::NUMERIC(10,2),
+                negative_reactive_power::NUMERIC(10,2),
+                timestamp
+                FROM {table_ref}
+                WHERE device_id = %s AND
+                timestamp <= cast(%s AS TIMESTAMPTZ)
+                ORDER BY id DESC
+                LIMIT 1) AS sq
         WHERE id = %s
         RETURNING id"""
-}
-
-latest = {
-    "hourly": """SELECT DISTINCT ON (id)
-        first_quadrant_reactive_energy::NUMERIC(10,2),
-        second_quadrant_reactive_energy::NUMERIC(10,2),
-        third_quadrant_reactive_energy::NUMERIC(10,2),
-        fourth_quadrant_reactive_power::NUMERIC(10,2),
-        active_power::NUMERIC(10,2),
-        reactive_power::NUMERIC(10,2),
-        positive_active_power::NUMERIC(10,2),
-        negative_active_power::NUMERIC(10,2),
-        positive_reactive_power::NUMERIC(10,2),
-        negative_reactive_power::NUMERIC(10,2),
-        timestamp
-        FROM data
-        WHERE device_id = %s AND
-        timestamp <= cast(%s AS TIMESTAMPTZ)
-        ORDER BY id ASC
-        LIMIT 1""",
-    "daily": """SELECT DISTINCT ON (id)
-        first_quadrant_reactive_energy::NUMERIC(10,2),
-        second_quadrant_reactive_energy::NUMERIC(10,2),
-        third_quadrant_reactive_energy::NUMERIC(10,2),
-        fourth_quadrant_reactive_power::NUMERIC(10,2),
-        active_power::NUMERIC(10,2),
-        reactive_power::NUMERIC(10,2),
-        positive_active_power::NUMERIC(10,2),
-        negative_active_power::NUMERIC(10,2),
-        positive_reactive_power::NUMERIC(10,2),
-        negative_reactive_power::NUMERIC(10,2),
-        timestamp
-        FROM data_hourly
-        WHERE device = %s AND
-        timestamp <= cast(%s AS TIMESTAMPTZ)
-        ORDER BY id ASC
-        LIMIT 1""",
-    "weekly": """SELECT DISTINCT ON (id)
-        first_quadrant_reactive_energy::NUMERIC(10,2),
-        second_quadrant_reactive_energy::NUMERIC(10,2),
-        third_quadrant_reactive_energy::NUMERIC(10,2),
-        fourth_quadrant_reactive_power::NUMERIC(10,2),
-        active_power::NUMERIC(10,2),
-        reactive_power::NUMERIC(10,2),
-        positive_active_power::NUMERIC(10,2),
-        negative_active_power::NUMERIC(10,2),
-        positive_reactive_power::NUMERIC(10,2),
-        negative_reactive_power::NUMERIC(10,2),
-        timestamp
-        FROM data_daily
-        WHERE device = %s AND
-        timestamp <= cast(%s AS TIMESTAMPTZ)
-        ORDER BY id ASC
-        LIMIT 1""",
-    "monthly": """SELECT DISTINCT ON (id)
-        first_quadrant_reactive_energy::NUMERIC(10,2),
-        second_quadrant_reactive_energy::NUMERIC(10,2),
-        third_quadrant_reactive_energy::NUMERIC(10,2),
-        fourth_quadrant_reactive_power::NUMERIC(10,2),
-        active_power::NUMERIC(10,2),
-        reactive_power::NUMERIC(10,2),
-        positive_active_power::NUMERIC(10,2),
-        negative_active_power::NUMERIC(10,2),
-        positive_reactive_power::NUMERIC(10,2),
-        negative_reactive_power::NUMERIC(10,2),
-        timestamp
-        FROM data_weekly
-        WHERE device = %s AND
-        timestamp <= cast(%s AS TIMESTAMPTZ)
-        ORDER BY id ASC
-        LIMIT 1""",
-    "yearly": """SELECT DISTINCT ON (id)
-        first_quadrant_reactive_energy::NUMERIC(10,2),
-        second_quadrant_reactive_energy::NUMERIC(10,2),
-        third_quadrant_reactive_energy::NUMERIC(10,2),
-        fourth_quadrant_reactive_power::NUMERIC(10,2),
-        active_power::NUMERIC(10,2),
-        reactive_power::NUMERIC(10,2),
-        positive_active_power::NUMERIC(10,2),
-        negative_active_power::NUMERIC(10,2),
-        positive_reactive_power::NUMERIC(10,2),
-        negative_reactive_power::NUMERIC(10,2),
-        timestamp
-        FROM data_monthly
-        WHERE device = %s AND
-        timestamp <= cast(%s AS TIMESTAMPTZ)
-        ORDER BY id ASC
-        LIMIT 1"""
-}
