@@ -158,7 +158,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS data_hourly (
             id SERIAL PRIMARY KEY,
-            device INT NOT NULL,
+            device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
             phase_voltage_c FLOAT8,
@@ -217,7 +217,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS data_daily (
             id SERIAL PRIMARY KEY,
-            device INT NOT NULL,
+            device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
             phase_voltage_c FLOAT8,
@@ -276,7 +276,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS data_weekly (
             id SERIAL PRIMARY KEY,
-            device INT NOT NULL,
+            device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
             phase_voltage_c FLOAT8,
@@ -335,7 +335,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS data_monthly (
             id SERIAL PRIMARY KEY,
-            device INT NOT NULL,
+            device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
             phase_voltage_c FLOAT8,
@@ -394,7 +394,7 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS data_yearly (
             id SERIAL PRIMARY KEY,
-            device INT NOT NULL,
+            device_id INT NOT NULL,
             phase_voltage_a FLOAT8,
             phase_voltage_b FLOAT8,
             phase_voltage_c FLOAT8,
