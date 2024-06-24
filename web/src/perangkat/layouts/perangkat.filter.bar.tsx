@@ -12,44 +12,28 @@ import {
   ViewColumnsIcon,
 } from "@heroicons/react/24/outline";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Dayjs } from "dayjs";
-import React from "react";
+import { boolean } from "zod";
 
-export const PerangkatFilterBar = (props: { perangkatId: string }) => {
-  const navigate = useNavigate();
-  const [from, setFrom] = React.useState<Dayjs | null>(null);
-  const [to, setTo] = React.useState<Dayjs | null>(null);
-  const [mode, interval] = useSearch({
-    from: "/__auth/perangkat/$perangkatId/data",
-    select: (search: { mode: string; interval: string }) => {
-      if (!search.mode && search.interval != undefined)
-        navigate({
-          to: "/perangkat/$perangkatId/data",
-          params: { perangkatId: props.perangkatId },
-          search: { mode: "grafik" },
-        });
-      if (search.mode != undefined && !search.interval)
-        navigate({
-          to: "/perangkat/$perangkatId/data",
-          params: { perangkatId: props.perangkatId },
-          search: { interval: "realtime" },
-        });
-      if (!search.mode && !search.interval)
-        navigate({
-          to: "/perangkat/$perangkatId/data",
-          params: { perangkatId: props.perangkatId },
-          search: { mode: "grafik", interval: "realtime" },
-        });
-      return [search.mode, search.interval];
-    },
-  });
+type PerangkatFilterBarProps = {
+  perangkatId: string;
+  from: Dayjs | null;
+  setFrom: (d: Dayjs | null) => void;
+  to: Dayjs | null;
+  setTo: (d: Dayjs | null) => void;
+  mode: string;
+  interval: string;
+  filterChanged: (b: boolean) => void;
+};
+
+export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
   return (
     <div className="mt-2 my-5 flex justify-between">
       <div className="flex gap-2">
         <Menu>
           <MenuButton className="bg-gray-900 text-gray-200 text-sm py-2 px-5 rounded w-fit flex gap-4 capitalize items-center">
-            {interval} <ChevronDownIcon className="size-5" />
+            {props.interval} <ChevronDownIcon className="size-5" />
           </MenuButton>
           <Transition
             enter="transition ease-out duration-75"
@@ -68,7 +52,8 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
                   className="block p-2 mb-2 hover:bg-gray-500 rounded"
                   to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: props.perangkatId }}
-                  search={{ mode: mode, interval: "hourly" }}
+                  search={{ mode: props.mode, interval: "hourly" }}
+                  onClick={() => props.filterChanged(true)}
                   activeProps={{
                     className: "bg-gray-500",
                   }}
@@ -81,7 +66,8 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
                   className="block p-2 mb-2 hover:bg-gray-500 rounded"
                   to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: props.perangkatId }}
-                  search={{ mode: mode, interval: "daily" }}
+                  search={{ mode: props.mode, interval: "daily" }}
+                  onClick={() => props.filterChanged(true)}
                   activeProps={{
                     className: "bg-gray-500",
                   }}
@@ -94,7 +80,8 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
                   className="block p-2 mb-2 hover:bg-gray-500 rounded"
                   to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: props.perangkatId }}
-                  search={{ mode: mode, interval: "weekly" }}
+                  search={{ mode: props.mode, interval: "weekly" }}
+                  onClick={() => props.filterChanged(true)}
                   activeProps={{
                     className: "bg-gray-500",
                   }}
@@ -107,7 +94,8 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
                   className="block p-2 mb-2 hover:bg-gray-500 rounded"
                   to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: props.perangkatId }}
-                  search={{ mode: mode, interval: "monthly" }}
+                  search={{ mode: props.mode, interval: "monthly" }}
+                  onClick={() => props.filterChanged(true)}
                   activeProps={{
                     className: "bg-gray-500",
                   }}
@@ -120,7 +108,8 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
                   className="block p-2 hover:bg-gray-500 rounded"
                   to="/perangkat/$perangkatId/data"
                   params={{ perangkatId: props.perangkatId }}
-                  search={{ mode: mode, interval: "realtime" }}
+                  search={{ mode: props.mode, interval: "realtime" }}
+                  onClick={() => props.filterChanged(true)}
                   activeProps={{
                     className: "bg-gray-500",
                   }}
@@ -134,25 +123,39 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
         <div className={`date_time flex bg-gray-900 rounded text-gray-200`}>
           <DateTimePicker
             label="Dari"
-            value={from}
-            onChange={(newValue) => setFrom(newValue)}
+            value={props.from}
+            onChange={(newValue) => {
+              props.setFrom(newValue);
+              props.filterChanged(true);
+            }}
           />
           <DateTimePicker
             label="Hingga"
-            value={to}
-            onChange={(newValue) => setTo(newValue)}
+            value={props.to}
+            onChange={(newValue) => {
+              props.setTo(newValue);
+              props.filterChanged(true);
+            }}
           />
+          {
+            props.from && <CompButton className="border border-white rounded-full m-2">
+            Reset
+          </CompButton>
+          }
+          
         </div>
       </div>
       <CompButtonLinkGroup>
         <CompButton>
           <Link
+            className={`${props.mode == "grafik" ? "bg-blue-900" : ""}`}
             to="/perangkat/$perangkatId/data"
             search={{
               mode: "grafik",
-              interval: interval,
+              interval: props.interval,
             }}
             params={{ perangkatId: props.perangkatId }}
+            onClick={() => props.filterChanged(true)}
             activeProps={{
               className: "bg-blue-900",
             }}
@@ -167,8 +170,9 @@ export const PerangkatFilterBar = (props: { perangkatId: string }) => {
             params={{ perangkatId: props.perangkatId }}
             search={{
               mode: "tabel",
-              interval: interval,
+              interval: props.interval,
             }}
+            onClick={() => props.filterChanged(true)}
             activeProps={{
               className: "bg-blue-900",
             }}

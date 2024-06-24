@@ -6,7 +6,7 @@ import random
 
 id = "MQ=="
 # data = {}
-start_datetime = datetime(2024, 6, 22,10,15,00)
+start_datetime = datetime(2024, 6, 22,10,19,00)
 
 print("start date: ", start_datetime)
 
@@ -18,7 +18,7 @@ def create_data():
         new_data[register[3]] = random.randrange(1000,3000) * register[1]
     return new_data
 
-for i in range(60 * 24 * 1):
+for i in range(2):
     i_date = last_datetime + timedelta(minutes=1)
     print("insert data -> ", i_date)
     result = insert_latest_data(

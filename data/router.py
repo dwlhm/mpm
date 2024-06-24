@@ -105,7 +105,7 @@ async def get_data_by_interval_and_datetime(id: str, interval: Literal["realtime
             "timestamp": [],
             "length": len(item)
         }
-    for d in item:
+    for d in reversed(item):
         data["data"]["phase_voltage_a"].append(d[0])
         data["data"]["phase_voltage_b"].append(d[1]),
         data["data"]["phase_voltage_c"].append(d[2]),
