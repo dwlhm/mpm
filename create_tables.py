@@ -211,7 +211,7 @@ def create_tables():
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
-            CONSTRAINT fk_device_hourly FOREIGN KEY(device) REFERENCES device(id)
+            CONSTRAINT fk_device_hourly FOREIGN KEY(device_id) REFERENCES device(id)
         )
         """,
         """
@@ -270,7 +270,7 @@ def create_tables():
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
-            CONSTRAINT fk_device_daily FOREIGN KEY(device) REFERENCES device(id)
+            CONSTRAINT fk_device_daily FOREIGN KEY(device_id) REFERENCES device(id)
         )
         """,
         """
@@ -329,7 +329,7 @@ def create_tables():
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
-            CONSTRAINT fk_device_daily FOREIGN KEY(device) REFERENCES device(id)
+            CONSTRAINT fk_device_daily FOREIGN KEY(device_id) REFERENCES device(id)
         )
         """,
         """
@@ -388,7 +388,7 @@ def create_tables():
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
-            CONSTRAINT fk_device_monthly FOREIGN KEY(device) REFERENCES device(id)
+            CONSTRAINT fk_device_monthly FOREIGN KEY(device_id) REFERENCES device(id)
         )
         """,
         """
@@ -447,7 +447,7 @@ def create_tables():
             third_quadrant_reactive_energy FLOAT8,
             fourth_quadrant_reactive_power FLOAT8,
             timestamp TIMESTAMPTZ NOT NULL,
-            CONSTRAINT fk_device_yearly FOREIGN KEY(device) REFERENCES device(id)
+            CONSTRAINT fk_device_yearly FOREIGN KEY(device_id) REFERENCES device(id)
         )
         """,
         """
