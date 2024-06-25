@@ -76,28 +76,28 @@ def get_date(mode_id: str):
     match mode_id:
         case "hourly":
             return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": datetime(2024, 6, 22,10,15,00) - timedelta(hours=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(hours=1)
             }
         case "daily":
             return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": datetime(2024, 6, 22,11,15,00) - timedelta(days=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(days=1)
             }
         case "weekly":
             return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": datetime(2024, 6, 22,11,15,00) - timedelta(weeks=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(weeks=1)
             }
         case "monthly":
             return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": (datetime(2024, 6, 22,11,15,00).replace(day=1) - timedelta(days=31)).replace(day=1)
+                "to": datetime.now(),
+                "from": (datetime.now().replace(day=1) - timedelta(days=31)).replace(day=1)
             }
         case _:
             return {
-                "to": datetime(2024, 6, 22,11,15,00),
-                "from": datetime(2024, 6, 22,11,15,00) - timedelta(hours=1)
+                "to": datetime.now(),
+                "from": datetime.now() - timedelta(hours=1)
             }
     
 sql_get_data_w_datetime_limit = """SELECT DISTINCT ON (id)
