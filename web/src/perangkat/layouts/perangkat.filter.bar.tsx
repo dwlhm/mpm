@@ -14,7 +14,6 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { Link } from "@tanstack/react-router";
 import { Dayjs } from "dayjs";
-import { boolean } from "zod";
 
 type PerangkatFilterBarProps = {
   perangkatId: string;
@@ -28,6 +27,11 @@ type PerangkatFilterBarProps = {
 };
 
 export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
+  const resetDatetime = () => {
+    props.setFrom(null)
+    props.setTo(null)
+    props.filterChanged(true)
+  }
   return (
     <div className="mt-2 my-5 flex justify-between">
       <div className="flex gap-2">
@@ -138,7 +142,7 @@ export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
             }}
           />
           {
-            props.from && <CompButton className="border border-white rounded-full m-2">
+            props.from && <CompButton className="border border-white rounded-full m-2" onClick={resetDatetime}>
             Reset
           </CompButton>
           }
@@ -155,7 +159,6 @@ export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
               interval: props.interval,
             }}
             params={{ perangkatId: props.perangkatId }}
-            onClick={() => props.filterChanged(true)}
             activeProps={{
               className: "bg-blue-900",
             }}
@@ -172,7 +175,6 @@ export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
               mode: "tabel",
               interval: props.interval,
             }}
-            onClick={() => props.filterChanged(true)}
             activeProps={{
               className: "bg-blue-900",
             }}

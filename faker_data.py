@@ -6,7 +6,7 @@ import random
 
 id = "MQ=="
 # data = {}
-start_datetime = datetime(2024, 6, 22,10,19,00)
+start_datetime = datetime(2024, 6, 24,10,19,00)
 
 print("start date: ", start_datetime)
 
@@ -23,6 +23,22 @@ for i in range(2):
     print("insert data -> ", i_date)
     result = insert_latest_data(
             id=id,
+            timestamp=i_date,
+            config=load_config(),
+            data=create_data()
+        )
+    last_datetime = i_date
+    
+
+print("start date: ", start_datetime)
+
+last_datetime = start_datetime
+
+for i in range(2):
+    i_date = last_datetime + timedelta(minutes=1)
+    print("insert data -> ", i_date)
+    result = insert_latest_data(
+            id="OA==",
             timestamp=i_date,
             config=load_config(),
             data=create_data()

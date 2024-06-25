@@ -3,10 +3,9 @@ import { interval_data, useQueryPerangkatData } from "../hooks";
 import { PerangkatData } from "../api";
 import { Api } from "@/api/internal";
 import { CompLoading, LayoutError } from "@/common";
-import ChartsView from "@/components/ChartsView";
 import { LayoutPerangkatCard } from "./perangkat.card";
-import { Line } from "react-chartjs-2";
 import { CompPerangkatLineChart } from "../components";
+import { CompPerangkatTable } from "../components/perangkat.table";
 
 export interface RepositoryInf {
   [key: string]: number[];
@@ -21,6 +20,8 @@ let GLOBAL_DATA: PerangkatData = {
 let current_perangkat = "";
 let firstTime = false;
 
+export type PerangkatDataRepresentationMode = "grafik" | "table"
+
 export type PerangkatDataRepresentationProps = {
   token: string | null;
   perangkatId: string;
@@ -30,6 +31,7 @@ export type PerangkatDataRepresentationProps = {
   to?: string;
   isFilterChanged: boolean;
   onFilterChanged: (b: boolean) => void;
+  mode: PerangkatDataRepresentationMode;
 };
 
 export const PerangkatDataRepresentation = (
@@ -40,20 +42,20 @@ export const PerangkatDataRepresentation = (
     current_perangkat = props.perangkatId;
   }
   if (props.isFilterChanged) {
-    props.onFilterChanged(false)
+    props.onFilterChanged(false);
     // props.isFilterChanged = false
     GLOBAL_DATA = {
       data: {},
       timestamp: [],
-      length: 0
-    }
+      length: 0,
+    };
     firstTime = true;
   }
 
   const q = useQueryPerangkatData({
     token: props.token,
     perangkatId: props.perangkatId,
-    limit: firstTime ? props.from ? undefined : 10 : 1,
+    limit: firstTime ? (props.from ? undefined : 10) : 1,
     from: props.from,
     to: props.to,
     interval: props.interval,
@@ -89,17 +91,31 @@ export const PerangkatDataRepresentation = (
     return <LayoutError process="get data perangkat" message={q.error} />;
 
   if (q.isSuccess)
-    return (<>
-      <div className="grid sm:grid-cols-3 gap-2">
-       {props.register.map((item) => (
-          <LayoutPerangkatCard>
-            <h4 className="text-base font-medium">{item[3]}</h4>
-            <div className="my-1 h-px bg-white/50 mb-2" />
-            <CompPerangkatLineChart
-              value={GLOBAL_DATA.data[item[4]]}
-              timestamp={GLOBAL_DATA.timestamp.map(d=> new Date(d).toLocaleTimeString())} />
-          </LayoutPerangkatCard>
-        ))} 
-      </div>
-      </>);
+    return (
+      <>
+        <div className="grid sm:grid-cols-3 gap-2">
+          {props.register.map((item) => (
+            <LayoutPerangkatCard>
+              <h4 className="text-base font-medium">{item[3]}</h4>
+              <div className="my-1 h-px bg-white/50 mb-2" />
+              {props.mode == "grafik" ? (
+                <CompPerangkatLineChart
+                  value={GLOBAL_DATA.data[item[4]]}
+                  timestamp={GLOBAL_DATA.timestamp.map((d) =>
+                    new Date(d).toLocaleTimeString(),
+                  )}
+                />
+              ) : (
+                <CompPerangkatTable 
+                value={GLOBAL_DATA.data[item[4]]}
+                timestamp={GLOBAL_DATA.timestamp.map((d) =>
+                  new Date(d).toLocaleString(),
+                )} 
+                unit={item[2]}/>
+              )}
+            </LayoutPerangkatCard>
+          ))}
+        </div>
+      </>
+    );
 };

@@ -1,11 +1,8 @@
 import {
   createLazyFileRoute,
-  useNavigate,
   useSearch,
 } from "@tanstack/react-router";
-import SensorData from "@/components/SensorData";
 import { useAuth } from "@/auth";
-import { RegisterItem } from "@/api/register";
 import {
   PerangkatSubBody,
   PerangkatSubHeadingPanel,
@@ -16,7 +13,7 @@ import { useQueryDetailPerangkat, interval_data } from "@/perangkat/hooks";
 import { PerangkatFilterBar } from "@/perangkat/layouts";
 import React from "react";
 import { Dayjs } from "dayjs";
-import { PerangkatDataRepresentation } from "@/perangkat/layouts/perangkat.data.representation";
+import { PerangkatDataRepresentation, PerangkatDataRepresentationMode } from "@/perangkat/layouts/perangkat.data.representation";
 
 export const Route = createLazyFileRoute("/__auth/perangkat/$perangkatId/data")(
   {
@@ -89,6 +86,7 @@ function DataPerangkat() {
               to={to?.toISOString()}
               isFilterChanged={filterChanged}
               onFilterChanged={(b: boolean) => setFilterChanged(b)}
+              mode={mode as PerangkatDataRepresentationMode}
             />
           )}
         </PerangkatSubBody>

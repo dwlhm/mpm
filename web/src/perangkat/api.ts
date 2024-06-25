@@ -1,7 +1,7 @@
 import { Gedung } from "@/api/gedung";
 import { Api } from "@/api/internal";
 import { Powermeter } from "@/api/powermeter";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { QueryFunctionContext } from "react-query";
 
 export interface DetailPerangkat {
