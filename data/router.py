@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from datetime import datetime
 from typing import Literal
-from .db import get_data_with_datetime, get_data_with_limit, get_data_with_datetime_limit
+from .db import get_data_with_datetime, get_data_with_limit, get_data_with_datetime_limit, get_data_with_datetime_fromonly_limit, get_data_with_datetime_fromonly
 from dependencies import oauth2_scheme
 from configuration.config import load_config
 
@@ -23,6 +23,24 @@ async def get_data_by_interval_and_datetime(id: str, interval: Literal["realtime
             limit=limit,
             config=load_config()
         )
+    elif (dfrom != None and dto == None):
+        if limit == None:
+            result = get_data_with_datetime_fromonly(
+                interval=interval,
+                id=id,
+                date_from=dfrom,
+                config=load_config()
+            )
+            print("D", result)
+        else:
+            result = get_data_with_datetime_fromonly_limit(
+                interval=interval,
+                id=id,
+                date_from=dfrom,
+                limit=limit,
+                config=load_config()
+            )
+            print("D", result)
     else:
         if limit == None:
             result = get_data_with_datetime(

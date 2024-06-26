@@ -28,9 +28,9 @@ type PerangkatFilterBarProps = {
 
 export const PerangkatFilterBar = (props: PerangkatFilterBarProps) => {
   const resetDatetime = () => {
+    props.filterChanged(true)
     props.setFrom(null)
     props.setTo(null)
-    props.filterChanged(true)
   }
   return (
     <div className="mt-2 my-5 flex justify-between">

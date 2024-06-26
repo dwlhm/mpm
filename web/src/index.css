@@ -45,7 +45,7 @@ h2 {
   @apply border-gray-200
 }
 .device-status {
-  @apply flex items-center text-sm text-green-900
+  @apply flex items-center text-sm text-green-900 z-0
 }
 .device-status.offline {
   @apply text-red-900
@@ -81,4 +81,7 @@ h2 {
 }
 .date_time .MuiSvgIcon-root {
   @apply fill-gray-200
+}
+.date_time .MuiOutlinedInput-notchedOutline {
+  @apply border-none
 }

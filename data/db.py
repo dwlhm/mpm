@@ -4,6 +4,24 @@ import base64
 from datetime import datetime, timedelta
 from database.internal import get as get_db, upsert as upsert_db
 
+def get_data_with_datetime_fromonly_limit(interval, id, date_from, limit, config):
+
+    if (interval == "realtime"):
+        mode_name = "data"
+    else:
+        mode_name = "data_" + interval
+    
+    return get_db(sql.SQL(sql_get_data_w_datetime_fromonly_limit).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, limit, ), config)
+
+def get_data_with_datetime_fromonly(interval, id, date_from, config):
+
+    if (interval == "realtime"):
+        mode_name = "data"
+    else:
+        mode_name = "data_" + interval
+    
+    return get_db(sql.SQL(sql_get_data_w_datetime_fromonly).format(table_name=sql.Identifier(mode_name)), ( base64.b64decode(id).decode(), date_from, ), config)
+
 def get_data_with_datetime_limit(interval, id, date_from, date_to, limit, config):
 
     if (interval == "realtime"):
@@ -99,7 +117,124 @@ def get_date(mode_id: str):
                 "to": datetime.now(),
                 "from": datetime.now() - timedelta(hours=1)
             }
-    
+        
+sql_get_data_w_datetime_fromonly_limit = """SELECT DISTINCT ON (id)
+        phase_voltage_a::NUMERIC(10,2),
+        phase_voltage_b::NUMERIC(10,2),
+        phase_voltage_c::NUMERIC(10,2),
+        wire_voltage_ab::NUMERIC(10,2),
+        wire_voltage_bc::NUMERIC(10,2),
+        wire_voltage_ca::NUMERIC(10,2),
+        phase_current_a::NUMERIC(10,2),
+        phase_current_b::NUMERIC(10,2),
+        phase_current_c::NUMERIC(10,2),
+        active_power_a::NUMERIC(10,2),
+        active_power_b::NUMERIC(10,2),
+        active_power_c::NUMERIC(10,2),
+        reactive_power_a::NUMERIC(10,2),
+        reactive_power_b::NUMERIC(10,2),
+        reactive_power_c::NUMERIC(10,2),
+        apparent_power_a::NUMERIC(10,2),
+        apparent_power_b::NUMERIC(10,2),
+        apparent_power_c::NUMERIC(10,2),
+        power_factor_a::NUMERIC(10,2),
+        power_factor_b::NUMERIC(10,2),
+        power_factor_c::NUMERIC(10,2),
+        frequency::NUMERIC(10,2),
+        active_power::NUMERIC(10,2),
+        reactive_power::NUMERIC(10,2),
+        positive_active_power::NUMERIC(10,2),
+        negative_active_power::NUMERIC(10,2),
+        positive_reactive_power::NUMERIC(10,2),
+        negative_reactive_power::NUMERIC(10,2),
+        current_active_power_demand::NUMERIC(10,2),
+        maximum_active_power_demand::NUMERIC(10,2),
+        current_reactive_power_demand::NUMERIC(10,2),
+        maximum_reactive_power_demand::NUMERIC(10,2),
+        a_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        b_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        c_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        a_phase_current_total_harmonic_content::NUMERIC(10,2),
+        b_phase_current_total_harmonic_content::NUMERIC(10,2),
+        c_phase_current_total_harmonic_content::NUMERIC(10,2),
+        o_phase_current::NUMERIC(10,2),
+        phase_voltage_maximum::NUMERIC(10,2),
+        Wires_voltage_maximum::NUMERIC(10,2),
+        current_maximum::NUMERIC(10,2),
+        voltage_imbalance::NUMERIC(10,2),
+        current_imbalance::NUMERIC(10,2),
+        a_b_phase_voltage_angle::NUMERIC(10,2),
+        b_C_phase_voltage_angle::NUMERIC(10,2),
+        c_a_phase_voltage_angle::NUMERIC(10,2),
+        first_quadrant_reactive_energy::NUMERIC(10,2),
+        second_quadrant_reactive_energy::NUMERIC(10,2),
+        third_quadrant_reactive_energy::NUMERIC(10,2),
+        fourth_quadrant_reactive_power::NUMERIC(10,2),
+        timestamp
+        FROM {table_name}
+        WHERE device_id = %s AND
+        timestamp >= cast(%s AS TIMESTAMPTZ)
+        ORDER BY id DESC
+        LIMIT %s"""
+
+sql_get_data_w_datetime_fromonly = """SELECT DISTINCT ON (id)
+        phase_voltage_a::NUMERIC(10,2),
+        phase_voltage_b::NUMERIC(10,2),
+        phase_voltage_c::NUMERIC(10,2),
+        wire_voltage_ab::NUMERIC(10,2),
+        wire_voltage_bc::NUMERIC(10,2),
+        wire_voltage_ca::NUMERIC(10,2),
+        phase_current_a::NUMERIC(10,2),
+        phase_current_b::NUMERIC(10,2),
+        phase_current_c::NUMERIC(10,2),
+        active_power_a::NUMERIC(10,2),
+        active_power_b::NUMERIC(10,2),
+        active_power_c::NUMERIC(10,2),
+        reactive_power_a::NUMERIC(10,2),
+        reactive_power_b::NUMERIC(10,2),
+        reactive_power_c::NUMERIC(10,2),
+        apparent_power_a::NUMERIC(10,2),
+        apparent_power_b::NUMERIC(10,2),
+        apparent_power_c::NUMERIC(10,2),
+        power_factor_a::NUMERIC(10,2),
+        power_factor_b::NUMERIC(10,2),
+        power_factor_c::NUMERIC(10,2),
+        frequency::NUMERIC(10,2),
+        active_power::NUMERIC(10,2),
+        reactive_power::NUMERIC(10,2),
+        positive_active_power::NUMERIC(10,2),
+        negative_active_power::NUMERIC(10,2),
+        positive_reactive_power::NUMERIC(10,2),
+        negative_reactive_power::NUMERIC(10,2),
+        current_active_power_demand::NUMERIC(10,2),
+        maximum_active_power_demand::NUMERIC(10,2),
+        current_reactive_power_demand::NUMERIC(10,2),
+        maximum_reactive_power_demand::NUMERIC(10,2),
+        a_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        b_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        c_phase_voltage_total_harmonic_content::NUMERIC(10,2),
+        a_phase_current_total_harmonic_content::NUMERIC(10,2),
+        b_phase_current_total_harmonic_content::NUMERIC(10,2),
+        c_phase_current_total_harmonic_content::NUMERIC(10,2),
+        o_phase_current::NUMERIC(10,2),
+        phase_voltage_maximum::NUMERIC(10,2),
+        Wires_voltage_maximum::NUMERIC(10,2),
+        current_maximum::NUMERIC(10,2),
+        voltage_imbalance::NUMERIC(10,2),
+        current_imbalance::NUMERIC(10,2),
+        a_b_phase_voltage_angle::NUMERIC(10,2),
+        b_C_phase_voltage_angle::NUMERIC(10,2),
+        c_a_phase_voltage_angle::NUMERIC(10,2),
+        first_quadrant_reactive_energy::NUMERIC(10,2),
+        second_quadrant_reactive_energy::NUMERIC(10,2),
+        third_quadrant_reactive_energy::NUMERIC(10,2),
+        fourth_quadrant_reactive_power::NUMERIC(10,2),
+        timestamp
+        FROM {table_name}
+        WHERE device_id = %s AND
+        timestamp >= cast(%s AS TIMESTAMPTZ)
+        ORDER BY id DESC"""
+
 sql_get_data_w_datetime_limit = """SELECT DISTINCT ON (id)
         phase_voltage_a::NUMERIC(10,2),
         phase_voltage_b::NUMERIC(10,2),

@@ -38,6 +38,7 @@ export interface PerangkatData {
 export async function getPerangkatData(
   context: QueryFunctionContext
 ): Promise<Api<PerangkatData>> {
+  console.log("limit: ", context.queryKey[4])
   const config: AxiosRequestConfig = {
     method: "get",
     url: `${import.meta.env.VITE_BACKEND_URL}/data/${context.queryKey[2]}/`,

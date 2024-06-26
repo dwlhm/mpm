@@ -6,6 +6,7 @@ import { CompLoading, LayoutError } from "@/common";
 import { LayoutPerangkatCard } from "./perangkat.card";
 import { CompPerangkatLineChart } from "../components";
 import { CompPerangkatTable } from "../components/perangkat.table";
+import { useEffect } from "react";
 
 export interface RepositoryInf {
   [key: string]: number[];
@@ -37,20 +38,23 @@ export type PerangkatDataRepresentationProps = {
 export const PerangkatDataRepresentation = (
   props: PerangkatDataRepresentationProps,
 ) => {
-  if (current_perangkat != props.perangkatId) {
-    firstTime = true;
-    current_perangkat = props.perangkatId;
-  }
-  if (props.isFilterChanged) {
-    props.onFilterChanged(false);
-    // props.isFilterChanged = false
-    GLOBAL_DATA = {
-      data: {},
-      timestamp: [],
-      length: 0,
-    };
-    firstTime = true;
-  }
+
+  useEffect(() => {
+    if (current_perangkat != props.perangkatId) {
+      firstTime = true;
+      current_perangkat = props.perangkatId;
+    }
+    if (props.isFilterChanged == true) {
+      props.onFilterChanged(false);
+      GLOBAL_DATA = {
+        data: {},
+        timestamp: [],
+        length: 0,
+      };
+      firstTime = true;
+    }
+  }, [props.isFilterChanged])
+  
 
   const q = useQueryPerangkatData({
     token: props.token,
@@ -87,15 +91,19 @@ export const PerangkatDataRepresentation = (
 
   if (q.isLoading) return <CompLoading />;
 
+  if (Object.keys(GLOBAL_DATA.data).length <= 0) return <CompLoading />
+
   if (q.isError)
     return <LayoutError process="get data perangkat" message={q.error} />;
+
+  if (q.isSuccess && GLOBAL_DATA.length <= 0) return <LayoutError process="Pengambilan data perangkat" message="Data tidak tersedia" />
 
   if (q.isSuccess)
     return (
       <>
         <div className="grid sm:grid-cols-3 gap-2">
           {props.register.map((item) => (
-            <LayoutPerangkatCard>
+            <LayoutPerangkatCard key={`i.c.${item[4]}`}>
               <h4 className="text-base font-medium">{item[3]}</h4>
               <div className="my-1 h-px bg-white/50 mb-2" />
               {props.mode == "grafik" ? (
