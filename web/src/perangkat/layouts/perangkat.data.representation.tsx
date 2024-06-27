@@ -5,7 +5,6 @@ import { Api } from "@/api/internal";
 import { CompLoading, LayoutError } from "@/common";
 import { LayoutPerangkatCard } from "./perangkat.card";
 import { CompPerangkatLineChart } from "../components";
-import { CompPerangkatTable } from "../components/perangkat.table";
 import { useEffect } from "react";
 
 export interface RepositoryInf {
