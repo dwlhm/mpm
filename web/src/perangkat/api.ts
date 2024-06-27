@@ -31,14 +31,14 @@ export async function getDetailPerangkat(
 
 export interface PerangkatData {
   data: { [key: string]: number[] };
-  timestamp: string[],
-  length: number
+  timestamp: string[];
+  length: number;
 }
 
 export async function getPerangkatData(
-  context: QueryFunctionContext
+  context: QueryFunctionContext,
 ): Promise<Api<PerangkatData>> {
-  console.log("limit: ", context.queryKey[4])
+  console.log("limit: ", context.queryKey[4]);
   const config: AxiosRequestConfig = {
     method: "get",
     url: `${import.meta.env.VITE_BACKEND_URL}/data/${context.queryKey[2]}/`,
@@ -48,9 +48,7 @@ export async function getPerangkatData(
     params: {
       interval: context.queryKey[3],
       limit: context.queryKey[4],
-      dfrom: context.queryKey[5],
-      dto: context.queryKey[6]
-    }
+    },
   };
 
   const { data } = await axios(config);

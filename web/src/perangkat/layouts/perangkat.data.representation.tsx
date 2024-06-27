@@ -21,24 +21,20 @@ let GLOBAL_DATA: PerangkatData = {
 let current_perangkat = "";
 let firstTime = false;
 
-export type PerangkatDataRepresentationMode = "grafik" | "table"
+export type PerangkatDataRepresentationMode = "grafik" | "table";
 
 export type PerangkatDataRepresentationProps = {
   token: string | null;
   perangkatId: string;
   register: RegisterItem[];
   interval: interval_data;
-  from?: string;
-  to?: string;
   isFilterChanged: boolean;
   onFilterChanged: (b: boolean) => void;
-  mode: PerangkatDataRepresentationMode;
 };
 
 export const PerangkatDataRepresentation = (
   props: PerangkatDataRepresentationProps,
 ) => {
-
   useEffect(() => {
     if (current_perangkat != props.perangkatId) {
       firstTime = true;
@@ -53,15 +49,12 @@ export const PerangkatDataRepresentation = (
       };
       firstTime = true;
     }
-  }, [props.isFilterChanged])
-  
+  }, [props.isFilterChanged]);
 
   const q = useQueryPerangkatData({
     token: props.token,
     perangkatId: props.perangkatId,
-    limit: firstTime ? (props.from ? undefined : 10) : 1,
-    from: props.from,
-    to: props.to,
+    limit: firstTime ? 10 : 1,
     interval: props.interval,
     onSuccess: (res: Api<PerangkatData>) => {
       if (firstTime) {
@@ -89,41 +82,35 @@ export const PerangkatDataRepresentation = (
     },
   });
 
-  if (q.isLoading) return <CompLoading />;
-
-  if (Object.keys(GLOBAL_DATA.data).length <= 0) return <CompLoading />
+  if (Object.keys(GLOBAL_DATA.data).length <= 0) return <CompLoading />;
 
   if (q.isError)
     return <LayoutError process="get data perangkat" message={q.error} />;
 
-  if (q.isSuccess && GLOBAL_DATA.length <= 0) return <LayoutError process="Pengambilan data perangkat" message="Data tidak tersedia" />
+  if (q.isSuccess && GLOBAL_DATA.length <= 0)
+    return (
+      <LayoutError
+        process="Pengambilan data perangkat"
+        message="Data tidak tersedia"
+      />
+    );
 
   if (q.isSuccess)
     return (
-      <>
-        <div className="grid sm:grid-cols-3 gap-2">
-          {props.register.map((item) => (
-            <LayoutPerangkatCard key={`i.c.${item[4]}`}>
-              <h4 className="text-base font-medium">{item[3]}</h4>
-              <div className="my-1 h-px bg-white/50 mb-2" />
-              {props.mode == "grafik" ? (
-                <CompPerangkatLineChart
-                  value={GLOBAL_DATA.data[item[4]]}
-                  timestamp={GLOBAL_DATA.timestamp.map((d) =>
-                    new Date(d).toLocaleTimeString(),
-                  )}
-                />
-              ) : (
-                <CompPerangkatTable 
-                value={GLOBAL_DATA.data[item[4]]}
-                timestamp={GLOBAL_DATA.timestamp.map((d) =>
-                  new Date(d).toLocaleString(),
-                )} 
-                unit={item[2]}/>
+      <div className="grid sm:grid-cols-3 gap-2">
+        {props.register.map((item) => (
+          <LayoutPerangkatCard key={`i.c.${item[4]}`}>
+            <h4 className="text-base font-medium">{item[3]}</h4>
+            <div className="my-1 h-px bg-white/50 mb-2" />
+
+            <CompPerangkatLineChart
+              value={GLOBAL_DATA.data[item[4]]}
+              timestamp={GLOBAL_DATA.timestamp.map((d) =>
+                new Date(d).toLocaleTimeString(),
               )}
-            </LayoutPerangkatCard>
-          ))}
-        </div>
-      </>
+            />
+          </LayoutPerangkatCard>
+        ))}
+      </div>
     );
 };

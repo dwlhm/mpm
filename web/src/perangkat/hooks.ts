@@ -46,8 +46,6 @@ export const useQueryPerangkatData = (
       q.perangkatId,
       q.interval,
       q.limit,
-      q.from,
-      q.to,
     ],
     queryFn: getPerangkatData,
     retry: false,
