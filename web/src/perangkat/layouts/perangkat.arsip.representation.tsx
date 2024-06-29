@@ -1,4 +1,3 @@
-import React from "react";
 import { Dayjs } from "dayjs";
 import { useQueryPerangkatArsipData } from "../hooks";
 import { CompLoading, LayoutError } from "@/common";
@@ -41,10 +40,10 @@ export const PerangkatArsipRepresentation = (
 
   if (isSuccess)
     return (
-      <div className="mb-5">
-        <table className="table-auto border-collapse min-w-full rounded overflow-hidden">
+      <div className="mb-5 sm:max-w-[calc(100vw-20rem)] overflow-auto max-h-[calc(100vh-24rem)]">
+        <table className="table-auto border-collapse rounded overflow-hidden">
           <thead className="bg-gray-900">
-            <tr className="border-b border-gray-900 text-gray-100">
+            <tr className="text-gray-100">
               <th className="px-3 py-6">No</th>
               <th className="px-3 py-6">Timestamp</th>
               {props.register.map((v) => (
@@ -57,7 +56,7 @@ export const PerangkatArsipRepresentation = (
               data.results.timestamp.map((v: string, i: number) => (
                 <tr key={v} className="py-1">
                   <td className="p-2 text-center">{i+1}</td>
-                  <td className="p-2 text-center">{new Date(v).toLocaleString()}</td>
+                  <td className="p-2 text-center w-full">{new Date(v).toLocaleString()}</td>
                   {
                     props.register?.map(v => (
                       <td key={`val.${v}`} className="p-2 text-center">
