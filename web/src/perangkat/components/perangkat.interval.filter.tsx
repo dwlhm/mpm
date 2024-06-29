@@ -1,4 +1,5 @@
 import {
+  Button,
   Menu,
   MenuButton,
   MenuItem,
@@ -7,11 +8,17 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link } from "@tanstack/react-router";
+import { PerangkatArsipInterval } from "../layouts/perangkat.arsip.representation";
 
 export type CompPerangkatIntervalFilterProps = {
   interval: string;
   perangkatId: string;
   onFilterChanged: (b: boolean) => void;
+};
+
+export type CompPerangkatIntervalFilterBasicProps = {
+  interval: PerangkatArsipInterval;
+  onIntervalChanged: (i: PerangkatArsipInterval) => void;
 };
 
 export const CompPerangkatIntervalFilter = (
@@ -103,6 +110,72 @@ export const CompPerangkatIntervalFilter = (
             >
               Realtime
             </Link>
+          </MenuItem>
+        </MenuItems>
+      </Transition>
+    </Menu>
+  );
+};
+
+export const CompPerangkatIntervalFilterBasic = (
+  props: CompPerangkatIntervalFilterBasicProps,
+) => {
+  return (
+    <Menu>
+      <MenuButton className="bg-gray-900 text-gray-200 text-sm py-2 px-5 rounded w-fit flex gap-4 capitalize items-center">
+        {props.interval} <ChevronDownIcon className="size-5" />
+      </MenuButton>
+      <Transition
+        enter="transition ease-out duration-75"
+        enterFrom="opacity-0 scale-95"
+        enterTo="opacity-100 scale-100"
+        leave="transition ease-in duration-100"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
+      >
+        <MenuItems
+          anchor="bottom start"
+          className="bg-gray-900 text-gray-200 text-sm p-2 mt-2 rounded min-w-36 border border-gray-700"
+        >
+          <MenuItem>
+            <Button
+              className="w-full text-left block p-2 mb-2 hover:bg-gray-500 rounded"
+              onClick={() => props.onIntervalChanged("hourly")}
+            >
+              Hourly
+            </Button>
+          </MenuItem>
+          <MenuItem>
+            <Button
+              className="w-full text-left block p-2 mb-2 hover:bg-gray-500 rounded"
+              onClick={() => props.onIntervalChanged("daily")}
+            >
+              Daily
+            </Button>
+          </MenuItem>
+          <MenuItem>
+            <Button
+              className="w-full text-left block p-2 mb-2 hover:bg-gray-500 rounded"
+              onClick={() => props.onIntervalChanged("weekly")}
+            >
+              Weekly
+            </Button>
+          </MenuItem>
+          <MenuItem>
+            <Button
+              className="w-full text-left block p-2 mb-2 hover:bg-gray-500 rounded"
+              onClick={() => props.onIntervalChanged("monthly")}
+            >
+              Monthly
+            </Button>
+          </MenuItem>
+          <MenuItem>
+            <Button
+              className="w-full text-left block p-2 hover:bg-gray-500 rounded"
+              onClick={() => props.onIntervalChanged("yearly")}
+            >
+              Yearly
+            </Button>
           </MenuItem>
         </MenuItems>
       </Transition>

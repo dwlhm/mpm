@@ -38,7 +38,6 @@ export interface PerangkatData {
 export async function getPerangkatData(
   context: QueryFunctionContext,
 ): Promise<Api<PerangkatData>> {
-  console.log("limit: ", context.queryKey[4]);
   const config: AxiosRequestConfig = {
     method: "get",
     url: `${import.meta.env.VITE_BACKEND_URL}/data/${context.queryKey[2]}/`,
@@ -53,4 +52,25 @@ export async function getPerangkatData(
 
   const { data } = await axios(config);
   return data;
+}
+
+export async function getPerangkatDataArsip(
+  context: QueryFunctionContext
+): Promise<Api<any>> {
+  const config: AxiosRequestConfig = {
+    method: "get",
+    url: `${import.meta.env.VITE_BACKEND_URL}/data/${context.queryKey[2]}/arsip/`,
+    headers: {
+      Authorization: `Bearer ${context.queryKey[1]}`,
+    },
+    params: {
+      interval: context.queryKey[3],
+      dfrom: context.queryKey[4],
+      dto: context.queryKey[5],
+    },
+  };
+
+  const { data } = await axios(config);
+  return data;
+
 }

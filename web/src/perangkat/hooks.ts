@@ -6,7 +6,9 @@ import {
   PerangkatData,
   getDetailPerangkat,
   getPerangkatData,
+  getPerangkatDataArsip,
 } from "./api";
+import { Dayjs } from "dayjs";
 
 export const useQueryDetailPerangkat = (
   token: string | null,
@@ -51,4 +53,23 @@ export const useQueryPerangkatData = (
     retry: false,
     refetchInterval: 2500, // ms
     onSuccess: q.onSuccess,
+  });
+
+export type UseQueryPerangkatArsipDataProps = {
+  token: string | null;
+  perangkatId: string;
+  interval: "hourly" | "daily" | "weekly" | "monthly" | "yearly";
+  from: Dayjs | null;
+  to: Dayjs | null;
+};
+
+export const useQueryPerangkatArsipData = (
+  q: UseQueryPerangkatArsipDataProps,
+): UseQueryResult<Api<PerangkatData>, AxiosError> =>
+  useQuery<Api<any>, AxiosError>({
+    queryKey: [`arsip.${q.perangkatId}`, q.token, q.perangkatId, q.interval, q.from?.toISOString(), q.to?.toISOString()],
+    queryFn: getPerangkatDataArsip,
+    retry: false,
+    refetchInterval: false,
+    refetchOnMount: false,
   });

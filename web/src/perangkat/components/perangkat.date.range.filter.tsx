@@ -1,6 +1,6 @@
 import { CompButton } from "@/common";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export type CompPerangkatDateRangeFilterProps = {
   from: Dayjs | null;
@@ -15,8 +15,8 @@ export const CompPerangkatDateRangeFilter = (
 ) => {
   const resetDatetime = () => {
     props.onFilterChanged(true);
-    props.setFrom(null);
-    props.setTo(null);
+    props.setFrom(dayjs().subtract(1, "day"));
+    props.setTo(dayjs());
   };
   return (
     <div className={`date_time flex bg-gray-900 rounded text-gray-200`}>
